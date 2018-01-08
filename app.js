@@ -24,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/dialogflow', require('./routes/dialogflow'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,8 +44,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var listener = app.listen(3000, function(){
-  console.log('Listening on port ' + listener.address().port); //Listening on port 3000
-});
+app.set('port', process.env.PORT || 3000);
+console.log('Jarvis backend started on port ' + app.get("port"));
 
 module.exports = app;
