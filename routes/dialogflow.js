@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/', function(req, res, next) {
+    console.log(req);
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ 
         "speech": "Barack Hussein Obama II was the 44th and current President of the United States.",
