@@ -2,7 +2,7 @@ version: '3'
 
 services:
   backend:
+    image: jarvis_backend
     build: .
     ports:
-     - "8080:8080"
-     - "4848:4848"
+     - "80:8080"
