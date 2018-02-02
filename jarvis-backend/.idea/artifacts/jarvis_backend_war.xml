@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="jarvis-backend:war">
     <output-path>$PROJECT_DIR$/out/artifacts/jarvis_backend_war</output-path>
-    <root id="archive" name="jarvis-backend_war.war">
+    <root id="archive" name="jarvis_war.war">
       <element id="artifact" artifact-name="jarvis-backend:war exploded" />
     </root>
   </artifact>
