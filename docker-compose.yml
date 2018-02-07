@@ -2,7 +2,30 @@ version: '3'
 
 services:
   backend:
-    image: jarvis_backend
-    build: .
+    container_name: "jarvis_backend"
+    image: oracle/glassfish:latest
+    #build: .
     ports:
      - "80:8080"
+     - "4848:4848"
+    volumes:
+     - ./jarvis-backend:/jarvis-backend
+    entrypoint: /jarvis-backend/backend-deploy.sh
+    links:
+      - db
+    depends_on:
+      - db
+  
+  db:
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGODB_USER="user" 
+      - MONGODB_PASS="pass1231"
+    volumes:
+      - ./data:/data
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
