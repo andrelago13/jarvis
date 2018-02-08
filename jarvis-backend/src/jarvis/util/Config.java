@@ -1,4 +1,4 @@
-package util;
+package jarvis.util;
 
 public class Config {
     /**

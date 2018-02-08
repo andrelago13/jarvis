@@ -1,4 +1,4 @@
-package routes;
+package jarvis.routes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

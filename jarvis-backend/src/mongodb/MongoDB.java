@@ -2,11 +2,9 @@ package mongodb;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
 import org.bson.Document;
-import util.Config;
+import jarvis.util.Config;
 
 import java.util.ArrayList;
 import java.util.List;
