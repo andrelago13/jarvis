@@ -9,6 +9,8 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="org.json:json:20171018" />
+          <element id="library" level="project" name="org.mongodb:mongodb-driver:3.0.0" />
+          <element id="library" level="project" name="org.apache.httpcomponents:httpclient:4.5" />
         </element>
       </element>
     </root>

@@ -1,4 +1,5 @@
 import routes.Ping;
+import slack.SlackUtil;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

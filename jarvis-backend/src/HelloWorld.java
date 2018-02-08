@@ -1,10 +1,12 @@
+import mongodb.MongoDB;
 import org.json.JSONObject;
+import slack.SlackUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-@Path("/helloworld")
+@Path("/")
 public class HelloWorld {
     @GET
     // The Java method will produce content identified by the MIME Media type "text/plain"
@@ -12,6 +14,7 @@ public class HelloWorld {
     public String getClichedMessage() {
         JSONObject obj = new JSONObject();
         obj.append("key", "value");
+        obj.append("test", "slack " + SlackUtil.sendDeployedMessage());
         return obj.toString();
     }
 }
