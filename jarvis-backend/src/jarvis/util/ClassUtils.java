@@ -20,7 +20,7 @@ public class ClassUtils {
                 return result;
             }
 
-            String path = packageName.replace('.', '/');
+            String path = "./" + packageName.replace('.', '/');
             Enumeration<URL> resources = classLoader.getResources(path);
             List<File> dirs = new ArrayList<>();
             while (resources.hasMoreElements()) {

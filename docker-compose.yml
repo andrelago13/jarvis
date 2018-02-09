@@ -3,12 +3,13 @@ version: '3'
 services:
   backend:
     container_name: "jarvis_backend"
-    image: oracle/glassfish:latest
+    image: oracle/glassfish:5.0
     ports:
      - "80:8080"
      - "4848:4848"
     volumes:
      - ./jarvis-backend:/jarvis-backend
+     - ./jarvis-backend/out/artifacts/jarvis_backend_war:/glassfish5/glassfish/domains/domain1/autodeploy
     entrypoint: /jarvis-backend/backend-deploy.sh
     links:
       - db
@@ -16,7 +17,7 @@ services:
       - db
   
   db:
-    image: mongo:latest
+    image: mongo:3.2
     container_name: "mongodb"
     environment:
       - MONGO_DATA_DIR=/data/db
