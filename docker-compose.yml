@@ -10,7 +10,7 @@ services:
     volumes:
      - ./jarvis-backend:/jarvis-backend
      - ./jarvis-backend/out/artifacts/jarvis_backend_war:/glassfish5/glassfish/domains/domain1/autodeploy
-    entrypoint: /jarvis-backend/backend-deploy.sh
+    entrypoint: asadmin start-domain --verbose
     links:
       - db
     depends_on:
@@ -28,4 +28,4 @@ services:
       - ./data:/data
     ports:
       - 27017:27017
-    command: mongod --smallfiles --logpath=/dev/null
+    command: mongod --smallfiles --logpath=/dev/null --auth
