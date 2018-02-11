@@ -22,10 +22,10 @@ services:
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
-      - MONGODB_USER="user" 
-      - MONGODB_PASS="pass1231"
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USR}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PWD}
     volumes:
-      - ./data:/data
+      - /jarvis_data:/data
     ports:
       - 27017:27017
     command: mongod --smallfiles --logpath=/dev/null --auth
