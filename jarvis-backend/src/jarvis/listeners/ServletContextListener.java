@@ -1,5 +1,6 @@
 package jarvis.listeners;
 
+import jarvis.util.AdminAlertUtil;
 import slack.SlackUtil;
 
 import javax.annotation.PostConstruct;
@@ -11,6 +12,6 @@ import javax.ejb.Singleton;
 public class ServletContextListener {
     @PostConstruct
     public void init() {
-        SlackUtil.maybeSendDeployedMessage();
+        AdminAlertUtil.alertJarvisDeployed();
     }
 }

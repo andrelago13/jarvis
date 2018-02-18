@@ -1,22 +1,13 @@
 package slack;
 
-import jarvis.util.Flags;
 import jarvis.util.HttpUtil;
 import org.json.JSONObject;
 import jarvis.util.Config;
 
 public class SlackUtil {
-    private static final String MSG_JARVIS_DEPLOYED = "Jarvis was successfully deployed!";
-
-    public static void maybeSendDeployedMessage() {
-        if(!Flags.isLocalExecution()) {
-            sendDeployedMessage();
-        }
-    }
-
-    public static boolean sendDeployedMessage() {
+    public static boolean sendMessage(String message) {
         JSONObject obj = new JSONObject();
-        obj.put("text", MSG_JARVIS_DEPLOYED);
+        obj.put("text", message);
         return HttpUtil.sendJsonMessage(Config.SLACK_WEBHOOK_URL, obj.toString());
     }
 }
