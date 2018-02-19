@@ -13,6 +13,9 @@ public class PingDB {
     @GET
     @Produces("text/plain")
     public String getClichedMessage() {
-        return "" + MongoDB.hasConnection();
+        if(MongoDB.hasConnection()) {
+            return "Database connection active.";
+        }
+        return "WARNING: database connection down!";
     }
 }

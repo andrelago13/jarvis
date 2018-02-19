@@ -1,19 +1,16 @@
 package mongodb;
 
 import com.mongodb.*;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-import jarvis.util.Config;
+import res.Config;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MongoDB {
     public static final int MONGO_PORT = 27017;
 
-    public static String test() {
+    private static String test() {
         String result = "1";
         try {
             MongoClient m = buildClient();
@@ -38,9 +35,6 @@ public class MongoDB {
             result += " " + e.getMessage();
         }
         return result;
-
-
-        //return "";
     }
 
     public static boolean hasConnection() {
@@ -55,9 +49,9 @@ public class MongoDB {
         List<MongoCredential> creds = getCredentials();
 
         MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder();
-        optionsBuilder.connectTimeout(5000);
-        optionsBuilder.socketTimeout(5000);
-        optionsBuilder.serverSelectionTimeout(5000);
+        optionsBuilder.connectTimeout(Config.MONGO_TIMEOUT_MS);
+        optionsBuilder.socketTimeout(Config.MONGO_TIMEOUT_MS);
+        optionsBuilder.serverSelectionTimeout(Config.MONGO_TIMEOUT_MS);
         MongoClientOptions options = optionsBuilder.build();
 
         return new MongoClient(new ServerAddress(Config.JARVIS_DOMAIN , MONGO_PORT), creds, options);

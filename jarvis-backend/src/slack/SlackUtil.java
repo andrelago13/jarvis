@@ -2,7 +2,7 @@ package slack;
 
 import jarvis.util.HttpUtil;
 import org.json.JSONObject;
-import jarvis.util.Config;
+import res.Config;
 
 public class SlackUtil {
     public static boolean sendMessage(String message) {

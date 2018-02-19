@@ -1,4 +1,4 @@
-package jarvis.util;
+package res;
 
 public class Config {
     /**
@@ -22,4 +22,9 @@ public class Config {
     public static String MONGO_USER = "jadmin";
     public static String MONGO_DATABASE = "admin";
     public static String MONGO_PASSWORD = "pwd1231pwd";
+
+    /**
+     * Timeout for Mongo connections.
+     */
+    public static int MONGO_TIMEOUT_MS = 5000;
 }
