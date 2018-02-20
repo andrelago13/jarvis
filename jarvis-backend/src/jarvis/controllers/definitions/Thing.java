@@ -1,9 +1,14 @@
 package jarvis.controllers.definitions;
 
+import com.sun.istack.internal.NotNull;
+
+import java.util.Optional;
+
 public abstract class Thing {
     protected String mName;
     protected Type mType;
     protected String mDescription;
+    protected ThingLinks mLinks;
 
     /**
      * Enum to represent the different IoT device types (from https://iot.mozilla.org/wot).
@@ -45,14 +50,29 @@ public abstract class Thing {
         DIMMABLE_COLOR_LIGHT
     }
 
-    protected Thing(String name, Type type) {
-        mName = name;
-        mType = type;
-    }
-
-    protected Thing(String name, Type type, String description) {
+    protected Thing(@NotNull String name, @NotNull Type type, String description, @NotNull ThingLinks links) {
+        if(name == null || type == null || links == null) {
+            throw new IllegalArgumentException(
+                    "Not nullable constructor parameters were null, please read documentation.");
+        }
         mName = name;
         mType = type;
         mDescription = description;
+        mLinks = links;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public Type getType() {
+        return mType;
+    }
+
+    public Optional<String> getDescription() {
+        if(mDescription == null) {
+            return Optional.empty();
+        }
+        return Optional.of(mDescription);
     }
 }
