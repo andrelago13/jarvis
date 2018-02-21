@@ -38,9 +38,13 @@ public class MongoDB {
     }
 
     public static boolean hasConnection() {
-        MongoClient client = buildClient();
-        MongoDatabase db = client.getDatabase("jarvis");
-        db.listCollectionNames().first();
+        try {
+            MongoClient client = buildClient();
+            MongoDatabase db = client.getDatabase("jarvis");
+            db.listCollectionNames().first();
+        } catch (Exception e) {
+            return false;
+        }
 
         return true;
     }
