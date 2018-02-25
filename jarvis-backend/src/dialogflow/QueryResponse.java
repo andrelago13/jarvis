@@ -47,7 +47,7 @@ public class QueryResponse {
         }
 
         for(QueryResponseMessage message : mFulfillmentMessages) {
-            result.append("fulfillmentMessages", message.toJSON());
+            result.append("messages", message.toJSON());
         }
 
         return result;
