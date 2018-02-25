@@ -14,7 +14,12 @@ public class DialogFlow {
     public String getClichedMessage() {
         JSONObject response = new JSONObject();
 
-        response.put("fulfillmentText", "I'm kind of dumb");
+        //response.put("fulfillmentText", "I'm kind of dumb");
+        JSONObject messages = new JSONObject();
+        messages.put("type", 0);
+        messages.put("speech", "Is it done?");
+
+        response.append("messages", messages);
 
         return response.toString();
     }
