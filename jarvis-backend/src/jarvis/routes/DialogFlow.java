@@ -1,5 +1,6 @@
 package jarvis.routes;
 
+import dialogflow.QueryResponse;
 import org.json.JSONObject;
 
 import javax.ws.rs.GET;
@@ -12,15 +13,8 @@ public class DialogFlow {
     @POST
     @Produces("text/plain")
     public String getClichedMessage() {
-        JSONObject response = new JSONObject();
-
-        //response.put("fulfillmentText", "I'm kind of dumb");
-        JSONObject messages = new JSONObject();
-        messages.put("type", 0);
-        messages.put("speech", "Is it done?");
-
-        response.append("messages", messages);
-
+        QueryResponse response = new QueryResponse();
+        response.addFulfillmentMessage("Is it done now?");
         return response.toString();
     }
 }
