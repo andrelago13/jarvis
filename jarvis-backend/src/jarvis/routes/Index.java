@@ -12,10 +12,15 @@ import java.io.IOException;
 
 @Path("/")
 public class Index {
+    public static String mobj;
+
     @GET
     // The Java method will produce content identified by the MIME Media type "text/plain"
-    @Produces("text/plain")
+    @Produces("application/json")
     public String getClichedMessage() throws IOException, ClassNotFoundException {
+        if(mobj != null) {
+            return mobj;
+        }
         JSONObject obj = new JSONObject();
         obj.put("key", "value");
         return obj.toString();
