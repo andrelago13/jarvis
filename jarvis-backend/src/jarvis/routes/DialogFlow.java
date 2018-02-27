@@ -18,9 +18,9 @@ public class DialogFlow {
         try {
             DialogFlowRequest request = new DialogFlowRequest(content);
 
+            new ArrayList<>().get(10);
             QueryResponse response = new QueryResponse();
             response.addFulfillmentMessage(request.getFulfillmentSpeech());
-            AdminAlertUtil.customAlert("Sending: " + response.toString());
             return response.toString();
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);
