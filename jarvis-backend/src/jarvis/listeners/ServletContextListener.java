@@ -1,5 +1,6 @@
 package jarvis.listeners;
 
+import jarvis.engine.JarvisEngine;
 import jarvis.util.AdminAlertUtil;
 import mongodb.MongoDB;
 import slack.SlackUtil;
@@ -17,5 +18,7 @@ public class ServletContextListener {
         if(!MongoDB.hasConnection()) {
             AdminAlertUtil.alertNoDbConnection();
         }
+
+        JarvisEngine.getInstance();
     }
 }

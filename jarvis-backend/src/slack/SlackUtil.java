@@ -10,4 +10,10 @@ public class SlackUtil {
         obj.put("text", message);
         return HttpUtil.sendJsonMessage(Config.SLACK_WEBHOOK_URL, obj.toString());
     }
+
+    public static boolean sendIoTMessage(String message) {
+        JSONObject obj = new JSONObject();
+        obj.put("text", message);
+        return HttpUtil.sendJsonMessage(Config.SLACK_IOT_URL, obj.toString());
+    }
 }
