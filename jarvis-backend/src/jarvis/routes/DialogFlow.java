@@ -1,5 +1,6 @@
 package jarvis.routes;
 
+import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import org.json.JSONObject;
 
@@ -9,11 +10,12 @@ import javax.ws.rs.*;
 public class DialogFlow {
     @POST
     @Produces("text/plain")
-    public String getClichedMessage(@FormParam("lang") String lang) {
-        Index.mobj = "+> " + lang;
+    @Consumes("application/json")
+    public String getClichedMessage(String content) {
+        DialogFlowRequest request = new DialogFlowRequest(content);
 
         QueryResponse response = new QueryResponse();
-        response.addFulfillmentMessage("Is it done now?");
+        response.addFulfillmentMessage(request.getFulfillmentSpeech());
         return response.toString();
     }
 }

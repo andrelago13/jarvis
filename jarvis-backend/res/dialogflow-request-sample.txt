@@ -1,0 +1,39 @@
+{
+  "id": "563b8a81-c2e8-4cf4-870e-5fcb9d3e8068",
+  "timestamp": "2018-02-27T15:34:40.852Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "turn the alarm on",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "actuator": {
+        "alarm": "alarm"
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "e7e07192-7e72-48d5-b702-aea5f8a79f4b",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "true",
+      "webhookResponseTime": 8011,
+      "intentName": "Turn on/off"
+    },
+    "fulfillment": {
+      "messages": [
+        {
+          "speech": "Is it done now?",
+          "type": 0
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "96f28797-74cd-483e-8e7d-83dfe8eaa028"
+}
