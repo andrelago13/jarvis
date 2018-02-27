@@ -1,6 +1,7 @@
 package dialogflow;
 
 import org.json.JSONObject;
+import res.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +56,11 @@ public class QueryResponse {
 
     public String toString() {
         return toJSON().toString();
+    }
+
+    public static QueryResponse getDefaultResponse() {
+        QueryResponse response = new QueryResponse();
+        response.addFulfillmentMessage(Config.JARVIS_DEFAULT_ERROR);
+        return response;
     }
 }

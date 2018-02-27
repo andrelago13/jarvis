@@ -1,5 +1,7 @@
 package dialogflow;
 
+import jarvis.util.JarvisException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Optional;
@@ -47,11 +49,23 @@ public class DialogFlowRequest {
     private int mStatusCode;
     private String mStatusErrorType;
 
-    public DialogFlowRequest(String request) {
-        this(new JSONObject(request));
+    public DialogFlowRequest(String request) throws JarvisException {
+        try {
+            init(new JSONObject(request));
+        } catch (JSONException e) {
+            throw new JarvisException(e);
+        }
     }
 
-    public DialogFlowRequest(JSONObject json) {
+    public DialogFlowRequest(JSONObject json) throws JarvisException {
+        try {
+            init(json);
+        } catch (JSONException e) {
+            throw new JarvisException(e);
+        }
+    }
+
+    private void init(JSONObject json) {
         mInternalJSON = json;
         parseJSON();
     }
