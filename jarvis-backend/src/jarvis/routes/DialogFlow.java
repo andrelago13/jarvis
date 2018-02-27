@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Path("/dialogflow")
 public class DialogFlow {
     @POST
-    @Produces("text/plain")
+    @Produces("application/json")
     @Consumes("application/json")
     public String getClichedMessage(String content) {
         try {
@@ -20,6 +20,7 @@ public class DialogFlow {
 
             QueryResponse response = new QueryResponse();
             response.addFulfillmentMessage(request.getFulfillmentSpeech());
+            AdminAlertUtil.customAlert("Sending: " + response.toString());
             return response.toString();
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);

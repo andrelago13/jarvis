@@ -34,6 +34,10 @@ public class AdminAlertUtil {
         return makeProductionAlert(MSG_UNEXPECTED_EXCEPTION + e.toString() + '\n' + stackTrace);
     }
 
+    public static boolean customAlert(String message) {
+        return makeProductionAlert(message);
+    }
+
     private static boolean makeProductionAlert(String message) {
         if(Flags.isLocalExecution()) {
             return false;
