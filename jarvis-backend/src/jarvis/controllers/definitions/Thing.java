@@ -90,6 +90,7 @@ public class Thing {
     }
 
     protected Thing(@NotNull JSONObject json) {
+        mName = json.getString(NAME_KEY);
         // TODO: implement parser
     }
 

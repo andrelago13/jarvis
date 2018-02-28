@@ -1,5 +1,8 @@
 package jarvis.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Unit {
     public enum UnitType {
         CELSIUS,
@@ -7,17 +10,17 @@ public class Unit {
         OTHER
     }
 
-    public static final String TYPE_CELSIUS = "celsius";
-    public static final String TYPE_PERCENT = "percent";
-    public static final String TYPE_OTHER = "other";
+    public static final Map<Integer, String> typeValues = new HashMap<>();
+    static {
+        typeValues.put(UnitType.CELSIUS.ordinal(), "celsius");
+        typeValues.put(UnitType.PERCENT.ordinal(), "percent");
+        typeValues.put(UnitType.OTHER.ordinal(), "other");
+    }
 
     public static String UnitTypeValue(UnitType type) {
-        switch (type) {
-            case CELSIUS:
-                return TYPE_CELSIUS;
-            case PERCENT:
-                return TYPE_OTHER;
+        if(typeValues.containsKey(type.ordinal())) {
+            return typeValues.get(type.ordinal());
         }
-        return TYPE_OTHER;
+        return typeValues.get(UnitType.OTHER.ordinal());
     }
 }

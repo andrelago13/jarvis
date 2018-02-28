@@ -3,6 +3,8 @@ package jarvis.controllers.definitions.properties;
 import jarvis.util.Unit;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static jarvis.util.Unit.UnitType;
@@ -19,9 +21,12 @@ public class ThingProperty {
         OTHER
     }
 
-    public static final String TYPE_BOOLEAN = "boolean";
-    public static final String TYPE_NUMBER = "number";
-    public static final String TYPE_OTHER = "other";
+    public static final Map<Integer, String> typeValues = new HashMap<>();
+    static {
+        typeValues.put(Type.BOOLEAN.ordinal(), "boolean");
+        typeValues.put(Type.NUMBER.ordinal(), "number");
+        typeValues.put(Type.OTHER.ordinal(), "other");
+    }
 
     private String mName;
     private Type mType;
@@ -92,15 +97,10 @@ public class ThingProperty {
     }
 
     public static String getTypeValue(Type type) {
-        switch (type) {
-            case NUMBER:
-                return TYPE_NUMBER;
-            case BOOLEAN:
-                return TYPE_BOOLEAN;
-            case OTHER:
-                return TYPE_OTHER;
+        if(typeValues.containsKey(type.ordinal())) {
+            return typeValues.get(type.ordinal());
         }
-        return TYPE_OTHER;
+        return typeValues.get(Type.OTHER.ordinal());
     }
 
     public JSONObject toJSON() {
