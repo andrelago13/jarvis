@@ -2,6 +2,7 @@ package jarvis.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Unit {
     public enum UnitType {
@@ -22,5 +23,15 @@ public class Unit {
             return typeValues.get(type.ordinal());
         }
         return typeValues.get(UnitType.OTHER.ordinal());
+    }
+
+    public static UnitType getUnitTypeForString(String type) {
+        Set<Integer> keys = typeValues.keySet();
+        for(Integer k : keys) {
+            if(typeValues.get(k).equals(type)) {
+                return UnitType.values()[k];
+            }
+        }
+        return UnitType.OTHER;
     }
 }

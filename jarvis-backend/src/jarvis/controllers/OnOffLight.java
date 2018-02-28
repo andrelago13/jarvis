@@ -6,6 +6,7 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.ThingProperty;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,17 @@ public class OnOffLight extends Thing implements Toggleable {
                          @NotNull ThingLinks links,
                          @NotNull List<ThingProperty> properties) {
         super(name, Type.ON_OFF_LIGHT, description, links, properties);
+    }
+
+    protected OnOffLight(@NotNull JSONObject json) {
+        super(json);
+        if(mType != Type.ON_OFF_LIGHT) {
+            throw new IllegalArgumentException("Thing type for OnOffLight must be onOffLight.");
+        }
+    }
+
+    protected OnOffLight(@NotNull OnOffLight t) {
+        super(t);
     }
 
     @Override
@@ -100,6 +112,14 @@ public class OnOffLight extends Thing implements Toggleable {
         @Override
         public boolean isValid() {
             return super.isValid();
+        }
+
+        public static OnOffLight buildFromCopy(OnOffLight t) {
+            return new OnOffLight(t);
+        }
+
+        public static OnOffLight buildFromJSON(JSONObject json) {
+            return new OnOffLight(json);
         }
     }
 }

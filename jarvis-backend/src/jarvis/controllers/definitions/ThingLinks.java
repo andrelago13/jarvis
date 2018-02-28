@@ -120,5 +120,39 @@ public class ThingLinks {
         public ThingLinks build() {
             return new ThingLinks(mChildProperties, mChildActions, mChildEvents, mChildWebsocket);
         }
+
+        public static ThingLinks buildFromJSON(JSONObject json) {
+            Builder b = new Builder();
+            if(json.has(PROPERTIES_KEY)) {
+                b.setProperties(json.getString(PROPERTIES_KEY));
+            }
+            if(json.has(ACTIONS_KEY)) {
+                b.setActions(json.getString(ACTIONS_KEY));
+            }
+            if(json.has(EVENTS_KEY)) {
+                b.setEvents(json.getString(EVENTS_KEY));
+            }
+            if(json.has(WEBSOCKET_KEY)) {
+                b.setWebsocket(json.getString(WEBSOCKET_KEY));
+            }
+            return b.build();
+        }
+
+        public static ThingLinks buildFromCopy(ThingLinks t) {
+            Builder b = new Builder();
+            if(t.hasProperties()) {
+                b.setProperties(t.mProperties);
+            }
+            if(t.hasActions()) {
+                b.setActions(t.mActions);
+            }
+            if(t.hasEvents()) {
+                b.setEvents(t.mEvents);
+            }
+            if(t.hasWebsocket()) {
+                b.setWebsocket(t.mWebsocket);
+            }
+            return b.build();
+        }
     }
 }

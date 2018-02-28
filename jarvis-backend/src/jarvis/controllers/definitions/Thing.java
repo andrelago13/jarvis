@@ -5,9 +5,7 @@ import com.sun.istack.internal.Nullable;
 import jarvis.controllers.definitions.properties.ThingProperty;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Thing {
     public final static String NAME_KEY = "name";
@@ -62,16 +60,19 @@ public class Thing {
         DIMMABLE_COLOR_LIGHT
     }
 
-    public final static String THING_TYPE = "thing";
-    public final static String ON_OFF_SWITCH_TYPE = "onOffSwitch";
-    public final static String MULTILEVEL_SWITCH_TYPE = "multilevelSwitch";
-    public final static String BINARY_SENSOR_TYPE = "binarySensor";
-    public final static String MULTILEVEL_SENSOR_TYPE = "multilevelSensor";
-    public final static String SMART_PLUG_TYPE = "smartPlug";
-    public final static String ON_OFF_LIGHT_TYPE = "onOffLight";
-    public final static String DIMMABLE_LIGHT_TYPE = "dimmableLight";
-    public final static String ON_OFF_COLOR_LIGHT_TYPE = "onOffColorLight";
-    public final static String DIMMABLE_COLOR_LIGHT_TYPE = "dimmableColorLight";
+    public static final Map<Integer, String> typeValues = new HashMap<>();
+    static {
+        typeValues.put(Type.THING.ordinal(), "thing");
+        typeValues.put(Type.ON_OFF_SWITCH.ordinal(), "onOffSwitch");
+        typeValues.put(Type.MULTILEVEL_SWITCH.ordinal(), "multilevelSwitch");
+        typeValues.put(Type.BINARY_SENSOR.ordinal(), "binarySensor");
+        typeValues.put(Type.MULTILEVEL_SENSOR.ordinal(), "multilevelSensor");
+        typeValues.put(Type.SMART_PLUG.ordinal(), "smartPlug");
+        typeValues.put(Type.ON_OFF_LIGHT.ordinal(), "onOffLight");
+        typeValues.put(Type.DIMMABLE_LIGHT.ordinal(), "dimmableLight");
+        typeValues.put(Type.ON_OFF_COLOR_LIGHT.ordinal(), "onOffColorLight");
+        typeValues.put(Type.DIMMABLE_COLOR_LIGHT.ordinal(), "dimmableColorLight");
+    }
 
     protected Thing(@NotNull String name,
                     @NotNull Type type,
@@ -89,9 +90,36 @@ public class Thing {
         mProperties = properties;
     }
 
+    protected Thing(Thing t) {
+        mName = t.mName;
+        mType = t.mType;
+        mDescription = t.mDescription;
+        mLinks = ThingLinks.Builder.buildFromCopy(t.mLinks);
+        mProperties = new ArrayList<>();
+        for(ThingProperty property : t.mProperties) {
+            mProperties.add(new ThingProperty(property));
+        }
+    }
+
     protected Thing(@NotNull JSONObject json) {
         mName = json.getString(NAME_KEY);
-        // TODO: implement parser
+        mType = getTypeForString(json.getString(TYPE_KEY));
+        if(json.has(DESCRIPTION_KEY)) {
+            mDescription = json.getString(DESCRIPTION_KEY);
+        }
+        if(json.has(LINKS_KEY)) {
+            mLinks = ThingLinks.Builder.buildFromJSON(json.getJSONObject(LINKS_KEY));
+        } else {
+            mLinks = new ThingLinks.Builder().build();
+        }
+        mProperties = new ArrayList<>();
+        if(json.has(PROPERTIES_KEY)) {
+            JSONObject properties = json.getJSONObject(PROPERTIES_KEY);
+            Set<String> keys = properties.keySet();
+            for(String k : keys) {
+                mProperties.add(new ThingProperty(k, (properties.getJSONObject(k))));
+            }
+        }
     }
 
     public JSONObject toJSON() {
@@ -149,28 +177,20 @@ public class Thing {
     }
 
     public static String getTypeString(Type type) {
-        switch (type) {
-            case THING:
-                return THING_TYPE;
-            case ON_OFF_SWITCH:
-            case MULTILEVEL_SWITCH:
-                return MULTILEVEL_SWITCH_TYPE;
-            case BINARY_SENSOR:
-                return BINARY_SENSOR_TYPE;
-            case MULTILEVEL_SENSOR:
-                return MULTILEVEL_SENSOR_TYPE;
-            case SMART_PLUG:
-                return SMART_PLUG_TYPE;
-            case ON_OFF_LIGHT:
-                return ON_OFF_LIGHT_TYPE;
-            case DIMMABLE_LIGHT:
-                return DIMMABLE_LIGHT_TYPE;
-            case ON_OFF_COLOR_LIGHT:
-                return ON_OFF_COLOR_LIGHT_TYPE;
-            case DIMMABLE_COLOR_LIGHT:
-                return DIMMABLE_COLOR_LIGHT_TYPE;
+        if(typeValues.containsKey(type.ordinal())) {
+            return typeValues.get(type.ordinal());
         }
-        return THING_TYPE;
+        return typeValues.get(Type.THING.ordinal());
+    }
+
+    public static Type getTypeForString(String type) {
+        Set<Integer> keys = typeValues.keySet();
+        for(Integer k : keys) {
+            if(typeValues.get(k).equals(type)) {
+                return Type.values()[k];
+            }
+        }
+        return Type.THING;
     }
 
     public static class Builder {
@@ -217,6 +237,14 @@ public class Thing {
 
         protected boolean isValid() {
             return mName != null && mType != null && mLinks != null && mProperties != null;
+        }
+
+        protected static Thing buildFromCopy(Thing t) {
+            return new Thing(t);
+        }
+
+        protected static Thing buildFromJSON(JSONObject json) {
+            return new Thing(json);
         }
     }
 }
