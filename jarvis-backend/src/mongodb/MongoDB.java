@@ -1,7 +1,12 @@
 package mongodb;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
+import jarvis.util.AdminAlertUtil;
+import org.bson.Document;
+import org.json.JSONObject;
 import res.Config;
 
 import java.util.ArrayList;
@@ -37,6 +42,55 @@ public class MongoDB {
         return result;
     }
 
+    public static boolean isInitialized() {
+        //return dbExists() && thingsCollectionExists();
+        return false;
+    }
+
+    public static String dbExists() {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoDatabase jarvisDb = m.getDatabase(Config.MONGO_JARVIS_DB);
+            jarvisDb.createCollection(Config.MONGO_THINGS_COLLECTION);
+            MongoCollection col = jarvisDb.getCollection(Config.MONGO_THINGS_COLLECTION);
+            //col.insertOne(new JSONObject().put("k","v"));
+            Document doc = Document.parse("{'T':'y'}");
+            col.insertOne(doc);
+            return "ok";
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+            return e.getMessage();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+    }
+
+    public static boolean thingsCollectionExists() {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoDatabase jarvisDb = m.getDatabase(Config.MONGO_JARVIS_DB);
+            Iterable<String> collections = jarvisDb.listCollectionNames();
+            for(String col : collections) {
+                if(col.equals(Config.MONGO_THINGS_COLLECTION)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return false;
+    }
+
     public static boolean hasConnection() {
         try {
             MongoClient client = buildClient();
@@ -63,7 +117,7 @@ public class MongoDB {
 
     private static List<MongoCredential> getCredentials() {
         MongoCredentials storedCredentials = new MongoCredentials(Config.MONGO_USER,
-                Config.MONGO_DATABASE, Config.MONGO_PASSWORD);
+                Config.MONGO_AUTH_DB, Config.MONGO_PASSWORD);
 
         List<MongoCredential> creds = new ArrayList<>();
         creds.add(MongoCredential.createCredential(storedCredentials.getUser(), storedCredentials.getDatabase(),

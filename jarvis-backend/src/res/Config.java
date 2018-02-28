@@ -25,8 +25,14 @@ public class Config {
      * Temporary Mongo credentials.
      */
     public static final String MONGO_USER = "jadmin";
-    public static final String MONGO_DATABASE = "admin";
+    public static final String MONGO_AUTH_DB = "admin";
     public static final String MONGO_PASSWORD = "pwd1231pwd";
+
+    /**
+     * Mongo DB config.
+     */
+    public static final String MONGO_JARVIS_DB = "jarvis";
+    public static final String MONGO_THINGS_COLLECTION = "things";
 
     /**
      * Timeout for Mongo connections.

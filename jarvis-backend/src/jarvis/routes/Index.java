@@ -1,9 +1,7 @@
 package jarvis.routes;
 
-import dialogflow.QueryResponse;
 import mongodb.MongoDB;
 import org.json.JSONObject;
-import slack.SlackUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,6 +21,7 @@ public class Index {
         }
         JSONObject obj = new JSONObject();
         obj.put("key", "value");
-        return obj.toString();
+        //return obj.toString();
+        return "" + MongoDB.dbExists();
     }
 }
