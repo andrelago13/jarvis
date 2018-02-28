@@ -8,7 +8,6 @@ import java.util.List;
 
 public class ThingInterface {
     public static List<Thing> getThings() {
-        sendThingsMessage("/things", "get");
         return new ArrayList<>();
     }
 

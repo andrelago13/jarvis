@@ -1,5 +1,6 @@
 package jarvis.routes;
 
+import jarvis.controllers.OnOffLight;
 import mongodb.MongoDB;
 import org.json.JSONObject;
 
@@ -22,6 +23,7 @@ public class Index {
         JSONObject obj = new JSONObject();
         obj.put("key", "value");
         //return obj.toString();
-        return "" + MongoDB.dbExists();
+        OnOffLight l =  OnOffLight.Builder.getDefaultBuilder("testlight", "/base").build();
+        return "" + l.toString();
     }
 }

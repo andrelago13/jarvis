@@ -43,30 +43,28 @@ public class MongoDB {
     }
 
     public static boolean isInitialized() {
-        //return dbExists() && thingsCollectionExists();
-        return false;
+        return dbExists() && thingsCollectionExists();
     }
 
-    public static String dbExists() {
+    public static boolean dbExists() {
         MongoClient m = null;
         try {
             m = buildClient();
-            MongoDatabase jarvisDb = m.getDatabase(Config.MONGO_JARVIS_DB);
-            jarvisDb.createCollection(Config.MONGO_THINGS_COLLECTION);
-            MongoCollection col = jarvisDb.getCollection(Config.MONGO_THINGS_COLLECTION);
-            //col.insertOne(new JSONObject().put("k","v"));
-            Document doc = Document.parse("{'T':'y'}");
-            col.insertOne(doc);
-            return "ok";
+            Iterable<String> dbs = m.listDatabaseNames();
+            for(String db : dbs) {
+                if(db.equals(Config.MONGO_JARVIS_DB)) {
+                    return true;
+                }
+            }
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();
-            return e.getMessage();
         } finally {
             if(m != null) {
                 m.close();
             }
         }
+        return false;
     }
 
     public static boolean thingsCollectionExists() {
@@ -89,6 +87,29 @@ public class MongoDB {
             }
         }
         return false;
+    }
+
+    public static boolean initialize() {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoDatabase jarvisDb = m.getDatabase(Config.MONGO_JARVIS_DB);
+            jarvisDb.createCollection(Config.MONGO_THINGS_COLLECTION);
+            MongoCollection col = jarvisDb.getCollection(Config.MONGO_THINGS_COLLECTION);
+            //col.insertOne(new JSONObject().put("k","v"));
+            //Document doc = Document.parse("{'T':'y'}");
+            //col.insertOne(doc);
+            // TODO: insert default objects
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+            return false;
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return true;
     }
 
     public static boolean hasConnection() {

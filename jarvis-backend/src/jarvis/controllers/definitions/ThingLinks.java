@@ -1,8 +1,15 @@
 package jarvis.controllers.definitions;
 
+import org.json.JSONObject;
+
 import java.util.Optional;
 
 public class ThingLinks {
+    public static final String PROPERTIES_KEY = "properties";
+    public static final String ACTIONS_KEY = "actions";
+    public static final String EVENTS_KEY = "events";
+    public static final String WEBSOCKET_KEY = "websocket";
+
     private String mProperties;
     private String mActions;
     private String mEvents;
@@ -15,20 +22,75 @@ public class ThingLinks {
         mWebsocket = websocket;
     }
 
+    public boolean hasProperties() {
+        return mProperties != null;
+    }
+
+    public boolean hasActions() {
+        return mActions != null;
+    }
+
+    public boolean hasEvents() {
+        return mEvents != null;
+    }
+
+    public boolean hasWebsocket() {
+        return mWebsocket != null;
+    }
+
+    public boolean hasLinks() {
+        return hasWebsocket() || hasEvents() || hasActions() || hasProperties();
+    }
+
     public Optional<String> getProperties() {
+        if(!hasProperties()) {
+            return Optional.empty();
+        }
         return Optional.of(mProperties);
     }
 
     public Optional<String> getActions() {
+        if(!hasActions()) {
+            return Optional.empty();
+        }
         return Optional.of(mActions);
     }
 
     public Optional<String> getEvents() {
+        if(!hasEvents()) {
+            return Optional.empty();
+        }
         return Optional.of(mEvents);
     }
 
     public Optional<String> getWebsocket() {
+        if(!hasWebsocket()) {
+            return Optional.empty();
+        }
         return Optional.of(mWebsocket);
+    }
+
+    public String toString() {
+        return toJSON().toString();
+    }
+
+    public JSONObject toJSON() {
+        JSONObject result = new JSONObject();
+
+        if(hasProperties()) {
+            result.put(PROPERTIES_KEY, mProperties);
+        }
+        if(hasActions()) {
+            result.put(ACTIONS_KEY, mActions);
+        }
+        if(hasEvents()) {
+            result.put(EVENTS_KEY, mEvents);
+        }
+        if(hasWebsocket()) {
+            result.put(WEBSOCKET_KEY, mWebsocket);
+        }
+
+        return result;
     }
 
     public static class Builder {
