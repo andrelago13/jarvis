@@ -1,9 +1,7 @@
 package jarvis.engine;
 
 import jarvis.communication.ThingInterface;
-import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
-import jarvis.controllers.definitions.ThingLinks;
 
 import java.util.ArrayList;
 import java.util.List;
