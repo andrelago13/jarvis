@@ -40,4 +40,10 @@ public class Config {
     public static final int MONGO_TIMEOUT_MS = 5000;
 
     public static final String JARVIS_DEFAULT_ERROR = "Sorry, there was a problem. Please try again later.";
+
+    /**
+     * DialogFlow intent constants.
+     */
+    public static final String DF_ON_OFF_INTENT_NAME = "Turn on/off";
+    public static final String DF_ON_OFF_INTENT_ID = "e7e07192-7e72-48d5-b702-aea5f8a79f4b";
 }

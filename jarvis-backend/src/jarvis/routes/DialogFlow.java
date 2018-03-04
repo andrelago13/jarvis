@@ -2,6 +2,7 @@ package jarvis.routes;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
+import dialogflow.intent.DialogFlowIntent;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
 import org.json.JSONObject;
@@ -17,15 +18,16 @@ public class DialogFlow {
     public String getClichedMessage(String content) {
         try {
             DialogFlowRequest request = new DialogFlowRequest(content);
+            DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
 
-            QueryResponse response = new QueryResponse();
-            response.addFulfillmentMessage(request.getFulfillmentSpeech());
-            return response.toString();
+            return intent.execute().toString();
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);
+            return e.getMessage();
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
+            return e.getMessage();
         }
-        return QueryResponse.getDefaultResponse().toString();
+        //return QueryResponse.getDefaultResponse().toString();
     }
 }
