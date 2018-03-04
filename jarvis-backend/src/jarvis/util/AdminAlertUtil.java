@@ -39,9 +39,9 @@ public class AdminAlertUtil {
     }
 
     private static boolean makeProductionAlert(String message) {
-//        if(Flags.isLocalExecution()) {
-//            return false;
-//        }
+        if(Flags.isLocalExecution()) {
+            return false;
+        }
         return SlackUtil.sendMessage(message);
     }
 

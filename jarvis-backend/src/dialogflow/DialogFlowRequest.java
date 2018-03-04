@@ -26,6 +26,7 @@ public class DialogFlowRequest {
     private static final String KEY_FULFILLMENT = "fulfillment";
     private static final String KEY_FULFILLMENT_SPEECH = "speech";
     private static final String KEY_SCORE = "score";
+    private static final String KEY_PARAMETERS = "parameters";
     private static final String KEY_STATUS = "status";
     private static final String KEY_STATUS_CODE = "code";
     private static final String KEY_STATUS_ERROR_TYPE = "errorType";
@@ -46,6 +47,7 @@ public class DialogFlowRequest {
     private String mMetadataIntentName;
     private String mFulfillmentSpeech;
     private Double mScore;
+    private JSONObject mParameters; // Optional
 
     /* STATUS */
     private int mStatusCode;
@@ -100,6 +102,9 @@ public class DialogFlowRequest {
             if(action != null && action.length() > 0) {
                 mAction = action;
             }
+        }
+        if(result.has(KEY_PARAMETERS)) {
+            mParameters = result.getJSONObject(KEY_PARAMETERS);
         }
 
         mActionIncomplete = result.getBoolean(KEY_ACTION_INCOMPLETE);
@@ -169,6 +174,13 @@ public class DialogFlowRequest {
             return Optional.empty();
         }
         return Optional.of(mAction);
+    }
+
+    public Optional<JSONObject> getParameters() {
+        if(mParameters == null) {
+            return Optional.empty();
+        }
+        return Optional.of(mParameters);
     }
 
     public Boolean getActionIncomplete() {
