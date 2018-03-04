@@ -1,6 +1,7 @@
 package jarvis.engine;
 
 import jarvis.communication.ThingInterface;
+import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 
 import java.util.ArrayList;
@@ -30,5 +31,9 @@ public class JarvisEngine {
         //result.add(light);
 
         return result;
+    }
+
+    public static Thing findThing(String tag) {
+        return OnOffLight.Builder.getDefaultBuilder("light", "/room").build();
     }
 }

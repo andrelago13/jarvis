@@ -2,6 +2,7 @@ package jarvis.controllers;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import jarvis.communication.ThingInterface;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.actionables.Toggleable;
@@ -39,6 +40,7 @@ public class OnOffLight extends Thing implements Toggleable {
 
     @Override
     public Optional<Boolean> turnOn() {
+        ThingInterface.sendThingsMessage(mLinks.getActions().get(), "on");
         return Optional.empty();
     }
 
