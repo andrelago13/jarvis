@@ -17,6 +17,10 @@ public class ServletContextListener {
         AdminAlertUtil.alertJarvisDeployed();
         if(!MongoDB.hasConnection()) {
             AdminAlertUtil.alertNoDbConnection();
+        } else {
+            if(!MongoDB.isInitialized()) {
+                MongoDB.initialize();
+            }
         }
 
         JarvisEngine.getInstance();
