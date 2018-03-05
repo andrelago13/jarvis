@@ -2,6 +2,7 @@ package jarvis.controllers.definitions;
 
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.properties.ThingProperty;
 import org.json.JSONObject;
 

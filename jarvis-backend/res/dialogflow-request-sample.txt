@@ -1,30 +1,34 @@
 {
-  "id": "4507c2a6-779a-4226-a5ee-75188168e0b3",
-  "timestamp": "2018-03-05T10:19:53.587Z",
+  "id": "c8146c3e-17fe-4e83-a30b-9f8ba28f6138",
+  "timestamp": "2018-03-05T15:06:59.243Z",
   "lang": "en",
   "result": {
     "source": "agent",
-    "resolvedQuery": "turn the light on",
+    "resolvedQuery": "turn on the light",
     "action": "",
     "actionIncomplete": false,
     "parameters": {
-      "actuator": {
-        "light-switch": "light"
-      },
-      "status": "on"
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "light"
+          }
+        }
+      }
     },
     "contexts": [],
     "metadata": {
-      "intentId": "e7e07192-7e72-48d5-b702-aea5f8a79f4b",
+      "intentId": "8b4ac42a-6b56-43a0-9fbb-ca5da1e7d6d1",
       "webhookUsed": "true",
-      "webhookForSlotFillingUsed": "true",
-      "webhookResponseTime": 7037,
-      "intentName": "Turn on/off"
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 654,
+      "intentName": "Direct Action"
     },
     "fulfillment": {
       "messages": [
         {
-          "speech": "Sorry, there was a problem. Please try again later.",
+          "speech": "Sorry, I did not understand what you mean.",
           "type": 0
         }
       ]

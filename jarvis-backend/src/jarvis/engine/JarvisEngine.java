@@ -1,8 +1,11 @@
 package jarvis.engine;
 
+import jarvis.actions.definitions.Command;
+import jarvis.actions.definitions.CommandResult;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
+import mongodb.MongoDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,22 +23,26 @@ public class JarvisEngine {
     }
 
     private void init() {
-        ThingInterface.getThings();
-        // TODO: get objects from message service
+        if(!MongoDB.isInitialized()) {
+            MongoDB.initialize(JarvisEngine.getDefaultThings());
+        }
     }
 
     public static List<Thing> getDefaultThings() {
-        List<Thing> result = new ArrayList<>();
+        ArrayList<Thing> things = new ArrayList<>();
 
-        //OnOffLight light = new OnOffLight("light");
-        //result.add(light);
+        // Default light
+        things.add(OnOffLight.Builder.getDefaultBuilder("light", "/room").build());
 
+        return things;
+    }
+
+    public static List<Thing> findThing(String tag) {
+        List<Thing> result = MongoDB.getThingsByName(tag);
         return result;
     }
 
-    public static ArrayList<Thing> findThing(String tag) {
-        ArrayList<Thing> result = new ArrayList<>();
-        result.add(OnOffLight.Builder.getDefaultBuilder("light", "/room").build());
-        return result;
+    public static CommandResult executeCommand(Command cmd) {
+        return cmd.execute();
     }
 }

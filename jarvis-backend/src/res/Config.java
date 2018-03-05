@@ -46,5 +46,13 @@ public class Config {
      */
     public static final String DF_ON_OFF_INTENT_NAME = "Turn on/off";
     public static final String DF_ON_OFF_INTENT_ID = "e7e07192-7e72-48d5-b702-aea5f8a79f4b";
-    public static final String LIGHT_SWITCH_ENTITY_NAME = "light-switch";
+    public static final String DF_DIRECT_ACTION_INTENT_NAME = "Direct Action";
+    public static final String DF_DIRECT_ACTION_INTENT_ID = "8b4ac42a-6b56-43a0-9fbb-ca5da1e7d6d1";
+
+    /**
+     * DialogFlow entity constants.
+     */
+    public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
+    public static final String DF_ACTION_ENTITY_NAME = "action";
+    public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
 }

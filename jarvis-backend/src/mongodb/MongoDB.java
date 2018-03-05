@@ -1,9 +1,13 @@
 package mongodb;
 
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
+import jarvis.controllers.OnOffLight;
+import jarvis.controllers.ThingParser;
+import jarvis.controllers.definitions.Thing;
 import jarvis.util.AdminAlertUtil;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -11,6 +15,7 @@ import res.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MongoDB {
     public static final int MONGO_PORT = 27017;
@@ -89,17 +94,27 @@ public class MongoDB {
         return false;
     }
 
-    public static boolean initialize() {
+    private static MongoDatabase getJarvisDatabase(MongoClient client) {
+        return client.getDatabase(Config.MONGO_JARVIS_DB);
+    }
+
+    private static MongoCollection getThingsCollection(MongoClient client) {
+        MongoDatabase database = getJarvisDatabase(client);
+        return database.getCollection(Config.MONGO_THINGS_COLLECTION);
+    }
+
+    public static boolean initialize(List<Thing> defaultThings) {
         MongoClient m = null;
         try {
             m = buildClient();
             MongoDatabase jarvisDb = m.getDatabase(Config.MONGO_JARVIS_DB);
             jarvisDb.createCollection(Config.MONGO_THINGS_COLLECTION);
             MongoCollection col = jarvisDb.getCollection(Config.MONGO_THINGS_COLLECTION);
-            //col.insertOne(new JSONObject().put("k","v"));
-            //Document doc = Document.parse("{'T':'y'}");
-            //col.insertOne(doc);
-            // TODO: insert default objects
+
+            for(Thing t : defaultThings) {
+                Document doc = Document.parse(t.toString());
+                col.insertOne(doc);
+            }
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();
@@ -115,13 +130,93 @@ public class MongoDB {
     public static boolean hasConnection() {
         try {
             MongoClient client = buildClient();
-            MongoDatabase db = client.getDatabase("jarvis");
+            MongoDatabase db = getJarvisDatabase(client);
             db.listCollectionNames().first();
         } catch (Exception e) {
             return false;
         }
 
         return true;
+    }
+
+    public static List<Thing> getThings() {
+        ArrayList<Thing> things = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getThingsCollection(m);
+
+            FindIterable<Document> documents = col.find();
+            things = getThingsFromDocuments(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return things;
+    }
+
+    public static List<Thing> getThingsByName(String name) {
+        ArrayList<Thing> things = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getThingsCollection(m);
+
+            BasicDBObject whereQuery = new BasicDBObject();
+            whereQuery.put(Thing.NAME_KEY, name);
+
+            FindIterable<Document> documents = col.find(whereQuery);
+            things = getThingsFromDocuments(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return things;
+    }
+
+    public static List<Thing> getThingsWithNameLike(String name) {
+        ArrayList<Thing> things = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getThingsCollection(m);
+
+            BasicDBObject query = new BasicDBObject();
+            query.put(Thing.NAME_KEY,  java.util.regex.Pattern.compile(name));
+
+            FindIterable<Document> documents = col.find(query);
+            things = getThingsFromDocuments(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return things;
+    }
+
+    private static ArrayList<Thing> getThingsFromDocuments(FindIterable<Document> documents) {
+        ArrayList<Thing> things = new ArrayList<>();
+        for(Document doc : documents) {
+            Optional<Thing> thing = ThingParser.parseThingFromJson(doc.toJson());
+            if(thing.isPresent()) {
+                things.add(thing.get());
+            }
+        }
+        return things;
     }
 
     private static MongoClient buildClient() {

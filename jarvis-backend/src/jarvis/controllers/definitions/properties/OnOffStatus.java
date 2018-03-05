@@ -37,4 +37,12 @@ public class OnOffStatus {
     public boolean isOn() {
         return mValue;
     }
+
+    public String getStatusString() {
+        if(isOn()) {
+            return ON_STATUS;
+        } else {
+            return OFF_STATUS;
+        }
+    }
 }
