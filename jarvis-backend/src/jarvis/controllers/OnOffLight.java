@@ -46,6 +46,7 @@ public class OnOffLight extends Thing implements Toggleable {
 
     @Override
     public Optional<Boolean> turnOff() {
+        ThingInterface.sendThingsMessage(mLinks.getActions().get(), "off");
         return Optional.empty();
     }
 
@@ -73,9 +74,9 @@ public class OnOffLight extends Thing implements Toggleable {
             statusProperty.setDescription(DEFAULT_PROPERTY_DESCRIPTION);
             builder.addProperty(statusProperty);
             ThingLinks.Builder linksBuilder = new ThingLinks.Builder();
-            linksBuilder.setProperties(basePath + '/' + DEFAULT_PROPERTIES_PATH);
-            linksBuilder.setActions(basePath + '/' + DEFAULT_ACTIONS_PATH);
-            linksBuilder.setEvents(basePath + '/' + DEFAULT_EVENTS_PATH);
+            linksBuilder.setProperties(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH);
+            linksBuilder.setActions(basePath + '/' + name + '/' + DEFAULT_ACTIONS_PATH);
+            linksBuilder.setEvents(basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH);
             builder.setLinks(linksBuilder.build());
 
             return builder;

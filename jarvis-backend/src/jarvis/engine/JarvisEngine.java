@@ -33,7 +33,9 @@ public class JarvisEngine {
         return result;
     }
 
-    public static Thing findThing(String tag) {
-        return OnOffLight.Builder.getDefaultBuilder("light", "/room").build();
+    public static ArrayList<Thing> findThing(String tag) {
+        ArrayList<Thing> result = new ArrayList<>();
+        result.add(OnOffLight.Builder.getDefaultBuilder("light", "/room").build());
+        return result;
     }
 }
