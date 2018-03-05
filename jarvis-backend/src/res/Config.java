@@ -44,6 +44,8 @@ public class Config {
     /**
      * DialogFlow intent constants.
      */
+    public static final String DF_WELCOME_INTENT_NAME = "Welcome Intent";
+    public static final String DF_WELCOME_INTENT_ID = "f3814c50-b4df-4f04-90b6-261b44eece77";
     public static final String DF_ON_OFF_INTENT_NAME = "Turn on/off";
     public static final String DF_ON_OFF_INTENT_ID = "e7e07192-7e72-48d5-b702-aea5f8a79f4b";
     public static final String DF_DIRECT_ACTION_INTENT_NAME = "Direct Action";
