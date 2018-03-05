@@ -1,29 +1,30 @@
 {
-  "id": "563b8a81-c2e8-4cf4-870e-5fcb9d3e8068",
-  "timestamp": "2018-02-27T15:34:40.852Z",
+  "id": "4507c2a6-779a-4226-a5ee-75188168e0b3",
+  "timestamp": "2018-03-05T10:19:53.587Z",
   "lang": "en",
   "result": {
     "source": "agent",
-    "resolvedQuery": "turn the alarm on",
+    "resolvedQuery": "turn the light on",
     "action": "",
     "actionIncomplete": false,
     "parameters": {
       "actuator": {
-        "alarm": "alarm"
-      }
+        "light-switch": "light"
+      },
+      "status": "on"
     },
     "contexts": [],
     "metadata": {
       "intentId": "e7e07192-7e72-48d5-b702-aea5f8a79f4b",
       "webhookUsed": "true",
       "webhookForSlotFillingUsed": "true",
-      "webhookResponseTime": 8011,
+      "webhookResponseTime": 7037,
       "intentName": "Turn on/off"
     },
     "fulfillment": {
       "messages": [
         {
-          "speech": "Is it done now?",
+          "speech": "Sorry, there was a problem. Please try again later.",
           "type": 0
         }
       ]
@@ -35,5 +36,5 @@
     "errorType": "success",
     "webhookTimedOut": false
   },
-  "sessionId": "96f28797-74cd-483e-8e7d-83dfe8eaa028"
+  "sessionId": "c97e966a-e5d5-4670-be00-3c27a3277d18"
 }
