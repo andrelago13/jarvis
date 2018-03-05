@@ -24,6 +24,7 @@ public class OnOffIntent extends DialogFlowIntent {
     public static final String MSG_ALREADY_OFF = "The device is already off.";
     public static final String MSG_DEVICE_NOT_FOUND = "The device you requested was not found.";
     public static final String MSG_MULTIPLE_DEVICES_PREFIX = "Multiple devices were found by the name of ";
+    public static final String MSG_DEVICE_NOT_SUPPORTED = "The specified device does not support the toggle feature.";
 
     private static final String KEY_STATUS = "status";
     private static final String KEY_ACTUATOR = "actuator";
@@ -60,7 +61,7 @@ public class OnOffIntent extends DialogFlowIntent {
                 response.addFulfillmentMessage(MSG_DEVICE_NOT_FOUND);
             } else if (things.size() > 1) {
                 response.addFulfillmentMessage(MSG_MULTIPLE_DEVICES_PREFIX + name);
-            } else {
+            } else if(things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
                 Optional<Boolean> isOn = device.isOn();
                 if (status.isOn()) {
@@ -78,6 +79,8 @@ public class OnOffIntent extends DialogFlowIntent {
                         response.addFulfillmentMessage(MSG_SUCCESS);
                     }
                 }
+            } else {
+                response.addFulfillmentMessage(MSG_DEVICE_NOT_SUPPORTED);
             }
         }
 
