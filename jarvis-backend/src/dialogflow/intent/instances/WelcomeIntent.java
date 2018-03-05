@@ -21,7 +21,7 @@ public class WelcomeIntent extends DialogFlowIntent {
         responses.add("Greetings!");
         responses.add("Hey! What's up?");
         responses.add("How can I help?");
-        responses.add("Hello There");
+        responses.add("Hello there");
     }
 
     private DialogFlowRequest mRequest;

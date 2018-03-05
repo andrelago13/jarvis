@@ -50,6 +50,8 @@ public class Config {
     public static final String DF_ON_OFF_INTENT_ID = "e7e07192-7e72-48d5-b702-aea5f8a79f4b";
     public static final String DF_DIRECT_ACTION_INTENT_NAME = "Direct Action";
     public static final String DF_DIRECT_ACTION_INTENT_ID = "8b4ac42a-6b56-43a0-9fbb-ca5da1e7d6d1";
+    public static final String DF_DELAYED_ACTION_INTENT_NAME = "Delayed Action";
+    public static final String DF_DELAYED_ACTION_INTENT_ID = "36e77c05-5ada-404d-8de5-cf7a7c1f2f96";
 
     /**
      * DialogFlow entity constants.
