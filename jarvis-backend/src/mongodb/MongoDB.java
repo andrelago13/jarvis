@@ -103,7 +103,7 @@ public class MongoDB {
         return database.getCollection(Config.MONGO_THINGS_COLLECTION);
     }
 
-    public static boolean initialize() {
+    public static boolean initialize(List<Thing> defaultThings) {
         MongoClient m = null;
         try {
             m = buildClient();
@@ -111,8 +111,7 @@ public class MongoDB {
             jarvisDb.createCollection(Config.MONGO_THINGS_COLLECTION);
             MongoCollection col = jarvisDb.getCollection(Config.MONGO_THINGS_COLLECTION);
 
-            ArrayList<Thing> things = getDefaultThings();
-            for(Thing t : things) {
+            for(Thing t : defaultThings) {
                 Document doc = Document.parse(t.toString());
                 col.insertOne(doc);
             }
@@ -140,7 +139,7 @@ public class MongoDB {
         return true;
     }
 
-    public static ArrayList<Thing> getThings() {
+    public static List<Thing> getThings() {
         ArrayList<Thing> things = new ArrayList<>();
 
         MongoClient m = null;
@@ -161,7 +160,7 @@ public class MongoDB {
         return things;
     }
 
-    public static ArrayList<Thing> getThingsByName(String name) {
+    public static List<Thing> getThingsByName(String name) {
         ArrayList<Thing> things = new ArrayList<>();
 
         MongoClient m = null;
@@ -173,6 +172,30 @@ public class MongoDB {
             whereQuery.put(Thing.NAME_KEY, name);
 
             FindIterable<Document> documents = col.find(whereQuery);
+            things = getThingsFromDocuments(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return things;
+    }
+
+    public static List<Thing> getThingsWithNameLike(String name) {
+        ArrayList<Thing> things = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getThingsCollection(m);
+
+            BasicDBObject query = new BasicDBObject();
+            query.put(Thing.NAME_KEY,  java.util.regex.Pattern.compile(name));
+
+            FindIterable<Document> documents = col.find(query);
             things = getThingsFromDocuments(documents);
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
@@ -216,14 +239,5 @@ public class MongoDB {
         creds.add(MongoCredential.createCredential(storedCredentials.getUser(), storedCredentials.getDatabase(),
                 storedCredentials.getPassword()));
         return creds;
-    }
-
-    private static ArrayList<Thing> getDefaultThings() {
-        ArrayList<Thing> things = new ArrayList<>();
-
-        // Default light
-        things.add(OnOffLight.Builder.getDefaultBuilder("light", "/room").build());
-
-        return things;
     }
 }

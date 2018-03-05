@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import res.Config;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class OnOffIntent extends DialogFlowIntent {
@@ -56,7 +57,7 @@ public class OnOffIntent extends DialogFlowIntent {
 
         if (actuator.has(Config.LIGHT_SWITCH_ENTITY_NAME)) {
             String name = actuator.getString(Config.LIGHT_SWITCH_ENTITY_NAME);
-            ArrayList<Thing> things = JarvisEngine.findThing(name);
+            List<Thing> things = JarvisEngine.findThing(name);
             if (things.isEmpty()) {
                 response.addFulfillmentMessage(MSG_DEVICE_NOT_FOUND);
             } else if (things.size() > 1) {
