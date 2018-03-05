@@ -13,7 +13,7 @@ public class ThingInterface {
     }
 
     public static List<Thing> getThingsByName(String name) {
-        return MongoDB.getThingsWithNameLike(name);
+        return MongoDB.getThingsByName(name);
     }
 
     public static boolean sendThingsMessage(String url, String message) {

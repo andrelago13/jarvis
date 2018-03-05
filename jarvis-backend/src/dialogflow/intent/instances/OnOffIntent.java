@@ -39,52 +39,55 @@ public class OnOffIntent extends DialogFlowIntent {
     @Override
     public QueryResponse execute() {
         QueryResponse response = new QueryResponse();
-
-        Optional<JSONObject> optParameters = mRequest.getParameters();
-        if (!optParameters.isPresent()) {
-            response.addFulfillmentMessage(MSG_ERROR);
-            return response;
-        }
-
-        JSONObject parameters = optParameters.get();
-        if (!parameters.has(KEY_STATUS) || !parameters.has(KEY_ACTUATOR)) {
-            response.addFulfillmentMessage(MSG_ERROR);
-            return response;
-        }
-
-        OnOffStatus status = new OnOffStatus(parameters.getString(KEY_STATUS));
-        JSONObject actuator = parameters.getJSONObject(KEY_ACTUATOR);
-
-        if (actuator.has(Config.LIGHT_SWITCH_ENTITY_NAME)) {
-            String name = actuator.getString(Config.LIGHT_SWITCH_ENTITY_NAME);
-            List<Thing> things = JarvisEngine.findThing(name);
-            if (things.isEmpty()) {
-                response.addFulfillmentMessage(MSG_DEVICE_NOT_FOUND);
-            } else if (things.size() > 1) {
-                response.addFulfillmentMessage(MSG_MULTIPLE_DEVICES_PREFIX + name);
-            } else if(things.get(0) instanceof Toggleable) {
-                Toggleable device = (Toggleable) things.get(0);
-                Optional<Boolean> isOn = device.isOn();
-                if (status.isOn()) {
-                    if(isOn.isPresent() && isOn.get()) {
-                        response.addFulfillmentMessage(MSG_ALREADY_ON);
-                    } else {
-                        device.turnOn();
-                        response.addFulfillmentMessage(MSG_SUCCESS);
-                    }
-                } else {
-                    if(isOn.isPresent() && !isOn.get()) {
-                        response.addFulfillmentMessage(MSG_ALREADY_OFF);
-                    } else {
-                        device.turnOff();
-                        response.addFulfillmentMessage(MSG_SUCCESS);
-                    }
-                }
-            } else {
-                response.addFulfillmentMessage(MSG_DEVICE_NOT_SUPPORTED);
-            }
-        }
-
+        response.addFulfillmentMessage(MSG_ERROR);
         return response;
+//        QueryResponse response = new QueryResponse();
+//
+//        Optional<JSONObject> optParameters = mRequest.getParameters();
+//        if (!optParameters.isPresent()) {
+//            response.addFulfillmentMessage(MSG_ERROR);
+//            return response;
+//        }
+//
+//        JSONObject parameters = optParameters.get();
+//        if (!parameters.has(KEY_STATUS) || !parameters.has(KEY_ACTUATOR)) {
+//            response.addFulfillmentMessage(MSG_ERROR);
+//            return response;
+//        }
+//
+//        OnOffStatus status = new OnOffStatus(parameters.getString(KEY_STATUS));
+//        JSONObject actuator = parameters.getJSONObject(KEY_ACTUATOR);
+//
+//        if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
+//            String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
+//            List<Thing> things = JarvisEngine.findThing(name);
+//            if (things.isEmpty()) {
+//                response.addFulfillmentMessage(MSG_DEVICE_NOT_FOUND);
+//            } else if (things.size() > 1) {
+//                response.addFulfillmentMessage(MSG_MULTIPLE_DEVICES_PREFIX + name);
+//            } else if(things.get(0) instanceof Toggleable) {
+//                Toggleable device = (Toggleable) things.get(0);
+//                Optional<Boolean> isOn = device.isOn();
+//                if (status.isOn()) {
+//                    if(isOn.isPresent() && isOn.get()) {
+//                        response.addFulfillmentMessage(MSG_ALREADY_ON);
+//                    } else {
+//                        device.turnOn();
+//                        response.addFulfillmentMessage(MSG_SUCCESS);
+//                    }
+//                } else {
+//                    if(isOn.isPresent() && !isOn.get()) {
+//                        response.addFulfillmentMessage(MSG_ALREADY_OFF);
+//                    } else {
+//                        device.turnOff();
+//                        response.addFulfillmentMessage(MSG_SUCCESS);
+//                    }
+//                }
+//            } else {
+//                response.addFulfillmentMessage(MSG_DEVICE_NOT_SUPPORTED);
+//            }
+//        }
+//
+//        return response;
     }
 }

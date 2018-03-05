@@ -1,5 +1,7 @@
 package jarvis.engine;
 
+import jarvis.actions.definitions.Command;
+import jarvis.actions.definitions.CommandResult;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
@@ -38,5 +40,9 @@ public class JarvisEngine {
     public static List<Thing> findThing(String tag) {
         List<Thing> result = MongoDB.getThingsByName(tag);
         return result;
+    }
+
+    public static CommandResult executeCommand(Command cmd) {
+        return cmd.execute();
     }
 }
