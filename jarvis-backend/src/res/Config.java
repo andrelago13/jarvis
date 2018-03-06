@@ -33,6 +33,7 @@ public class Config {
      */
     public static final String MONGO_JARVIS_DB = "jarvis";
     public static final String MONGO_THINGS_COLLECTION = "things";
+    public static final String MONGO_COMMANDS_COLLECTION = "commands";
 
     /**
      * Timeout for Mongo connections.

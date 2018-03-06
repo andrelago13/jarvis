@@ -21,16 +21,12 @@ public class Index {
     @Produces("application/json")
     public String getClichedMessage() throws IOException, ClassNotFoundException {
         try {
-            if(mobj != null) {
+            if (mobj != null) {
                 return mobj;
             }
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
-            //return obj.toString();
-            OnOffLight l =  OnOffLight.Builder.getDefaultBuilder("testlight", "/base").build();
-            String str1 = l.toString();
-            OnOffLight t2 = OnOffLight.Builder.buildFromJSON(new JSONObject(str1));
-            return "" + l.toString();// + '\n' + '\n' + t2.toString();
+            return obj.toString();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
