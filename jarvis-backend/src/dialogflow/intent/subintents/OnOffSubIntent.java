@@ -2,6 +2,7 @@ package dialogflow.intent.subintents;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
+import dialogflow.intent.DialogFlowIntent;
 import jarvis.actions.OnOffAction;
 import jarvis.actions.definitions.Command;
 import jarvis.actions.definitions.CommandResult;
@@ -9,13 +10,14 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
 import jarvis.engine.JarvisEngine;
+import jarvis.util.JarvisException;
 import org.json.JSONObject;
 import res.Config;
 
 import java.util.List;
 import java.util.Optional;
 
-public class OnOffSubIntent {
+public class OnOffSubIntent extends DialogFlowIntent {
     public static final String MSG_SUCCESS = "Done!";
     public static final String MSG_ERROR = "Sorry, I was not able to do that.";
     public static final String MSG_ALREADY_STATE = "The device is already ";
@@ -34,7 +36,20 @@ public class OnOffSubIntent {
         mParameters = parameters;
     }
 
-    public void execute(QueryResponse response) {
+    private static boolean isStateDifferent(Toggleable device, OnOffStatus status) {
+        Optional<Boolean> isOn = device.isOn();
+        if (status.isOn() && isOn.isPresent() && isOn.get()) {
+            return false;
+        } else if(!status.isOn() && isOn.isPresent() && !isOn.get()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public QueryResponse execute() throws JarvisException {
+        QueryResponse response = new QueryResponse();
         OnOffStatus status = new OnOffStatus(mParameters.getString(KEY_STATUS));
         JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
 
@@ -69,16 +84,6 @@ public class OnOffSubIntent {
         }
 
         response.addFulfillmentMessage(resultMessage);
-    }
-
-    private static boolean isStateDifferent(Toggleable device, OnOffStatus status) {
-        Optional<Boolean> isOn = device.isOn();
-        if (status.isOn() && isOn.isPresent() && isOn.get()) {
-            return false;
-        } else if(!status.isOn() && isOn.isPresent() && !isOn.get()) {
-            return false;
-        }
-
-        return true;
+        return response;
     }
 }
