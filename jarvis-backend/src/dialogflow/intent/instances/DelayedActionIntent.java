@@ -15,6 +15,10 @@ public class DelayedActionIntent extends DialogFlowIntent {
     public static final String INTENT_NAME = Config.DF_DELAYED_ACTION_INTENT_NAME;
     public static final String INTENT_ID = Config.DF_DELAYED_ACTION_INTENT_ID;
 
+    public static final String KEY_DATETIME = "date-time"; // tomorrow, on Jan 20th
+    public static final String KEY_DURATION= "duration"; // in X minutes
+    public static final String KEY_TIME = "time"; // at X
+
     public static final String MSG_ERROR = "Invalid parameters for \"Delayed Action\" intent.";
 
     private DialogFlowRequest mRequest;
@@ -50,5 +54,16 @@ public class DelayedActionIntent extends DialogFlowIntent {
         QueryResponse response = new QueryResponse();
         response.addFulfillmentMessage(MSG_ERROR);
         return response;
+    }
+
+    private void parseTime(JSONObject time) {
+        if(time.has(KEY_DATETIME)) {
+            // normal "2017-07-12T16:30:00Z"
+            // period "2017-07-12T12:00:00Z/2017-07-12T16:00:00Z"
+        } else if(time.has(KEY_DURATION)) {
+            // "amount":10,"unit":"min"
+        } else if(time.has(KEY_TIME)) {
+            // "16:30:00"
+        }
     }
 }
