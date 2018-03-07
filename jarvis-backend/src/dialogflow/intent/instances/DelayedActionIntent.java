@@ -8,6 +8,7 @@ import dialogflow.intent.subintents.OnOffSubIntent;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
+import jarvis.util.TimeUtils.TimeInfo;
 import org.json.JSONObject;
 import res.Config;
 import slack.SlackUtil;
@@ -52,8 +53,8 @@ public class DelayedActionIntent extends DialogFlowIntent {
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
         JSONObject timeJson = parameters.getJSONObject(Config.DF_TIME_ENTITY_NAME);
 
-        long seconds = parseTimeToSeconds(timeJson);
-        if(seconds == -1) {
+        TimeInfo timeInfo = parseTimeToSeconds(timeJson);
+        if(timeInfo == null || timeInfo.value < 0) {
             return getInvalidTimeResponse();
         }
 
@@ -74,7 +75,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
                     e.printStackTrace();
                 }
             }
-        }, seconds, TimeUnit.SECONDS);
+        }, timeInfo.value, timeInfo.unit);
 
         return getSuccessResponse();
     }
@@ -97,19 +98,22 @@ public class DelayedActionIntent extends DialogFlowIntent {
         return response;
     }
 
-    private long parseTimeToSeconds(JSONObject time) {
+    private TimeInfo parseTimeToSeconds(JSONObject time) {
         if(time.has(KEY_DATETIME)) {
             // normal "2017-07-12T16:30:00Z"
             // period "2017-07-12T12:00:00Z/2017-07-12T16:00:00Z"
+            // TODO period parsing
+            return TimeUtils.dateTimeToInfo(time.getString(KEY_DATETIME));
         } else if(time.has(KEY_DURATION)) {
             // {"amount":10,"unit":"min"}
             JSONObject duration = time.getJSONObject(KEY_DURATION);
             if(duration.has(KEY_AMOUNT) && duration.has(KEY_UNIT)) {
-                return TimeUtils.timeUnitToSeconds(duration.getString(KEY_UNIT), duration.getInt(KEY_AMOUNT));
+                return TimeUtils.timeUnitToInfo(duration.getString(KEY_UNIT), duration.getInt(KEY_AMOUNT));
             }
         } else if(time.has(KEY_TIME)) {
             // "16:30:00"
+            return TimeUtils.dayTimeToInfo(time.getString(KEY_TIME));
         }
-        return -1;
+        return null;
     }
 }

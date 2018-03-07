@@ -11,6 +11,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,21 +34,15 @@ public class Index {
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
 
-//            ScheduledExecutorService executor =
-//                    Executors.newSingleThreadScheduledExecutor();
-//            executor.schedule(new Runnable() {
-//                @Override
-//                public void run() {
-//                    SlackUtil.sendIoTMessage("test schedule");
-//                }
-//            }, 10, TimeUnit.SECONDS);
+            LocalTime localTime = LocalTime.parse("14:40:00", DateTimeFormatter.ofPattern("HH:mm:ss"));
+            LocalTime.now();
+            return "" + LocalTime.now().until(localTime, ChronoUnit.SECONDS);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String date = "2017-07-12T16:30:00Z";
-            date.replace('T', ' ');
-            Date parsedDate = dateFormat.parse(date.replace('T', ' '));
-            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-            return timestamp.toString();
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+//            String date = "16:30:00";
+//            Date parsedDate = dateFormat.parse(date.replace('T', ' '));
+//            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+//            return timestamp.toString();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
