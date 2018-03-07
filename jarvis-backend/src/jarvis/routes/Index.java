@@ -31,14 +31,14 @@ public class Index {
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
 
-            ScheduledExecutorService executor =
-                    Executors.newSingleThreadScheduledExecutor();
-            executor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    SlackUtil.sendIoTMessage("test schedule");
-                }
-            }, 10, TimeUnit.SECONDS);
+//            ScheduledExecutorService executor =
+//                    Executors.newSingleThreadScheduledExecutor();
+//            executor.schedule(new Runnable() {
+//                @Override
+//                public void run() {
+//                    SlackUtil.sendIoTMessage("test schedule");
+//                }
+//            }, 10, TimeUnit.SECONDS);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String date = "2017-07-12T16:30:00Z";

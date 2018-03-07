@@ -59,6 +59,6 @@ public class Config {
      */
     public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
     public static final String DF_ACTION_ENTITY_NAME = "action";
-    public static final String DF_TIME_ENTITY_NAME = "action";
+    public static final String DF_TIME_ENTITY_NAME = "time";
     public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
 }
