@@ -55,7 +55,7 @@ public class QueryResponse {
         JSONArray a = new JSONArray();
         JSONObject c = new JSONObject();
         c.put("name", "test-context");
-        c.put("parameters", new JSONArray());
+        c.put("parameters", (new JSONObject()).put("test", "arg"));
         c.put("lifespan", 2);
         a.put(c);
         result.put("contextOut", a);
