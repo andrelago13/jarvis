@@ -55,6 +55,8 @@ public class Config {
     public static final String DF_DELAYED_ACTION_INTENT_ID = "36e77c05-5ada-404d-8de5-cf7a7c1f2f96";
     public static final String DF_CANCEL_INTENT_NAME = "Cancel Command";
     public static final String DF_CANCEL_INTENT_ID = "62544394-9d76-42da-a40b-6a6cda34066b";
+    public static final String DF_CONFIRM_CANCEL_INTENT_NAME = "Confirm Cancel";
+    public static final String DF_CONFIRM_CANCEL_INTENT_ID = "145e7d3b-9105-4bfb-8c6a-78c3e5c2783b";
 
     /**
      * DialogFlow context constants.

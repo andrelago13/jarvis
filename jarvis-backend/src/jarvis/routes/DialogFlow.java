@@ -5,6 +5,7 @@ import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
+import slack.SlackUtil;
 
 import javax.ws.rs.*;
 
@@ -14,6 +15,7 @@ public class DialogFlow {
     @Produces("application/json")
     @Consumes("application/json")
     public String getClichedMessage(String content) {
+        SlackUtil.sendMessage(content);
         try {
             DialogFlowRequest request = new DialogFlowRequest(content);
             DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
