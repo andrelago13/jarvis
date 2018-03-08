@@ -1,6 +1,5 @@
 package dialogflow;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import res.Config;
 
@@ -15,7 +14,7 @@ public class QueryResponse {
 
     private Optional<String> mFulfillmentText;
     private List<QueryResponseMessage> mFulfillmentMessages;
-    private List<QueryResponseContext> mOutContexts;
+    private List<DialogFlowContext> mOutContexts;
 
     public QueryResponse() {
         mFulfillmentText = Optional.empty();
@@ -31,11 +30,11 @@ public class QueryResponse {
         return mFulfillmentText;
     }
 
-    public void addOutContext(QueryResponseContext context) {
+    public void addOutContext(DialogFlowContext context) {
         mOutContexts.add(context);
     }
 
-    public List<QueryResponseContext> getOutContext() {
+    public List<DialogFlowContext> getOutContext() {
         return mOutContexts;
     }
 
@@ -66,7 +65,7 @@ public class QueryResponse {
             result.append(KEY_MESSAGES, message.toJSON());
         }
 
-        for(QueryResponseContext c : mOutContexts) {
+        for(DialogFlowContext c : mOutContexts) {
             result.append(KEY_CONTEXT_OUT, c.getJSON());
         }
 

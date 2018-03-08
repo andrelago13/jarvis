@@ -2,16 +2,10 @@ package dialogflow.intent.instances;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.QueryResponseContext;
+import dialogflow.DialogFlowContext;
 import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.subintents.ActionFinder;
-import jarvis.actions.DelayedCommand;
 import jarvis.actions.definitions.Command;
-import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
-import jarvis.util.TimeUtils;
-import jarvis.util.TimeUtils.TimeInfo;
-import org.json.JSONObject;
 import res.Config;
 
 import java.util.Optional;
@@ -42,7 +36,7 @@ public class CancelIntent extends DialogFlowIntent {
         QueryResponse response = new QueryResponse();
         response.addFulfillmentMessage(MSG_SUCCESS);
 
-        QueryResponseContext c = new QueryResponseContext(Config.DF_CANCEL_INTENT_CONTEXT,
+        DialogFlowContext c = new DialogFlowContext(Config.DF_CANCEL_INTENT_CONTEXT,
                 Config.DF_CANCEL_INTENT_COMMAND_LIFESPAN);
         c.addParameter(Config.DF_CANCEL_INTENT_COMMAND_ID, "cmd123");
         response.addOutContext(c);

@@ -2,7 +2,6 @@ package dialogflow.intent.instances;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.QueryResponseContext;
 import dialogflow.intent.DialogFlowIntent;
 import jarvis.actions.definitions.Command;
 import jarvis.util.JarvisException;
@@ -14,7 +13,7 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
     public static final String INTENT_NAME = Config.DF_CONFIRM_CANCEL_INTENT_NAME;
     public static final String INTENT_ID = Config.DF_CONFIRM_CANCEL_INTENT_ID;
 
-    public static final String MSG_SUCCESS = "Are you sure you want to cancel the command?";
+    public static final String MSG_SUCCESS = "Cancelled!";
 
     private DialogFlowRequest mRequest;
 

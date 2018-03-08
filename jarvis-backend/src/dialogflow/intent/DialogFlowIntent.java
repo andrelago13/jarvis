@@ -23,6 +23,8 @@ public abstract class DialogFlowIntent {
             return new DelayedActionIntent(request);
         } else if (CancelIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new CancelIntent(request);
+        } else if (ConfirmCancelIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+            return new ConfirmCancelIntent(request);
         }
 
         return new InvalidIntent();

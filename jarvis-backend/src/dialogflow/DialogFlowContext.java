@@ -1,13 +1,11 @@
 package dialogflow;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class QueryResponseContext {
+public class DialogFlowContext {
     public static final String KEY_NAME = "name";
     public static final String KEY_PARAMETERS = "parameters";
     public static final String KEY_LIFESPAN = "lifespan";
@@ -16,13 +14,13 @@ public class QueryResponseContext {
     private Map<String, Object> mParameters;
     private int mLifespan;
 
-    public QueryResponseContext(String name, int lifespan, Map<String, Object> parameters) {
+    public DialogFlowContext(String name, int lifespan, Map<String, Object> parameters) {
         mName = name;
         mLifespan = lifespan;
         mParameters = parameters;
     }
 
-    public QueryResponseContext(String name, int lifespan) {
+    public DialogFlowContext(String name, int lifespan) {
         this(name, lifespan, new HashMap<>());
     }
 
@@ -60,5 +58,31 @@ public class QueryResponseContext {
 
     public String toString() {
         return getJSON().toString();
+    }
+
+    public static DialogFlowContext fromJSON(JSONObject context) {
+        String name = context.getString(KEY_NAME);
+        int lifespan = context.getInt(KEY_LIFESPAN);
+        if(!context.has(KEY_PARAMETERS)) {
+            return new DialogFlowContext(name, lifespan);
+        }
+
+        Map<String, Object> parameters = new HashMap<>();
+        JSONObject parametersJSON = context.getJSONObject(KEY_PARAMETERS);
+        Set<String> parameterKeys = parametersJSON.keySet();
+        for(String k : parameterKeys) {
+            parameters.put(k, parametersJSON.get(k));
+        }
+        return new DialogFlowContext(name, lifespan, parameters);
+    }
+
+    public static List<DialogFlowContext> fromJSONList(JSONArray contexts) {
+        List<DialogFlowContext> result = new ArrayList<>();
+
+        for(int index = 0; index < contexts.length(); ++index) {
+            result.add(DialogFlowContext.fromJSON(contexts.getJSONObject(index)));
+        }
+
+        return result;
     }
 }

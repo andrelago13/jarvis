@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class DialogFlowRequest {
@@ -25,6 +27,7 @@ public class DialogFlowRequest {
     private static final String KEY_INTENT_NAME = "intentName";
     private static final String KEY_FULFILLMENT = "fulfillment";
     private static final String KEY_FULFILLMENT_SPEECH = "speech";
+    private static final String KEY_CONTEXTS = "contexts";
     private static final String KEY_SCORE = "score";
     private static final String KEY_PARAMETERS = "parameters";
     private static final String KEY_STATUS = "status";
@@ -48,6 +51,7 @@ public class DialogFlowRequest {
     private String mFulfillmentSpeech;
     private Double mScore;
     private JSONObject mParameters; // Optional
+    private List<DialogFlowContext> mContexts;
 
     /* STATUS */
     private int mStatusCode;
@@ -124,6 +128,11 @@ public class DialogFlowRequest {
         }
         if(mFulfillmentSpeech == null) {
             mFulfillmentSpeech = "";
+        }
+
+        mContexts = new ArrayList<>();
+        if(result.has(KEY_CONTEXTS)) {
+            mContexts = DialogFlowContext.fromJSONList(result.getJSONArray(KEY_CONTEXTS));
         }
 
         mScore = result.getDouble(KEY_SCORE);
@@ -209,6 +218,10 @@ public class DialogFlowRequest {
 
     public String getStatusErrorType() {
         return mStatusErrorType;
+    }
+
+    public List<DialogFlowContext> getContexts() {
+        return mContexts;
     }
 
     public String toString() {
