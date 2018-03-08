@@ -58,7 +58,7 @@ public class QueryResponse {
         c.put("parameters", new JSONArray());
         c.put("lifespan", 2);
         a.put(c);
-        result.put("contexts", a);
+        result.put("contextOut", a);
 
         return result;
     }
