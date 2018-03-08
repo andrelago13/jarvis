@@ -58,7 +58,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
 
         if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
             String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
-            List<Thing> things = JarvisEngine.findThing(name);
+            List<Thing> things = JarvisEngine.getInstance().findThing(name);
 
             if (things.isEmpty()) {
                 resultMessage = MSG_DEVICE_NOT_FOUND;
@@ -77,7 +77,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
         }
 
         if (cmd != null) {
-            CommandResult result = JarvisEngine.executeCommand(cmd);
+            CommandResult result = JarvisEngine.getInstance().executeCommand(cmd);
             if (result.isSuccessful()) {
                 resultMessage = MSG_SUCCESS;
             }
@@ -95,7 +95,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
 
         if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
             String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
-            List<Thing> things = JarvisEngine.findThing(name);
+            List<Thing> things = JarvisEngine.getInstance().findThing(name);
 
             if (things.size() == 1 && things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);

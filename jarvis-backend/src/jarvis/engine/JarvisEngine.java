@@ -1,17 +1,25 @@
 package jarvis.engine;
 
+import jarvis.actions.CommandRunnable;
+import jarvis.actions.ScheduledAction;
 import jarvis.actions.definitions.Command;
 import jarvis.actions.definitions.CommandResult;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
+import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 public class JarvisEngine {
     private static final String KEY_COMMAND_TEXT = "commandText";
@@ -21,6 +29,8 @@ public class JarvisEngine {
     private static final String KEY_SUCCESS = "success";
 
     private static JarvisEngine instance;
+
+    private Map<Long, ScheduledAction> mScheduledActions;
 
     private JarvisEngine() {init();}
 
@@ -34,9 +44,11 @@ public class JarvisEngine {
     private void init() {
         ThingInterface.init(getDefaultThings());
         LoggerCommunication.init(getDefaultThings());
+        // TODO get actions from backup
+        mScheduledActions = new HashMap<>();
     }
 
-    public static List<Thing> getDefaultThings() {
+    public List<Thing> getDefaultThings() {
         ArrayList<Thing> things = new ArrayList<>();
 
         // Default light
@@ -45,24 +57,39 @@ public class JarvisEngine {
         return things;
     }
 
-    public static List<Thing> findThing(String tag) {
+    public List<Thing> findThing(String tag) {
         List<Thing> result = ThingInterface.getThingsByName(tag);
         return result;
     }
 
-    public static CommandResult executeCommand(Command cmd) {
+    public void scheduleAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
+        ScheduledAction action = new ScheduledAction(id, future);
+        mScheduledActions.put(id, action);
+    }
+
+    public boolean cancelAction(long id) {
+        if(!mScheduledActions.containsKey(id)) {
+            return false;
+        }
+        return mScheduledActions.get(id).getFuture().cancel(false);
+    }
+
+    public CommandResult executeCommand(Command cmd) {
         CommandResult res = cmd.execute();
         logCommand(getCommandJSON(cmd, res, false));
         return res;
     }
 
-    public static CommandResult undoCommand(Command cmd) {
+    public CommandResult undoCommand(Command cmd) {
         CommandResult res = cmd.undo();
         logCommand(getCommandJSON(cmd, res, true));
         return res;
     }
 
-    private static boolean logCommand(JSONObject commandJSON) {
+    private boolean logCommand(JSONObject commandJSON) {
         return MongoDB.logCommand(commandJSON);
     }
 

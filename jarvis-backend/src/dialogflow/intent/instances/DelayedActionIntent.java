@@ -73,7 +73,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
         }
 
         Command cmd = new DelayedCommand(intentCommand.get(), timeInfo);
-        JarvisEngine.executeCommand(cmd);
+        JarvisEngine.getInstance().executeCommand(cmd);
 
         return getSuccessResponse();
     }

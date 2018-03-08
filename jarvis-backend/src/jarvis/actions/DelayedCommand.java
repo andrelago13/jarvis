@@ -2,11 +2,13 @@ package jarvis.actions;
 
 import jarvis.actions.definitions.Command;
 import jarvis.actions.definitions.CommandResult;
+import jarvis.engine.JarvisEngine;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DelayedCommand extends Command {
     public static final String TAG = "delayedCommand";
@@ -14,33 +16,31 @@ public class DelayedCommand extends Command {
     private static final String KEY_TIME_UNIT = "timeUnit";
     private static final String KEY_TIME_VALUE = "timeValue";
     private static final String KEY_COMMAND = "command";
+    private static final String KEY_ID = "id";
 
     private Command mCommand;
     private TimeUtils.TimeInfo mTimeInfo;
+    private long mId;
 
     public DelayedCommand(Command command, TimeUtils.TimeInfo timeInfo) {
         mCommand = command;
         mTimeInfo = timeInfo;
+        mId = generateID();
+    }
+
+    private static long generateID() {
+        return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }
 
     @Override
     public CommandResult execute() {
-        // TODO use jarvis scheduler
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
-        executor.schedule(new Runnable() {
-            @Override
-            public void run() {
-                mCommand.execute();
-            }
-        }, mTimeInfo.value, mTimeInfo.unit);
+        JarvisEngine.getInstance().scheduleAction(mId, mCommand, mTimeInfo);
         return new CommandResult(true);
     }
 
     @Override
     public CommandResult undo() {
-        // TODO use jarvis scheduler
-        return new CommandResult(false);
+        return new CommandResult(JarvisEngine.getInstance().cancelAction(mId));
     }
 
     @Override
@@ -57,6 +57,7 @@ public class DelayedCommand extends Command {
     @Override
     public JSONObject getJSON() {
         JSONObject res = new JSONObject();
+        res.put(KEY_ID, mId);
         res.put(KEY_TYPE, TAG);
         res.put(KEY_TIME_UNIT, mTimeInfo.unit);
         res.put(KEY_TIME_VALUE, mTimeInfo.value);
