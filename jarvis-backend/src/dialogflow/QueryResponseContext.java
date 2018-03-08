@@ -49,9 +49,11 @@ public class QueryResponseContext {
         result.put(KEY_LIFESPAN, mLifespan);
 
         Set<String> keys = mParameters.keySet();
+        JSONObject parameters = new JSONObject();
         for(String k : keys) {
-            result.append(KEY_PARAMETERS, mParameters.get(k));
+            parameters.put(k, mParameters.get(k));
         }
+        result.put(KEY_PARAMETERS, parameters);
 
         return result;
     }
