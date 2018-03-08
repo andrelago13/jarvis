@@ -1,0 +1,47 @@
+{
+  "id": "c499358c-3a74-4d10-9c59-0547b2675bff",
+  "timestamp": "2018-03-06T09:55:20.534Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "turn on the light tomorrow",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "time": {
+        "date-time": "2018-03-07"
+      },
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "light"
+          }
+        }
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "36e77c05-5ada-404d-8de5-cf7a7c1f2f96",
+      "webhookUsed": "false",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Delayed Action"
+    },
+    "fulfillment": {
+      "speech": "Delayed? Sure",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Delayed? Sure"
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "8e854d8c-db7b-487d-a248-f8b9eeca3ad1"
+}

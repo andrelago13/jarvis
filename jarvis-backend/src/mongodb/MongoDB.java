@@ -103,6 +103,11 @@ public class MongoDB {
         return database.getCollection(Config.MONGO_THINGS_COLLECTION);
     }
 
+    private static MongoCollection getCommandsCollection(MongoClient client) {
+        MongoDatabase database = getJarvisDatabase(client);
+        return database.getCollection(Config.MONGO_COMMANDS_COLLECTION);
+    }
+
     public static boolean initialize(List<Thing> defaultThings) {
         MongoClient m = null;
         try {
@@ -217,6 +222,25 @@ public class MongoDB {
             }
         }
         return things;
+    }
+
+    public static boolean logCommand(JSONObject command) {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getCommandsCollection(m);
+            String s = Document.parse(command.toString()).toString();
+            col.insertOne(Document.parse(command.toString()));
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+            return false;
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return true;
     }
 
     private static MongoClient buildClient() {

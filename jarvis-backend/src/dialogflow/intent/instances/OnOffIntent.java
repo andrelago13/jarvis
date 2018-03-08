@@ -3,6 +3,7 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import jarvis.actions.definitions.Command;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public class OnOffIntent extends DialogFlowIntent {
     public static final String INTENT_NAME = Config.DF_ON_OFF_INTENT_NAME;
     public static final String INTENT_ID = Config.DF_ON_OFF_INTENT_ID;
@@ -89,5 +91,10 @@ public class OnOffIntent extends DialogFlowIntent {
 //        }
 //
 //        return response;
+    }
+
+    @Override
+    public Optional<Command> getCommand() {
+        return Optional.empty();
     }
 }

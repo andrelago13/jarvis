@@ -1,9 +1,7 @@
 package jarvis.routes;
 
-import jarvis.controllers.OnOffLight;
-import jarvis.controllers.definitions.Thing;
-import mongodb.MongoDB;
 import org.json.JSONObject;
+import slack.SlackUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +9,15 @@ import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Path("/")
 public class Index {
@@ -21,16 +28,12 @@ public class Index {
     @Produces("application/json")
     public String getClichedMessage() throws IOException, ClassNotFoundException {
         try {
-            if(mobj != null) {
+            if (mobj != null) {
                 return mobj;
             }
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
-            //return obj.toString();
-            OnOffLight l =  OnOffLight.Builder.getDefaultBuilder("testlight", "/base").build();
-            String str1 = l.toString();
-            OnOffLight t2 = OnOffLight.Builder.buildFromJSON(new JSONObject(str1));
-            return "" + l.toString();// + '\n' + '\n' + t2.toString();
+            return obj.toString();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

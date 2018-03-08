@@ -1,17 +1,36 @@
 package jarvis.engine;
 
+import jarvis.actions.CommandRunnable;
+import jarvis.actions.ScheduledAction;
 import jarvis.actions.definitions.Command;
 import jarvis.actions.definitions.CommandResult;
+import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
+import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
+import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 public class JarvisEngine {
+    private static final String KEY_COMMAND_TEXT = "commandText";
+    private static final String KEY_COMMAND = "command";
+    private static final String KEY_UNDO = "undo";
+    private static final String KEY_TIMESTAMP = "timestamp";
+    private static final String KEY_SUCCESS = "success";
+
     private static JarvisEngine instance;
+
+    private Map<Long, ScheduledAction> mScheduledActions;
 
     private JarvisEngine() {init();}
 
@@ -23,12 +42,13 @@ public class JarvisEngine {
     }
 
     private void init() {
-        if(!MongoDB.isInitialized()) {
-            MongoDB.initialize(JarvisEngine.getDefaultThings());
-        }
+        ThingInterface.init(getDefaultThings());
+        LoggerCommunication.init(getDefaultThings());
+        // TODO get actions from backup
+        mScheduledActions = new HashMap<>();
     }
 
-    public static List<Thing> getDefaultThings() {
+    public List<Thing> getDefaultThings() {
         ArrayList<Thing> things = new ArrayList<>();
 
         // Default light
@@ -37,12 +57,55 @@ public class JarvisEngine {
         return things;
     }
 
-    public static List<Thing> findThing(String tag) {
-        List<Thing> result = MongoDB.getThingsByName(tag);
+    public List<Thing> findThing(String tag) {
+        List<Thing> result = ThingInterface.getThingsByName(tag);
         return result;
     }
 
-    public static CommandResult executeCommand(Command cmd) {
-        return cmd.execute();
+    public void scheduleAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
+        ScheduledAction action = new ScheduledAction(id, future);
+        mScheduledActions.put(id, action);
+    }
+
+    public boolean cancelAction(long id) {
+        if(!mScheduledActions.containsKey(id)) {
+            return false;
+        }
+        return mScheduledActions.get(id).getFuture().cancel(false);
+    }
+
+    public CommandResult executeCommand(Command cmd) {
+        CommandResult res = cmd.execute();
+        logCommand(getCommandJSON(cmd, res, false));
+        return res;
+    }
+
+    public CommandResult undoCommand(Command cmd) {
+        CommandResult res = cmd.undo();
+        logCommand(getCommandJSON(cmd, res, true));
+        return res;
+    }
+
+    private boolean logCommand(JSONObject commandJSON) {
+        return MongoDB.logCommand(commandJSON);
+    }
+
+    private static JSONObject getCommandJSON(Command cmd, CommandResult result, boolean undo) {
+        JSONObject json = new JSONObject();
+        if(undo) {
+            json.put(KEY_COMMAND_TEXT, cmd.undoString());
+            json.put(KEY_UNDO, true);
+        } else {
+            json.put(KEY_COMMAND_TEXT, cmd.executeString());
+            json.put(KEY_UNDO, false);
+        }
+        json.put(KEY_COMMAND, cmd.getJSON());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        json.put(KEY_TIMESTAMP, timestamp.toString());
+        json.put(KEY_SUCCESS, result.isSuccessful());
+        return json;
     }
 }

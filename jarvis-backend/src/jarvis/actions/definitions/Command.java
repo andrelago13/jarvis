@@ -1,6 +1,13 @@
 package jarvis.actions.definitions;
 
-public interface Command {
-    CommandResult execute();
-    CommandResult undo();
+import org.json.JSONObject;
+
+public abstract class Command {
+    public static final String KEY_TYPE = "type";
+
+    public abstract CommandResult execute();
+    public abstract CommandResult undo();
+    public abstract String executeString();
+    public abstract String undoString();
+    public abstract JSONObject getJSON();
 }

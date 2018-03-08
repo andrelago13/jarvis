@@ -19,4 +19,10 @@ public class ThingInterface {
     public static boolean sendThingsMessage(String url, String message) {
         return SlackUtil.sendIoTMessage(url + " " + message);
     }
+
+    public static void init(List<Thing> defaultThings) {
+        if(!MongoDB.isInitialized()) {
+            MongoDB.initialize(defaultThings);
+        }
+    }
 }
