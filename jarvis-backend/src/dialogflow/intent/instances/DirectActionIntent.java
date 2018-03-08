@@ -6,6 +6,7 @@ import dialogflow.intent.DialogFlowIntent;
 import dialogflow.intent.subintents.ActionFinder;
 import dialogflow.intent.subintents.OnOffSubIntent;
 import jarvis.actions.OnOffAction;
+import jarvis.actions.definitions.Command;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
@@ -48,6 +49,23 @@ public class DirectActionIntent extends DialogFlowIntent {
         }
 
         return subIntent.execute();
+    }
+
+    @Override
+    public Optional<Command> getCommand() {
+        Optional<JSONObject> optParameters = mRequest.getParameters();
+        if (optParameters.isPresent()) {
+            JSONObject parameters = optParameters.get();
+            if (parameters.has(Config.DF_ACTION_ENTITY_NAME)) {
+                JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
+                DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action);
+                if(subIntent == null) {
+                    return subIntent.getCommand();
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     private static QueryResponse getErrorResponse() {

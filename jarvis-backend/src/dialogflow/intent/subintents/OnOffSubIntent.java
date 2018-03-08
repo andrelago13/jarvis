@@ -40,15 +40,11 @@ public class OnOffSubIntent extends DialogFlowIntent {
         Optional<Boolean> isOn = device.isOn();
         if (status.isOn() && isOn.isPresent() && isOn.get()) {
             return false;
-        } else if(!status.isOn() && isOn.isPresent() && !isOn.get()) {
+        } else if (!status.isOn() && isOn.isPresent() && !isOn.get()) {
             return false;
         }
 
         return true;
-    }
-
-    public OnOffAction getAction() {
-
     }
 
     @Override
@@ -68,9 +64,9 @@ public class OnOffSubIntent extends DialogFlowIntent {
                 resultMessage = MSG_DEVICE_NOT_FOUND;
             } else if (things.size() > 1) {
                 resultMessage = MSG_MULTIPLE_DEVICES_PREFIX + name;
-            } else if(things.get(0) instanceof Toggleable) {
+            } else if (things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
-                if(isStateDifferent(device, status)) {
+                if (isStateDifferent(device, status)) {
                     cmd = new OnOffAction(device, status);
                 } else {
                     resultMessage = MSG_ALREADY_STATE + status.getStatusString();
@@ -80,14 +76,36 @@ public class OnOffSubIntent extends DialogFlowIntent {
             }
         }
 
-        if(cmd != null) {
+        if (cmd != null) {
             CommandResult result = JarvisEngine.executeCommand(cmd);
-            if(result.isSuccessful()) {
+            if (result.isSuccessful()) {
                 resultMessage = MSG_SUCCESS;
             }
         }
 
         response.addFulfillmentMessage(resultMessage);
         return response;
+    }
+
+    @Override
+    public Optional<Command> getCommand() {
+        OnOffStatus status = new OnOffStatus(mParameters.getString(KEY_STATUS));
+        JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
+        Command cmd = null;
+
+        if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
+            String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
+            List<Thing> things = JarvisEngine.findThing(name);
+
+            if (things.size() == 1 && things.get(0) instanceof Toggleable) {
+                Toggleable device = (Toggleable) things.get(0);
+                cmd = new OnOffAction(device, status);
+            }
+        }
+
+        if (cmd != null) {
+            return Optional.of(cmd);
+        }
+        return Optional.empty();
     }
 }

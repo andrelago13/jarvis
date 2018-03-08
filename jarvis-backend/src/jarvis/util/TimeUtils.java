@@ -78,8 +78,8 @@ public class TimeUtils {
     }
 
     public static class TimeInfo {
-        public long value;
-        public TimeUnit unit;
+        public final long value;
+        public final TimeUnit unit;
 
         public TimeInfo(long value, TimeUnit unit) {
             this.value = value;

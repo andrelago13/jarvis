@@ -3,10 +3,14 @@ package dialogflow.intent;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.instances.*;
+import jarvis.actions.definitions.Command;
 import jarvis.util.JarvisException;
+
+import java.util.Optional;
 
 public abstract class DialogFlowIntent {
     public abstract QueryResponse execute() throws JarvisException;
+    public abstract Optional<Command> getCommand();
 
     public static DialogFlowIntent getIntent(DialogFlowRequest request) {
         if(OnOffIntent.INTENT_ID.equals(request.getMetadataIntentId())) {

@@ -3,11 +3,13 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import jarvis.actions.definitions.Command;
 import jarvis.util.JarvisException;
 import res.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class WelcomeIntent extends DialogFlowIntent {
@@ -36,5 +38,10 @@ public class WelcomeIntent extends DialogFlowIntent {
         int randomNum = ThreadLocalRandom.current().nextInt(0, responses.size());
         response.addFulfillmentMessage(responses.get(randomNum));
         return response;
+    }
+
+    @Override
+    public Optional<Command> getCommand() {
+        return Optional.empty();
     }
 }

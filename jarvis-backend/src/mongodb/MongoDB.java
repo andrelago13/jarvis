@@ -229,6 +229,7 @@ public class MongoDB {
         try {
             m = buildClient();
             MongoCollection col = getCommandsCollection(m);
+            String s = Document.parse(command.toString()).toString();
             col.insertOne(Document.parse(command.toString()));
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);

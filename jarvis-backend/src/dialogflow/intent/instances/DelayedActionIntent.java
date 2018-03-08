@@ -5,6 +5,9 @@ import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
 import dialogflow.intent.subintents.ActionFinder;
 import dialogflow.intent.subintents.OnOffSubIntent;
+import jarvis.actions.DelayedCommand;
+import jarvis.actions.definitions.Command;
+import jarvis.engine.JarvisEngine;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
@@ -13,6 +16,8 @@ import org.json.JSONObject;
 import res.Config;
 import slack.SlackUtil;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,22 +67,20 @@ public class DelayedActionIntent extends DialogFlowIntent {
         if(subIntent == null) {
             return getErrorResponse();
         }
+        Optional<Command> intentCommand = subIntent.getCommand();
+        if(!intentCommand.isPresent()) {
+            return getErrorResponse();
+        }
 
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
-        executor.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    subIntent.execute();
-                } catch (JarvisException e) {
-                    AdminAlertUtil.alertJarvisException(e);
-                    e.printStackTrace();
-                }
-            }
-        }, timeInfo.value, timeInfo.unit);
+        Command cmd = new DelayedCommand(intentCommand.get(), timeInfo);
+        JarvisEngine.executeCommand(cmd);
 
         return getSuccessResponse();
+    }
+
+    @Override
+    public Optional<Command> getCommand() {
+        return Optional.empty();
     }
 
     private static QueryResponse getErrorResponse() {

@@ -9,10 +9,9 @@ import org.json.JSONObject;
 
 import java.util.Optional;
 
-public class OnOffAction implements Command {
+public class OnOffAction extends Command {
     public static final String TAG = "onOffAction";
 
-    public static final String KEY_TYPE = "type";
     public static final String KEY_THING = "thing";
     public static final String KEY_STATUS = "status";
 
