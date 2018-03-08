@@ -53,6 +53,15 @@ public class Config {
     public static final String DF_DIRECT_ACTION_INTENT_ID = "8b4ac42a-6b56-43a0-9fbb-ca5da1e7d6d1";
     public static final String DF_DELAYED_ACTION_INTENT_NAME = "Delayed Action";
     public static final String DF_DELAYED_ACTION_INTENT_ID = "36e77c05-5ada-404d-8de5-cf7a7c1f2f96";
+    public static final String DF_CANCEL_INTENT_NAME = "Cancel Command";
+    public static final String DF_CANCEL_INTENT_ID = "62544394-9d76-42da-a40b-6a6cda34066b";
+
+    /**
+     * DialogFlow context constants.
+     */
+    public static final String DF_CANCEL_INTENT_CONTEXT = "confirm-cancel-event";
+    public static final String DF_CANCEL_INTENT_COMMAND_ID = "commandId";
+    public static final int DF_CANCEL_INTENT_COMMAND_LIFESPAN = 1;
 
     /**
      * DialogFlow entity constants.

@@ -9,12 +9,18 @@ import java.util.List;
 import java.util.Optional;
 
 public class QueryResponse {
+    public static final String KEY_FULFILLMENT_TEXT = "fulfillmentText";
+    public static final String KEY_MESSAGES = "messages";
+    public static final String KEY_CONTEXT_OUT = "contextOut";
+
     private Optional<String> mFulfillmentText;
     private List<QueryResponseMessage> mFulfillmentMessages;
+    private List<QueryResponseContext> mOutContexts;
 
     public QueryResponse() {
         mFulfillmentText = Optional.empty();
         mFulfillmentMessages = new ArrayList<>();
+        mOutContexts = new ArrayList<>();
     }
 
     public void setFulfillmentText(String text) {
@@ -23,6 +29,14 @@ public class QueryResponse {
 
     public Optional<String> getFulfillmentText() {
         return mFulfillmentText;
+    }
+
+    public void addOutContext(QueryResponseContext context) {
+        mOutContexts.add(context);
+    }
+
+    public List<QueryResponseContext> getOutContext() {
+        return mOutContexts;
     }
 
     public void addFulfillmentMessage(String speech) {
@@ -45,20 +59,16 @@ public class QueryResponse {
         JSONObject result = new JSONObject();
 
         if(mFulfillmentText.isPresent()) {
-            result.put("fulfillmentText", mFulfillmentText.get());
+            result.put(KEY_FULFILLMENT_TEXT, mFulfillmentText.get());
         }
 
         for(QueryResponseMessage message : mFulfillmentMessages) {
-            result.append("messages", message.toJSON());
+            result.append(KEY_MESSAGES, message.toJSON());
         }
 
-        JSONArray a = new JSONArray();
-        JSONObject c = new JSONObject();
-        c.put("name", "test-context");
-        c.put("parameters", (new JSONObject()).put("test", "arg"));
-        c.put("lifespan", 2);
-        a.put(c);
-        result.put("contextOut", a);
+        for(QueryResponseContext c : mOutContexts) {
+            result.append(KEY_CONTEXT_OUT, c);
+        }
 
         return result;
     }
