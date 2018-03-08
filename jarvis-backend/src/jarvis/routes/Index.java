@@ -33,16 +33,7 @@ public class Index {
             }
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
-
-            LocalTime localTime = LocalTime.parse("14:40:00", DateTimeFormatter.ofPattern("HH:mm:ss"));
-            LocalTime.now();
-            return "" + LocalTime.now().until(localTime, ChronoUnit.SECONDS);
-
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-//            String date = "16:30:00";
-//            Date parsedDate = dateFormat.parse(date.replace('T', ' '));
-//            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-//            return timestamp.toString();
+            return obj.toString();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

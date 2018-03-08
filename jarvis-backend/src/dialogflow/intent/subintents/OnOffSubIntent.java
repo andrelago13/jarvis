@@ -47,6 +47,10 @@ public class OnOffSubIntent extends DialogFlowIntent {
         return true;
     }
 
+    public OnOffAction getAction() {
+
+    }
+
     @Override
     public QueryResponse execute() throws JarvisException {
         QueryResponse response = new QueryResponse();
