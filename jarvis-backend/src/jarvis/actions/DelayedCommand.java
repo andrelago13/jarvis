@@ -28,6 +28,10 @@ public class DelayedCommand extends Command {
         mId = generateID();
     }
 
+    public DelayedCommand(JSONObject command) {
+        // TODO implement
+    }
+
     private static long generateID() {
         return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }

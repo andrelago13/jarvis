@@ -5,8 +5,11 @@ import jarvis.actions.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
+import jarvis.engine.JarvisEngine;
+import jarvis.util.JarvisException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OnOffAction extends Command {
@@ -21,6 +24,18 @@ public class OnOffAction extends Command {
     public OnOffAction(Toggleable toggleable, OnOffStatus targetStatus) {
         mTargetStatus = targetStatus;
         mToggleable = toggleable;
+    }
+
+    public OnOffAction(JSONObject json) throws JarvisException {
+        boolean targetStatus = json.getBoolean(KEY_STATUS);
+        String toggleableName = json.getString(KEY_THING);
+        List<Thing> things = JarvisEngine.getInstance().findThing(toggleableName);
+        if(things.size() < 1 || !(things.get(0) instanceof Toggleable)) {
+            throw new JarvisException("Unable to create OnOffAction from provided JSON (no toggleable things found).");
+        }
+
+        mToggleable = (Toggleable) things.get(0);
+        mTargetStatus = new OnOffStatus(targetStatus);
     }
 
     @Override
