@@ -67,7 +67,7 @@ public class QueryResponse {
         }
 
         for(QueryResponseContext c : mOutContexts) {
-            result.append(KEY_CONTEXT_OUT, c);
+            result.append(KEY_CONTEXT_OUT, c.getJSON());
         }
 
         return result;
