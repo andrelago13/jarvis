@@ -4,7 +4,7 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.DialogFlowContext;
 import dialogflow.intent.DialogFlowIntent;
-import jarvis.actions.definitions.Command;
+import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 import res.Config;
 

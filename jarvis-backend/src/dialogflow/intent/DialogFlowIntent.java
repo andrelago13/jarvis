@@ -3,7 +3,7 @@ package dialogflow.intent;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.instances.*;
-import jarvis.actions.definitions.Command;
+import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 
 import java.util.Optional;

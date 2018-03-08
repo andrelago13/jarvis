@@ -1,6 +1,6 @@
 package jarvis.actions;
 
-import jarvis.actions.definitions.Command;
+import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
 
 public class CommandRunnable implements Runnable {

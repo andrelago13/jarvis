@@ -1,4 +1,4 @@
-package jarvis.actions.definitions;
+package jarvis.actions.command.definitions;
 
 import org.json.JSONObject;
 

@@ -1,14 +1,15 @@
-package jarvis.actions;
+package jarvis.actions.command;
 
-import jarvis.actions.definitions.Command;
-import jarvis.actions.definitions.CommandResult;
+import jarvis.actions.CommandBuilder;
+import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.definitions.CommandResult;
 import jarvis.engine.JarvisEngine;
+import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class DelayedCommand extends Command {
     public static final String TAG = "delayedCommand";
@@ -28,8 +29,18 @@ public class DelayedCommand extends Command {
         mId = generateID();
     }
 
-    public DelayedCommand(JSONObject command) {
-        // TODO implement
+    public DelayedCommand(JSONObject command) throws JarvisException {
+        long id = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        int timeValue = command.getInt(KEY_TIME_VALUE);
+        String timeUnit = command.getString(KEY_TIME_UNIT);
+        JSONObject subCommand = command.getJSONObject(KEY_COMMAND);
+
+        mId = id;
+        mCommand = CommandBuilder.buildFromJSON(subCommand);
+        if(mCommand == null) {
+            throw new JarvisException("Unable to create nested command from JSON.");
+        }
+        mTimeInfo = new TimeUtils.TimeInfo(timeValue, TimeUnit.valueOf(timeUnit));
     }
 
     private static long generateID() {

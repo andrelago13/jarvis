@@ -3,17 +3,9 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
-import jarvis.actions.definitions.Command;
-import jarvis.controllers.OnOffLight;
-import jarvis.controllers.definitions.Thing;
-import jarvis.controllers.definitions.actionables.Toggleable;
-import jarvis.controllers.definitions.properties.OnOffStatus;
-import jarvis.engine.JarvisEngine;
-import org.json.JSONObject;
+import jarvis.actions.command.definitions.Command;
 import res.Config;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Deprecated

@@ -4,24 +4,16 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
 import dialogflow.intent.subintents.ActionFinder;
-import dialogflow.intent.subintents.OnOffSubIntent;
-import jarvis.actions.DelayedCommand;
-import jarvis.actions.definitions.Command;
+import jarvis.actions.command.DelayedCommand;
+import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
-import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import jarvis.util.TimeUtils.TimeInfo;
 import org.json.JSONObject;
 import res.Config;
-import slack.SlackUtil;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class DelayedActionIntent extends DialogFlowIntent {
     public static final String INTENT_NAME = Config.DF_DELAYED_ACTION_INTENT_NAME;

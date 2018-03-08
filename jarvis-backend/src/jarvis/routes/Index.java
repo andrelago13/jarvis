@@ -1,5 +1,6 @@
 package jarvis.routes;
 
+import mongodb.MongoDB;
 import org.json.JSONObject;
 import slack.SlackUtil;
 
@@ -33,7 +34,8 @@ public class Index {
             }
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
-            return obj.toString();
+            //return obj.toString();
+            return "" + MongoDB.getLatestNCommands(20).size();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

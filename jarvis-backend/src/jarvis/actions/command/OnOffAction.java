@@ -1,7 +1,7 @@
-package jarvis.actions;
+package jarvis.actions.command;
 
-import jarvis.actions.definitions.Command;
-import jarvis.actions.definitions.CommandResult;
+import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
