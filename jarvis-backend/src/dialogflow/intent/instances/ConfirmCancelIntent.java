@@ -21,7 +21,7 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
     public ConfirmCancelIntent(DialogFlowRequest request) {
         mRequest = request;
         if(request.getParameters().isPresent()) {
-            id = request.getParameters().get().getString(Config.DF_CANCEL_INTENT_COMMAND_ID);
+            id = request.getParameters().get().toString();
         }
     }
 
