@@ -16,9 +16,13 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
     public static final String MSG_SUCCESS = "Cancelled!";
 
     private DialogFlowRequest mRequest;
+    private Object id;
 
     public ConfirmCancelIntent(DialogFlowRequest request) {
         mRequest = request;
+        if(request.getParameters().isPresent()) {
+            id = request.getParameters().get().getString(Config.DF_CANCEL_INTENT_COMMAND_ID);
+        }
     }
 
     @Override
@@ -31,9 +35,9 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
         return Optional.empty();
     }
 
-    private static QueryResponse getSuccessResponse() {
+    private QueryResponse getSuccessResponse() {
         QueryResponse response = new QueryResponse();
-        response.addFulfillmentMessage(MSG_SUCCESS);
+        response.addFulfillmentMessage(MSG_SUCCESS + id);
         return response;
     }
 }

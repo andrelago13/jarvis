@@ -65,6 +65,10 @@ public class JarvisEngine {
         return ThingInterface.getLatestNCommands(n);
     }
 
+    public Map<Long, ScheduledAction> getScheduledActions() {
+        return mScheduledActions;
+    }
+
     public void scheduleAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
         ScheduledExecutorService executor =
                 Executors.newSingleThreadScheduledExecutor();
