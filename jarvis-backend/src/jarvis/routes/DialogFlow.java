@@ -16,6 +16,7 @@ public class DialogFlow {
     @Consumes("application/json")
     public String getClichedMessage(String content) {
         try {
+            SlackUtil.sendIoTMessage(content);
             DialogFlowRequest request = new DialogFlowRequest(content);
             DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
 
