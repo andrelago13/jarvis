@@ -87,6 +87,15 @@ public class OnOffAction extends Command {
     }
 
     @Override
+    public String friendlyExecuteString() {
+        if(mToggleable instanceof Thing) {
+            return "Turn " + ((Thing) mToggleable).getName() + " " + mTargetStatus.getStatusString();
+        } else {
+            return "Turn device " + mTargetStatus.getStatusString();
+        }
+    }
+
+    @Override
     public JSONObject getJSON() {
         JSONObject res = new JSONObject();
         res.put(KEY_TYPE, TAG);

@@ -9,5 +9,6 @@ public abstract class Command {
     public abstract CommandResult undo();
     public abstract String executeString();
     public abstract String undoString();
+    public abstract String friendlyExecuteString();
     public abstract JSONObject getJSON();
 }

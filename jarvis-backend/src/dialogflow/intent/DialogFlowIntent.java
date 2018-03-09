@@ -13,9 +13,7 @@ public abstract class DialogFlowIntent {
     public abstract Optional<Command> getCommand();
 
     public static DialogFlowIntent getIntent(DialogFlowRequest request) {
-        if(OnOffIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
-            return new OnOffIntent(request);
-        } else if (DirectActionIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+        if (DirectActionIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new DirectActionIntent(request);
         } else if (WelcomeIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new WelcomeIntent(request);

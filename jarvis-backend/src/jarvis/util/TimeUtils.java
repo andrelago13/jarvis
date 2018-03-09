@@ -7,10 +7,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
+    public static final SimpleDateFormat FRIENDLY_FORMATTER =
+            new SimpleDateFormat("EEEE MMMM dd, HH:mm:ss a", Locale.ENGLISH);
+
     public static final String UNIT_SECOND = "s";
     public static final String UNIT_MINUTE = "min";
     public static final String UNIT_HOUR = "h";
@@ -77,6 +81,14 @@ public class TimeUtils {
         return null;
     }
 
+    public static String friendlyFormat(long date) {
+        return FRIENDLY_FORMATTER.format(new Date(date));
+    }
+
+    public static long calculateTargetTimestamp(TimeInfo info) {
+        return System.currentTimeMillis() + info.unit.toMillis(info.value);
+    }
+
     public static class TimeInfo {
         public final long value;
         public final TimeUnit unit;
@@ -84,6 +96,10 @@ public class TimeUtils {
         public TimeInfo(long value, TimeUnit unit) {
             this.value = value;
             this.unit = unit;
+        }
+
+        public String toString() {
+            return "" + value + " " + unit.toString().toLowerCase();
         }
     }
 }

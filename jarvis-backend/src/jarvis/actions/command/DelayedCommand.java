@@ -14,33 +14,35 @@ import java.util.concurrent.TimeUnit;
 public class DelayedCommand extends Command {
     public static final String TAG = "delayedCommand";
 
+    private static final String KEY_ID = "id";
     private static final String KEY_TIME_UNIT = "timeUnit";
     private static final String KEY_TIME_VALUE = "timeValue";
+    private static final String KEY_TARGET_TIMESTAMP = "targetTimestamp";
     private static final String KEY_COMMAND = "command";
-    private static final String KEY_ID = "id";
 
+    private long mId;
     private Command mCommand;
     private TimeUtils.TimeInfo mTimeInfo;
-    private long mId;
+    private long mTargetTimestamp;
 
-    public DelayedCommand(Command command, TimeUtils.TimeInfo timeInfo) {
+    public DelayedCommand(Command command, TimeUtils.TimeInfo timeInfo, long targetTimestamp) {
+        mId = generateID();
         mCommand = command;
         mTimeInfo = timeInfo;
-        mId = generateID();
+        mTargetTimestamp = targetTimestamp;
     }
 
     public DelayedCommand(JSONObject command) throws JarvisException {
-        long id = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        mTargetTimestamp = Long.parseLong(command.getJSONObject(KEY_TARGET_TIMESTAMP).getString("$numberLong"));
         int timeValue = command.getInt(KEY_TIME_VALUE);
         String timeUnit = command.getString(KEY_TIME_UNIT);
         JSONObject subCommand = command.getJSONObject(KEY_COMMAND);
-
-        mId = id;
+        mTimeInfo = new TimeUtils.TimeInfo(timeValue, TimeUnit.valueOf(timeUnit));
         mCommand = CommandBuilder.buildFromJSON(subCommand);
         if(mCommand == null) {
             throw new JarvisException("Unable to create nested command from JSON.");
         }
-        mTimeInfo = new TimeUtils.TimeInfo(timeValue, TimeUnit.valueOf(timeUnit));
     }
 
     private static long generateID() {
@@ -60,13 +62,18 @@ public class DelayedCommand extends Command {
 
     @Override
     public String executeString() {
-        return "[DelayedAction] Scheduled action for " + mTimeInfo.value + " " +
-                mTimeInfo.unit.toString() + " : " + mCommand.executeString();
+        return "[DelayedAction] Scheduled action for " + mTimeInfo.toString() + " : " + mCommand.executeString();
     }
 
     @Override
     public String undoString() {
         return "[DelayedAction] Canceled action schedule : " + mCommand.executeString();
+    }
+
+    @Override
+    public String friendlyExecuteString() {
+        return "Schedule action " + mCommand.friendlyExecuteString() + " in "
+                + mTimeInfo.toString() + ", on " + TimeUtils.friendlyFormat(mTargetTimestamp);
     }
 
     @Override
@@ -76,6 +83,7 @@ public class DelayedCommand extends Command {
         res.put(KEY_TYPE, TAG);
         res.put(KEY_TIME_UNIT, mTimeInfo.unit);
         res.put(KEY_TIME_VALUE, mTimeInfo.value);
+        res.put(KEY_TARGET_TIMESTAMP, mTargetTimestamp);
         res.put(KEY_COMMAND, mCommand.getJSON());
         return res;
     }

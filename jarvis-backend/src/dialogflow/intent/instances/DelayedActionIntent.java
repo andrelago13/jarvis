@@ -54,6 +54,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
         if(timeInfo == null || timeInfo.value < 0) {
             return getInvalidTimeResponse();
         }
+        long targetTimestamp = TimeUtils.calculateTargetTimestamp(timeInfo);
 
         final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action);
         if(subIntent == null) {
@@ -64,7 +65,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
             return getErrorResponse();
         }
 
-        Command cmd = new DelayedCommand(intentCommand.get(), timeInfo);
+        Command cmd = new DelayedCommand(intentCommand.get(), timeInfo, targetTimestamp);
         JarvisEngine.getInstance().executeCommand(cmd);
 
         return getSuccessResponse();
