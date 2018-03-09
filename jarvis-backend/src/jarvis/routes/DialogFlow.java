@@ -16,11 +16,12 @@ public class DialogFlow {
     @Consumes("application/json")
     public String getClichedMessage(String content) {
         try {
-            SlackUtil.sendIoTMessage(content);
             DialogFlowRequest request = new DialogFlowRequest(content);
             DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
 
-            return intent.execute().toString();
+            String res = intent.execute().toString();
+            res += "";
+            return res;
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);
         } catch (Exception e) {

@@ -81,7 +81,9 @@ public class JarvisEngine {
         if(!mScheduledActions.containsKey(id)) {
             return false;
         }
-        return mScheduledActions.get(id).getFuture().cancel(false);
+        ScheduledFuture future = mScheduledActions.get(id).getFuture();
+        mScheduledActions.remove(id);
+        return future.cancel(false);
     }
 
     public CommandResult executeCommand(Command cmd) {

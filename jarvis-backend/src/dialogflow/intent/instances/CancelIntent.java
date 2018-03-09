@@ -61,7 +61,7 @@ public class CancelIntent extends DialogFlowIntent {
 
         DialogFlowContext c = new DialogFlowContext(Config.DF_CANCEL_INTENT_CONTEXT,
                 Config.DF_CANCEL_INTENT_COMMAND_LIFESPAN);
-        c.addParameter(Config.DF_CANCEL_INTENT_COMMAND_ID, cmd.getId());
+        c.addParameter(Config.DF_CANCEL_INTENT_COMMAND_ID, "" + cmd.getId());
         response.addOutContext(c);
 
         return response;
