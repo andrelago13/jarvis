@@ -8,19 +8,16 @@ import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedCommand extends Command {
     public static final String TAG = "delayedCommand";
 
-    private static final String KEY_ID = "id";
     private static final String KEY_TIME_UNIT = "timeUnit";
     private static final String KEY_TIME_VALUE = "timeValue";
     private static final String KEY_TARGET_TIMESTAMP = "targetTimestamp";
     private static final String KEY_COMMAND = "command";
 
-    private long mId;
     private Command mCommand;
     private TimeUtils.TimeInfo mTimeInfo;
     private long mTargetTimestamp;
@@ -43,10 +40,6 @@ public class DelayedCommand extends Command {
         if(mCommand == null) {
             throw new JarvisException("Unable to create nested command from JSON.");
         }
-    }
-
-    private static long generateID() {
-        return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }
 
     @Override
@@ -86,5 +79,10 @@ public class DelayedCommand extends Command {
         res.put(KEY_TARGET_TIMESTAMP, mTargetTimestamp);
         res.put(KEY_COMMAND, mCommand.getJSON());
         return res;
+    }
+
+    @Override
+    public boolean isCancellable() {
+        return mTargetTimestamp > System.currentTimeMillis();
     }
 }

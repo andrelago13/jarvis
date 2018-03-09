@@ -12,8 +12,8 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Optional;
 
-public class OnOffAction extends Command {
-    public static final String TAG = "onOffAction";
+public class OnOffCommand extends Command {
+    public static final String TAG = "onOffCommand";
 
     public static final String KEY_THING = "thing";
     public static final String KEY_STATUS = "status";
@@ -21,17 +21,19 @@ public class OnOffAction extends Command {
     private Toggleable mToggleable;
     private OnOffStatus mTargetStatus;
 
-    public OnOffAction(Toggleable toggleable, OnOffStatus targetStatus) {
+    public OnOffCommand(Toggleable toggleable, OnOffStatus targetStatus) {
+        mId = generateID();
         mTargetStatus = targetStatus;
         mToggleable = toggleable;
     }
 
-    public OnOffAction(JSONObject json) throws JarvisException {
+    public OnOffCommand(JSONObject json) throws JarvisException {
+        mId = Long.parseLong(json.getJSONObject(KEY_ID).getString("$numberLong"));
         boolean targetStatus = json.getBoolean(KEY_STATUS);
         String toggleableName = json.getString(KEY_THING);
         List<Thing> things = JarvisEngine.getInstance().findThing(toggleableName);
         if(things.size() < 1 || !(things.get(0) instanceof Toggleable)) {
-            throw new JarvisException("Unable to create OnOffAction from provided JSON (no toggleable things found).");
+            throw new JarvisException("Unable to create OnOffCommand from provided JSON (no toggleable things found).");
         }
 
         mToggleable = (Toggleable) things.get(0);
@@ -70,7 +72,7 @@ public class OnOffAction extends Command {
 
     @Override
     public String executeString() {
-        String result = mTargetStatus.isOn() ? "[OnOffAction] Executed device on" : "[OnOffAction] Executed device off";
+        String result = mTargetStatus.isOn() ? "[OnOffCommand] Executed device on" : "[OnOffCommand] Executed device off";
         if(mToggleable instanceof Thing) {
             result += " (" + ((Thing) mToggleable).getName() + ")";
         }
@@ -79,7 +81,7 @@ public class OnOffAction extends Command {
 
     @Override
     public String undoString() {
-        String result = mTargetStatus.isOn() ? "[OnOffAction] Undo device on" : "[OnOffAction] Undo device off";
+        String result = mTargetStatus.isOn() ? "[OnOffCommand] Undo device on" : "[OnOffCommand] Undo device off";
         if(mToggleable instanceof Thing) {
             result += " (" + ((Thing) mToggleable).getName() + ")";
         }
@@ -98,6 +100,7 @@ public class OnOffAction extends Command {
     @Override
     public JSONObject getJSON() {
         JSONObject res = new JSONObject();
+        res.put(KEY_ID, mId);
         res.put(KEY_TYPE, TAG);
         if(mToggleable instanceof Thing) {
              res.put(KEY_THING, ((Thing) mToggleable).getName());

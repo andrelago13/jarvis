@@ -1,7 +1,7 @@
 package jarvis.actions;
 
 import jarvis.actions.command.DelayedCommand;
-import jarvis.actions.command.OnOffAction;
+import jarvis.actions.command.OnOffCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
@@ -19,8 +19,8 @@ public abstract class CommandBuilder {
 
         String cmdType = json.getString(KEY_TYPE);
         try {
-            if(OnOffAction.TAG.equals(cmdType)) {
-                return new OnOffAction(json);
+            if(OnOffCommand.TAG.equals(cmdType)) {
+                return new OnOffCommand(json);
             } else if (DelayedCommand.TAG.equals(cmdType)) {
                 return new DelayedCommand(json);
             }
