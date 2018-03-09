@@ -5,6 +5,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
+import jarvis.actions.CommandBuilder;
+import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.ThingParser;
 import jarvis.controllers.definitions.Thing;
@@ -16,6 +18,8 @@ import res.Config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static jarvis.actions.CommandBuilder.KEY_COMMAND;
 
 public class MongoDB {
     public static final int MONGO_PORT = 27017;
@@ -145,7 +149,7 @@ public class MongoDB {
     }
 
     public static List<Thing> getThings() {
-        ArrayList<Thing> things = new ArrayList<>();
+        List<Thing> things = new ArrayList<>();
 
         MongoClient m = null;
         try {
@@ -166,7 +170,7 @@ public class MongoDB {
     }
 
     public static List<Thing> getThingsByName(String name) {
-        ArrayList<Thing> things = new ArrayList<>();
+        List<Thing> things = new ArrayList<>();
 
         MongoClient m = null;
         try {
@@ -189,8 +193,29 @@ public class MongoDB {
         return things;
     }
 
+    public static List<Command> getLatestNCommands(int n) {
+        List<Command> commands = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getCommandsCollection(m);
+
+            FindIterable<Document> documents = col.find().sort(new Document("timestamp", -1)).limit(n);
+            commands = getCommandsFromDocument(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return commands;
+    }
+
     public static List<Thing> getThingsWithNameLike(String name) {
-        ArrayList<Thing> things = new ArrayList<>();
+        List<Thing> things = new ArrayList<>();
 
         MongoClient m = null;
         try {
@@ -213,8 +238,8 @@ public class MongoDB {
         return things;
     }
 
-    private static ArrayList<Thing> getThingsFromDocuments(FindIterable<Document> documents) {
-        ArrayList<Thing> things = new ArrayList<>();
+    private static List<Thing> getThingsFromDocuments(FindIterable<Document> documents) {
+        List<Thing> things = new ArrayList<>();
         for(Document doc : documents) {
             Optional<Thing> thing = ThingParser.parseThingFromJson(doc.toJson());
             if(thing.isPresent()) {
@@ -222,6 +247,21 @@ public class MongoDB {
             }
         }
         return things;
+    }
+
+    private static List<Command> getCommandsFromDocument(FindIterable<Document> documents) {
+        List<Command> commands = new ArrayList<>();
+        for(Document doc : documents) {
+            JSONObject commandInfo = new JSONObject(doc.toJson());
+            if(!commandInfo.has(KEY_COMMAND)) {
+                continue;
+            }
+            Command c = CommandBuilder.buildFromJSON(commandInfo.getJSONObject(KEY_COMMAND));
+            if(c != null) {
+                commands.add(c);
+            }
+        }
+        return commands;
     }
 
     public static boolean logCommand(JSONObject command) {

@@ -1,0 +1,35 @@
+{
+  "id": "de9c5202-84ed-448f-adac-30303e77d94b",
+  "timestamp": "2018-03-09T14:52:03.526Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "cancel my last command",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {},
+    "contexts": [],
+    "metadata": {
+      "intentId": "62544394-9d76-42da-a40b-6a6cda34066b",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 9376,
+      "intentName": "Cancel Command"
+    },
+    "fulfillment": {
+      "messages": [
+        {
+          "speech": "Are you sure you want to cancel the command?",
+          "type": 0
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "8e854d8c-db7b-487d-a248-f8b9eeca3ad1"
+}

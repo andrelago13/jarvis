@@ -2,8 +2,8 @@ package jarvis.engine;
 
 import jarvis.actions.CommandRunnable;
 import jarvis.actions.ScheduledAction;
-import jarvis.actions.definitions.Command;
-import jarvis.actions.definitions.CommandResult;
+import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.definitions.CommandResult;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
@@ -58,8 +58,11 @@ public class JarvisEngine {
     }
 
     public List<Thing> findThing(String tag) {
-        List<Thing> result = ThingInterface.getThingsByName(tag);
-        return result;
+        return ThingInterface.getThingsByName(tag);
+    }
+
+    public List<Command> getLatestNCommands(int n) {
+        return ThingInterface.getLatestNCommands(n);
     }
 
     public void scheduleAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
@@ -104,7 +107,7 @@ public class JarvisEngine {
         }
         json.put(KEY_COMMAND, cmd.getJSON());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        json.put(KEY_TIMESTAMP, timestamp.toString());
+        json.put(KEY_TIMESTAMP, timestamp.getTime());
         json.put(KEY_SUCCESS, result.isSuccessful());
         return json;
     }

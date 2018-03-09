@@ -4,18 +4,11 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
 import dialogflow.intent.subintents.ActionFinder;
-import dialogflow.intent.subintents.OnOffSubIntent;
-import jarvis.actions.OnOffAction;
-import jarvis.actions.definitions.Command;
-import jarvis.controllers.definitions.Thing;
-import jarvis.controllers.definitions.actionables.Toggleable;
-import jarvis.controllers.definitions.properties.OnOffStatus;
-import jarvis.engine.JarvisEngine;
+import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 import org.json.JSONObject;
 import res.Config;
 
-import java.util.List;
 import java.util.Optional;
 
 public class DirectActionIntent extends DialogFlowIntent {

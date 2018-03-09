@@ -3,9 +3,9 @@ package dialogflow.intent.subintents;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
-import jarvis.actions.OnOffAction;
-import jarvis.actions.definitions.Command;
-import jarvis.actions.definitions.CommandResult;
+import jarvis.actions.command.OnOffCommand;
+import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
@@ -67,7 +67,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
             } else if (things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
                 if (isStateDifferent(device, status)) {
-                    cmd = new OnOffAction(device, status);
+                    cmd = new OnOffCommand(device, status);
                 } else {
                     resultMessage = MSG_ALREADY_STATE + status.getStatusString();
                 }
@@ -99,7 +99,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
 
             if (things.size() == 1 && things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
-                cmd = new OnOffAction(device, status);
+                cmd = new OnOffCommand(device, status);
             }
         }
 
