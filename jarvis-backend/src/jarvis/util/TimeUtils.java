@@ -85,6 +85,53 @@ public class TimeUtils {
         return FRIENDLY_FORMATTER.format(new Date(date));
     }
 
+    public static String friendlyFormat(TimeInfo timeInfo) {
+        if(timeInfo.value == 0) {
+            return "0 seconds";
+        }
+        long totalSeconds = timeInfo.unit.toSeconds(timeInfo.value);
+
+        long seconds = totalSeconds;
+        long minutes = 0;
+        long hours = 0;
+        long days = 0;
+        if(seconds > 59) {
+            minutes = TimeUnit.SECONDS.toMinutes(seconds);
+            seconds = seconds - minutes*60;
+            if(minutes > 59) {
+                hours = TimeUnit.MINUTES.toHours(minutes);
+                minutes = minutes - hours*60;
+                if(hours > 23) {
+                    days = TimeUnit.HOURS.toDays(hours);
+                    hours = hours - days*24;
+                }
+            }
+        }
+
+        StringBuilder result = new StringBuilder();
+        if(days > 1) {
+            result.append(days);
+            result.append(" day");
+            result.append((days == 1 ? " " : "s "));
+        }
+        if(hours > 1) {
+            result.append(hours);
+            result.append(" hour");
+            result.append((hours == 1 ? " " : "s "));
+        }
+        if(minutes > 1) {
+            result.append(minutes);
+            result.append(" minute");
+            result.append((minutes == 1 ? " " : "s "));
+        }
+        if(seconds > 1) {
+            result.append(seconds);
+            result.append(" second");
+            result.append((seconds == 1 ? " " : "s "));
+        }
+        return result.toString();
+    }
+
     public static long calculateTargetTimestamp(TimeInfo info) {
         return System.currentTimeMillis() + info.unit.toMillis(info.value);
     }

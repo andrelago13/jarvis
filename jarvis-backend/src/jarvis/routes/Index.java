@@ -36,7 +36,8 @@ public class Index {
             }
             JSONObject obj = new JSONObject();
             obj.put("key", "value");
-            return obj.toString();
+            int secs = 120;
+            return TimeUtils.friendlyFormat(new TimeUtils.TimeInfo(12453, TimeUnit.SECONDS));
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
