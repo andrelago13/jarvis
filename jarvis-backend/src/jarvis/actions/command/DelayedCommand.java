@@ -66,7 +66,7 @@ public class DelayedCommand extends Command {
 
     @Override
     public String friendlyExecuteString() {
-        return "Schedule action " + mCommand.friendlyExecuteString() + " in "
+        return "Schedule action " + mCommand.friendlyExecuteString().toLowerCase() + " in "
                 + TimeUtils.friendlyFormat(mTimeInfo) + ", which is on " + TimeUtils.friendlyFormat(mTargetTimestamp);
     }
 

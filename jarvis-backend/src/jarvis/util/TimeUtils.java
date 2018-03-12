@@ -16,6 +16,8 @@ public class TimeUtils {
 
     public static final SimpleDateFormat FRIENDLY_FORMATTER =
             new SimpleDateFormat("EEEE MMMM dd, HH:mm:ss a", Locale.ENGLISH);
+    public static final SimpleDateFormat TIME_FORMATTER =
+            new SimpleDateFormat("HH:mm:ss a", Locale.ENGLISH);
 
     public static final String UNIT_SECOND = "s";
     public static final String UNIT_MINUTE = "min";
@@ -204,6 +206,23 @@ public class TimeUtils {
             result.append((seconds == 1 ? " " : "s "));
         }
         return result.toString();
+    }
+
+    public static String friendlyFormatPeriod(long startDate, long endDate) {
+        Date start = new Date(startDate);
+        Date end = new Date(endDate);
+        Calendar c = Calendar.getInstance();
+        c.setTime(start);
+        int timeId = c.get(Calendar.DAY_OF_YEAR);
+        c.setTime(end);
+
+        if(timeId == c.get(Calendar.DAY_OF_YEAR)) {
+            String result = "from " + friendlyFormat(startDate) + " to ";
+            result += TIME_FORMATTER.format(endDate);
+            return result;
+        } else {
+            return "from " + friendlyFormat(startDate) + " to " + friendlyFormat(endDate);
+        }
     }
 
     public static long calculateTargetTimestamp(TimeInfo info) {

@@ -1,5 +1,6 @@
 package jarvis.actions.command.definitions;
 
+import jarvis.engine.JarvisEngine;
 import org.json.JSONObject;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -12,6 +13,10 @@ public abstract class Command {
 
     protected static long generateID() {
         return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
+    }
+
+    protected void done() {
+        JarvisEngine.getInstance().actionCompleted(mId);
     }
 
     public abstract CommandResult execute();

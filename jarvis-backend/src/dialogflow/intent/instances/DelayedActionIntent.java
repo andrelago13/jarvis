@@ -57,7 +57,9 @@ public class DelayedActionIntent extends DialogFlowIntent {
             if(datetime.length() != TimeUtils.LENGTH_DATETIME) {
                 Date[] dates = TimeUtils.parsePeriod(datetime);
                 if(dates != null) {
-                    return new PeriodActionIntent(dates).execute();
+                    return new PeriodActionIntent(mRequest, dates, action).execute();
+                } else {
+                    return getInvalidTimeResponse();
                 }
             }
         }
