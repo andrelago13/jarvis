@@ -8,6 +8,7 @@ import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
+import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedCommand extends Command {
@@ -66,7 +67,7 @@ public class DelayedCommand extends Command {
     @Override
     public String friendlyExecuteString() {
         return "Schedule action " + mCommand.friendlyExecuteString() + " in "
-                + mTimeInfo.toString() + ", which is on " + TimeUtils.friendlyFormat(mTargetTimestamp);
+                + TimeUtils.friendlyFormat(mTimeInfo) + ", which is on " + TimeUtils.friendlyFormat(mTargetTimestamp);
     }
 
     @Override

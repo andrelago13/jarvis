@@ -30,19 +30,17 @@ public class Index {
     // The Java method will produce content identified by the MIME Media type "text/plain"
     @Produces("application/json")
     public String getClichedMessage() throws IOException, ClassNotFoundException {
+        String res = "Nothing to see here :)";
         try {
             if (mobj != null) {
                 return mobj;
             }
-            JSONObject obj = new JSONObject();
-            obj.put("key", "value");
-            int secs = 120;
-            return TimeUtils.friendlyFormat(new TimeUtils.TimeInfo(12453, TimeUnit.SECONDS));
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             return sw.toString();
         }
+        return res;
     }
 }

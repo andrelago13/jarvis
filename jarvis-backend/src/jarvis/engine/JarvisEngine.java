@@ -73,7 +73,7 @@ public class JarvisEngine {
         ScheduledExecutorService executor =
                 Executors.newSingleThreadScheduledExecutor();
         ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
-        ScheduledAction action = new ScheduledAction(id, future);
+        ScheduledAction action = new ScheduledAction(id, cmd, future);
         mScheduledActions.put(id, action);
     }
 

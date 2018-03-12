@@ -4,6 +4,7 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
 import dialogflow.intent.subintents.ActionFinder;
+import dialogflow.intent.subintents.PeriodActionIntent;
 import jarvis.actions.command.DelayedCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
@@ -13,6 +14,7 @@ import jarvis.util.TimeUtils.TimeInfo;
 import org.json.JSONObject;
 import res.Config;
 
+import java.util.Date;
 import java.util.Optional;
 
 public class DelayedActionIntent extends DialogFlowIntent {
@@ -49,6 +51,16 @@ public class DelayedActionIntent extends DialogFlowIntent {
 
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
         JSONObject timeJson = parameters.getJSONObject(Config.DF_TIME_ENTITY_NAME);
+
+        if(timeJson.has(KEY_DATETIME)) {
+            String datetime = timeJson.getString(KEY_DATETIME);
+            if(datetime.length() != TimeUtils.LENGTH_DATETIME) {
+                Date[] dates = TimeUtils.parsePeriod(datetime);
+                if(dates != null) {
+                    return new PeriodActionIntent(dates).execute();
+                }
+            }
+        }
 
         TimeInfo timeInfo = parseTimeToSeconds(timeJson);
         if(timeInfo == null || timeInfo.value < 0) {
@@ -96,9 +108,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
 
     private TimeInfo parseTimeToSeconds(JSONObject time) {
         if(time.has(KEY_DATETIME)) {
-            // normal "2017-07-12T16:30:00Z"
-            // period "2017-07-12T12:00:00Z/2017-07-12T16:00:00Z"
-            // TODO period parsing
+            // "2017-07-12T16:30:00Z"
             return TimeUtils.dateTimeToInfo(time.getString(KEY_DATETIME));
         } else if(time.has(KEY_DURATION)) {
             // {"amount":10,"unit":"min"}
