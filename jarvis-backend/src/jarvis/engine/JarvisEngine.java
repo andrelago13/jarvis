@@ -13,13 +13,11 @@ import mongodb.MongoDB;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class JarvisEngine {
     private static final String KEY_COMMAND_TEXT = "commandText";
@@ -73,8 +71,18 @@ public class JarvisEngine {
         ScheduledExecutorService executor =
                 Executors.newSingleThreadScheduledExecutor();
         ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
-        ScheduledAction action = new ScheduledAction(id, future);
+        ScheduledAction action = new ScheduledAction(id, cmd, future);
         mScheduledActions.put(id, action);
+    }
+
+    public void scheduleAction(long id, Command cmd, long timestamp) {
+        long diff = (new Date().getTime()) - timestamp;
+        long secs = TimeUnit.MILLISECONDS.toSeconds(diff);
+        scheduleAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
+    }
+
+    public void actionCompleted(long id) {
+        mScheduledActions.remove(id);
     }
 
     public boolean cancelAction(long id) {
