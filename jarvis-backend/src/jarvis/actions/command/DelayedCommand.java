@@ -3,12 +3,14 @@ package jarvis.actions.command;
 import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
+import jarvis.controllers.definitions.Thing;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
 import java.sql.Time;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedCommand extends Command {
@@ -80,6 +82,11 @@ public class DelayedCommand extends Command {
         res.put(KEY_TARGET_TIMESTAMP, mTargetTimestamp);
         res.put(KEY_COMMAND, mCommand.getJSON());
         return res;
+    }
+
+    @Override
+    public List<Thing> targetThings() {
+        return mCommand.targetThings();
     }
 
     @Override

@@ -112,6 +112,11 @@ public class MongoDB {
         return database.getCollection(Config.MONGO_COMMANDS_COLLECTION);
     }
 
+    private static MongoCollection getRulesCollection(MongoClient client) {
+        MongoDatabase database = getJarvisDatabase(client);
+        return database.getCollection(Config.MONGO_RULES_COLLECTION);
+    }
+
     public static boolean initialize(List<Thing> defaultThings) {
         MongoClient m = null;
         try {
@@ -214,6 +219,27 @@ public class MongoDB {
         return commands;
     }
 
+    public static List<Command> getRules() {
+        List<Command> commands = new ArrayList<>();
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getRulesCollection(m);
+
+            FindIterable<Document> documents = col.find().sort(new Document("timestamp", -1));
+            commands = getCommandsFromDocument(documents);
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return commands;
+    }
+
     public static List<Thing> getThingsWithNameLike(String name) {
         List<Thing> things = new ArrayList<>();
 
@@ -269,8 +295,25 @@ public class MongoDB {
         try {
             m = buildClient();
             MongoCollection col = getCommandsCollection(m);
-            String s = Document.parse(command.toString()).toString();
             col.insertOne(Document.parse(command.toString()));
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+            return false;
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return true;
+    }
+
+    public static boolean logRule(JSONObject rule) {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getRulesCollection(m);
+            col.insertOne(Document.parse(rule.toString()));
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();

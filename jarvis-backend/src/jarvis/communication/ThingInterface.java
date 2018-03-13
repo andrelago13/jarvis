@@ -14,7 +14,7 @@ public class ThingInterface {
     }
 
     public static List<Thing> getThingsByName(String name) {
-        return MongoDB.getThingsByName(name);
+        return MongoDB.getThingsWithNameLike(name);
     }
 
     public static List<Command> getLatestNCommands(int n) {
@@ -22,7 +22,7 @@ public class ThingInterface {
     }
 
     public static boolean sendThingsMessage(String url, String message) {
-        return SlackUtil.sendIoTMessage(url + " " + message);
+        return SlackUtil.sendIoTMessage(url.replace(' ', '_') + " " + message);
     }
 
     public static void init(List<Thing> defaultThings) {

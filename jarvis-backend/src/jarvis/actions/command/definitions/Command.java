@@ -1,8 +1,10 @@
 package jarvis.actions.command.definitions;
 
+import jarvis.controllers.definitions.Thing;
 import jarvis.engine.JarvisEngine;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Command {
@@ -25,6 +27,7 @@ public abstract class Command {
     public abstract String undoString();
     public abstract String friendlyExecuteString();
     public abstract JSONObject getJSON();
+    public abstract List<Thing> targetThings();
 
     public long getId() {
         return mId;

@@ -50,7 +50,8 @@ public class JarvisEngine {
         ArrayList<Thing> things = new ArrayList<>();
 
         // Default light
-        things.add(OnOffLight.Builder.getDefaultBuilder("light", "/room").build());
+        things.add(OnOffLight.Builder.getDefaultBuilder("bedroom light", "/house").build());
+        things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
 
         return things;
     }
@@ -79,6 +80,7 @@ public class JarvisEngine {
         long diff = (new Date().getTime()) - timestamp;
         long secs = TimeUnit.MILLISECONDS.toSeconds(diff);
         scheduleAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
+        logRule(getRuleJSON(cmd, false));
     }
 
     public void actionCompleted(long id) {
@@ -110,19 +112,37 @@ public class JarvisEngine {
         return MongoDB.logCommand(commandJSON);
     }
 
+    public boolean logRule(JSONObject rule) {
+        return MongoDB.logRule(rule);
+    }
+
     private static JSONObject getCommandJSON(Command cmd, CommandResult result, boolean undo) {
         JSONObject json = new JSONObject();
-        if(undo) {
-            json.put(KEY_COMMAND_TEXT, cmd.undoString());
-            json.put(KEY_UNDO, true);
-        } else {
-            json.put(KEY_COMMAND_TEXT, cmd.executeString());
-            json.put(KEY_UNDO, false);
-        }
+        addStringParameters(json, cmd, undo);
         json.put(KEY_COMMAND, cmd.getJSON());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         json.put(KEY_TIMESTAMP, timestamp.getTime());
         json.put(KEY_SUCCESS, result.isSuccessful());
         return json;
+    }
+
+
+    private static JSONObject getRuleJSON(Command cmd, boolean undo) {
+        JSONObject json = new JSONObject();
+        addStringParameters(json, cmd, undo);
+        json.put(KEY_COMMAND, cmd.getJSON());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        json.put(KEY_TIMESTAMP, timestamp.getTime());
+        return json;
+    }
+
+    private static void addStringParameters(JSONObject obj, Command cmd, boolean undo) {
+        if(undo) {
+            obj.put(KEY_COMMAND_TEXT, cmd.undoString());
+            obj.put(KEY_UNDO, true);
+        } else {
+            obj.put(KEY_COMMAND_TEXT, cmd.executeString());
+            obj.put(KEY_UNDO, false);
+        }
     }
 }

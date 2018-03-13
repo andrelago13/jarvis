@@ -1,5 +1,6 @@
 package jarvis.routes;
 
+import jarvis.controllers.definitions.Thing;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,6 +38,8 @@ public class Index {
             if (mobj != null) {
                 return mobj;
             }
+            List<Thing> t = MongoDB.getThingsWithNameLike("light");
+            res += t.size();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
