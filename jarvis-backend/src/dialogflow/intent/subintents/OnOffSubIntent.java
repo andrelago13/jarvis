@@ -110,13 +110,25 @@ public class OnOffSubIntent extends DialogFlowIntent {
         JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
         Command cmd = null;
 
-        if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
-            String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
-            List<Thing> things = JarvisEngine.getInstance().findThing(name);
+        if(mToggleable == null) {
+            List<Thing> things;
+            if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
+                String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
+                things = JarvisEngine.getInstance().findThing(thingName);
+            } else {
+                things = JarvisEngine.getInstance().findThingLike(actuator);
+            }
 
-            if (things.size() == 1 && things.get(0) instanceof Toggleable) {
+            if (things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
-                cmd = new OnOffCommand(device, status);
+                if (isStateDifferent(device, status)) {
+                    mToggleable = device;
+                    cmd = new OnOffCommand(device, status);
+                }
+            }
+        } else {
+            if (isStateDifferent(mToggleable, status)) {
+                cmd = new OnOffCommand(mToggleable, status);
             }
         }
 
@@ -136,6 +148,8 @@ public class OnOffSubIntent extends DialogFlowIntent {
         List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
         if (things.size() > 1) {
             return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
+        } else if (things.size() == 0 && things.get(0) instanceof Toggleable) {
+            mToggleable = (Toggleable) things.get(0);
         }
 
         return null;

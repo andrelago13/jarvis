@@ -33,6 +33,12 @@ public class PeriodActionIntent extends DialogFlowIntent {
         if(subIntent == null) {
             return getErrorResponse();
         }
+        
+        QueryResponse followUpRequest = subIntent.getFollowUpRequest();
+        if(followUpRequest != null) {
+            return followUpRequest;
+        }
+
         Optional<Command> intentCommand = subIntent.getCommand();
         if(!intentCommand.isPresent()) {
             return getErrorResponse();
