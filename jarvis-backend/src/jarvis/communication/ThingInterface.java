@@ -14,6 +14,10 @@ public class ThingInterface {
     }
 
     public static List<Thing> getThingsByName(String name) {
+        return MongoDB.getThingsByName(name);
+    }
+
+    public static List<Thing> getThingsByNameLike(String name) {
         return MongoDB.getThingsWithNameLike(name);
     }
 
