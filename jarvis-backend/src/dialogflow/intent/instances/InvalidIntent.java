@@ -7,6 +7,10 @@ import jarvis.actions.command.definitions.Command;
 import java.util.Optional;
 
 public class InvalidIntent extends DialogFlowIntent {
+    public InvalidIntent() {
+        super(null, null);
+    }
+
     @Override
     public QueryResponse execute() {
         QueryResponse response = new QueryResponse();

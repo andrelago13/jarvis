@@ -34,6 +34,7 @@ public class Config {
     public static final String MONGO_JARVIS_DB = "jarvis";
     public static final String MONGO_THINGS_COLLECTION = "things";
     public static final String MONGO_COMMANDS_COLLECTION = "commands";
+    public static final String MONGO_RULES_COLLECTION = "rules";
 
     /**
      * Timeout for Mongo connections.
@@ -57,6 +58,8 @@ public class Config {
     public static final String DF_CANCEL_INTENT_ID = "62544394-9d76-42da-a40b-6a6cda34066b";
     public static final String DF_CONFIRM_CANCEL_INTENT_NAME = "Confirm Cancel";
     public static final String DF_CONFIRM_CANCEL_INTENT_ID = "145e7d3b-9105-4bfb-8c6a-78c3e5c2783b";
+    public static final String DF_CONFIRM_THING_INTENT_ID = "5f3f7eb8-c2dc-42db-9f59-38a9bf0c3a52";
+    public static final String DF_CONFIRM_THING_INTENT_NAME = "Confirm Thing Choice";
 
     /**
      * DialogFlow context constants.
@@ -64,6 +67,7 @@ public class Config {
     public static final String DF_CANCEL_INTENT_CONTEXT = "confirm-cancel-event";
     public static final String DF_CANCEL_INTENT_COMMAND_ID = "commandId";
     public static final int DF_CANCEL_INTENT_COMMAND_LIFESPAN = 1;
+    public static final String DF_CONFIRM_THING_INTENT_CONTEXT = "confirm-thing-choice";
 
     /**
      * DialogFlow entity constants.

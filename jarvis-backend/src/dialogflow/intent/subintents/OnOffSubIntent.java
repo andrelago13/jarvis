@@ -1,8 +1,11 @@
 package dialogflow.intent.subintents;
 
+import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
+import dialogflow.intent.instances.ConfirmThingIntent;
 import jarvis.actions.command.OnOffCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
@@ -11,6 +14,7 @@ import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import res.Config;
 
@@ -18,21 +22,22 @@ import java.util.List;
 import java.util.Optional;
 
 public class OnOffSubIntent extends DialogFlowIntent {
+    public static final String TAG = "OnOffSubIntent";
+
     public static final String MSG_SUCCESS = "Done!";
     public static final String MSG_ERROR = "Sorry, I was not able to do that.";
     public static final String MSG_ALREADY_STATE = "The device is already ";
     public static final String MSG_DEVICE_NOT_FOUND = "The device you requested was not found.";
-    public static final String MSG_MULTIPLE_DEVICES_PREFIX = "Multiple devices were found by the name of ";
+    public static final String MSG_MULTIPLE_DEVICES_PREFIX = "Do you mean ";
     public static final String MSG_DEVICE_NOT_SUPPORTED = "The specified device does not support the toggle feature.";
 
     private static final String KEY_STATUS = "status";
     private static final String KEY_ACTUATOR = "actuator";
 
-    private DialogFlowRequest mRequest;
     private JSONObject mParameters;
 
-    public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters) {
-        mRequest = request;
+    public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters, IntentExtras extras) {
+        super(request, extras);
         mParameters = parameters;
     }
 
@@ -63,7 +68,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
             if (things.isEmpty()) {
                 resultMessage = MSG_DEVICE_NOT_FOUND;
             } else if (things.size() > 1) {
-                resultMessage = MSG_MULTIPLE_DEVICES_PREFIX + name;
+                return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
             } else if (things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
                 if (isStateDifferent(device, status)) {

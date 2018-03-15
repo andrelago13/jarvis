@@ -9,6 +9,7 @@ import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,5 +108,14 @@ public class OnOffCommand extends Command {
         }
         res.put(KEY_STATUS, mTargetStatus.isOn());
         return res;
+    }
+
+    @Override
+    public List<Thing> targetThings() {
+        List<Thing> result = new ArrayList<>();
+        if(mToggleable instanceof Thing) {
+            result.add((Thing) mToggleable);
+        }
+        return result;
     }
 }
