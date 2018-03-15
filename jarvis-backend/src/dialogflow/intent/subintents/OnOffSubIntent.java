@@ -61,24 +61,20 @@ public class OnOffSubIntent extends DialogFlowIntent {
         String resultMessage = MSG_ERROR;
         Command cmd = null;
 
-        if (actuator.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
-            String name = actuator.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
-            List<Thing> things = JarvisEngine.getInstance().findThing(name);
-
-            if (things.isEmpty()) {
-                resultMessage = MSG_DEVICE_NOT_FOUND;
-            } else if (things.size() > 1) {
-                return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
-            } else if (things.get(0) instanceof Toggleable) {
-                Toggleable device = (Toggleable) things.get(0);
-                if (isStateDifferent(device, status)) {
-                    cmd = new OnOffCommand(device, status);
-                } else {
-                    resultMessage = MSG_ALREADY_STATE + status.getStatusString();
-                }
+        List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
+        if (things.isEmpty()) {
+            resultMessage = MSG_DEVICE_NOT_FOUND;
+        } else if (things.size() > 1) {
+            return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
+        } else if (things.get(0) instanceof Toggleable) {
+            Toggleable device = (Toggleable) things.get(0);
+            if (isStateDifferent(device, status)) {
+                cmd = new OnOffCommand(device, status);
             } else {
-                resultMessage = MSG_DEVICE_NOT_SUPPORTED;
+                resultMessage = MSG_ALREADY_STATE + status.getStatusString();
             }
+        } else {
+            resultMessage = MSG_DEVICE_NOT_SUPPORTED;
         }
 
         if (cmd != null) {

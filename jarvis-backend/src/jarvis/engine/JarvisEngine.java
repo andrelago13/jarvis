@@ -11,6 +11,7 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
+import res.Config;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -58,6 +59,33 @@ public class JarvisEngine {
 
     public List<Thing> findThing(String tag) {
         return ThingInterface.getThingsByName(tag);
+    }
+
+    public List<Thing> findThing(JSONObject thing) {
+        String name = getThingName(thing);
+        if(name == null) {
+            return new ArrayList<>();
+        }
+        return findThing(name);
+    }
+
+    public List<Thing> findThingLike(String tag) {
+        return ThingInterface.getThingsByName(tag);
+    }
+
+    public List<Thing> findThingLike(JSONObject thing) {
+        String name = getThingName(thing);
+        if(name == null) {
+            return new ArrayList<>();
+        }
+        return findThingLike(name);
+    }
+
+    public static String getThingName(JSONObject thing) {
+        if (thing.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
+            return thing.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
+        }
+        return null;
     }
 
     public List<Command> getLatestNCommands(int n) {

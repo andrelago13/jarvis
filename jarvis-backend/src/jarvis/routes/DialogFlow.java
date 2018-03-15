@@ -11,11 +11,16 @@ import javax.ws.rs.*;
 
 @Path("/dialogflow")
 public class DialogFlow {
+    public static boolean writeRequests = false;
+
     @POST
     @Produces("application/json")
     @Consumes("application/json")
     public String getClichedMessage(String content) {
         try {
+            if(writeRequests) {
+                SlackUtil.sendMessage(content);
+            }
             DialogFlowRequest request = new DialogFlowRequest(content);
             DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
 

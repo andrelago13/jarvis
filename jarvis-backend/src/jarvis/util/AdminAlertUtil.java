@@ -45,7 +45,7 @@ public class AdminAlertUtil {
         return SlackUtil.sendMessage(message);
     }
 
-    private static String getExceptionStackTrace(Throwable t) {
+    public static String getExceptionStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         t.printStackTrace(pw);
