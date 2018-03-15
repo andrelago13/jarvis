@@ -61,7 +61,14 @@ public class OnOffSubIntent extends DialogFlowIntent {
         String resultMessage = MSG_ERROR;
         Command cmd = null;
 
-        List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
+        List<Thing> things;
+        if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
+            String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
+            things = JarvisEngine.getInstance().findThing(thingName);
+        } else {
+            things = JarvisEngine.getInstance().findThingLike(actuator);
+        }
+
         if (things.isEmpty()) {
             resultMessage = MSG_DEVICE_NOT_FOUND;
         } else if (things.size() > 1) {
