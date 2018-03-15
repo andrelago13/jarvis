@@ -20,6 +20,10 @@ public abstract class DialogFlowIntent {
     public abstract QueryResponse execute() throws JarvisException;
     public abstract Optional<Command> getCommand();
 
+    public QueryResponse getFollowUpRequest() {
+        return null;
+    }
+
     public static DialogFlowIntent getIntent(DialogFlowRequest request, IntentExtras extras) {
         if (DirectActionIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new DirectActionIntent(request, extras);

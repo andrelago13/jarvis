@@ -35,6 +35,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
     private static final String KEY_ACTUATOR = "actuator";
 
     private JSONObject mParameters;
+    private Toggleable mToggleable;
 
     public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters, IntentExtras extras) {
         super(request, extras);
@@ -61,27 +62,35 @@ public class OnOffSubIntent extends DialogFlowIntent {
         String resultMessage = MSG_ERROR;
         Command cmd = null;
 
-        List<Thing> things;
-        if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
-            String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
-            things = JarvisEngine.getInstance().findThing(thingName);
-        } else {
-            things = JarvisEngine.getInstance().findThingLike(actuator);
-        }
+        if(mToggleable == null) {
+            List<Thing> things;
+            if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
+                String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
+                things = JarvisEngine.getInstance().findThing(thingName);
+            } else {
+                things = JarvisEngine.getInstance().findThingLike(actuator);
+            }
 
-        if (things.isEmpty()) {
-            resultMessage = MSG_DEVICE_NOT_FOUND;
-        } else if (things.size() > 1) {
-            return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
-        } else if (things.get(0) instanceof Toggleable) {
-            Toggleable device = (Toggleable) things.get(0);
-            if (isStateDifferent(device, status)) {
-                cmd = new OnOffCommand(device, status);
+            if (things.isEmpty()) {
+                resultMessage = MSG_DEVICE_NOT_FOUND;
+            } else if (things.size() > 1) {
+                return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
+            } else if (things.get(0) instanceof Toggleable) {
+                Toggleable device = (Toggleable) things.get(0);
+                if (isStateDifferent(device, status)) {
+                    cmd = new OnOffCommand(device, status);
+                } else {
+                    resultMessage = MSG_ALREADY_STATE + status.getStatusString();
+                }
+            } else {
+                resultMessage = MSG_DEVICE_NOT_SUPPORTED;
+            }
+        } else {
+            if (isStateDifferent(mToggleable, status)) {
+                cmd = new OnOffCommand(mToggleable, status);
             } else {
                 resultMessage = MSG_ALREADY_STATE + status.getStatusString();
             }
-        } else {
-            resultMessage = MSG_DEVICE_NOT_SUPPORTED;
         }
 
         if (cmd != null) {
@@ -115,5 +124,20 @@ public class OnOffSubIntent extends DialogFlowIntent {
             return Optional.of(cmd);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public QueryResponse getFollowUpRequest() {
+        if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
+            return null;
+        }
+
+        JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
+        List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
+        if (things.size() > 1) {
+            return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
+        }
+
+        return null;
     }
 }
