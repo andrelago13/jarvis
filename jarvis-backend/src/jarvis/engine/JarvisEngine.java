@@ -70,7 +70,7 @@ public class JarvisEngine {
     }
 
     public List<Thing> findThingLike(String tag) {
-        return ThingInterface.getThingsByName(tag);
+        return ThingInterface.getThingsByNameLike(tag);
     }
 
     public List<Thing> findThingLike(JSONObject thing) {
