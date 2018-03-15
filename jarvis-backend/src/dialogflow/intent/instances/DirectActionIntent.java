@@ -3,6 +3,7 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
@@ -17,10 +18,8 @@ public class DirectActionIntent extends DialogFlowIntent {
 
     public static final String MSG_ERROR = "Invalid parameters for \"Direct Action\" intent.";
 
-    private DialogFlowRequest mRequest;
-
-    public DirectActionIntent(DialogFlowRequest request) {
-        mRequest = request;
+    public DirectActionIntent(DialogFlowRequest request, IntentExtras extras) {
+        super(request, extras);
     }
 
     @Override
@@ -36,7 +35,7 @@ public class DirectActionIntent extends DialogFlowIntent {
         }
 
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
-        DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action);
+        DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
         if(subIntent == null) {
             return getErrorResponse();
         }
@@ -51,7 +50,7 @@ public class DirectActionIntent extends DialogFlowIntent {
             JSONObject parameters = optParameters.get();
             if (parameters.has(Config.DF_ACTION_ENTITY_NAME)) {
                 JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
-                DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action);
+                DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
                 if(subIntent == null) {
                     return subIntent.getCommand();
                 }

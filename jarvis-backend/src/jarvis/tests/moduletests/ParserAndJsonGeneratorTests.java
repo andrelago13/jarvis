@@ -4,7 +4,7 @@ import jarvis.controllers.OnOffLight;
 import jarvis.tests.Test;
 import org.json.JSONObject;
 
-public class ParserAndJsonGeneratorTests implements Test {
+public class  ParserAndJsonGeneratorTests implements Test {
     private static final String sampleOnOffLight = "{\"name\":\"testlight\",\"description\":\"On/Off light switch\",\"links\":{\"actions\":\"/base/actions\",\"properties\":\"/base/properties\",\"events\":\"/base/events\"},\"type\":\"onOffLight\",\"properties\":{\"status\":{\"description\":\"Describes current state of the switch (true=on)\",\"type\":\"boolean\"}}}";
 
     @Override

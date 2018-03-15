@@ -3,6 +3,7 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 import res.Config;
@@ -26,10 +27,8 @@ public class WelcomeIntent extends DialogFlowIntent {
         responses.add("Hello there");
     }
 
-    private DialogFlowRequest mRequest;
-
-    public WelcomeIntent(DialogFlowRequest request) {
-        mRequest = request;
+    public WelcomeIntent(DialogFlowRequest request, IntentExtras extras) {
+        super(request, extras);
     }
 
     @Override

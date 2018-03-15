@@ -4,6 +4,7 @@ import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import dialogflow.intent.instances.ConfirmThingIntent;
 import jarvis.actions.command.OnOffCommand;
 import jarvis.actions.command.definitions.Command;
@@ -33,11 +34,10 @@ public class OnOffSubIntent extends DialogFlowIntent {
     private static final String KEY_STATUS = "status";
     private static final String KEY_ACTUATOR = "actuator";
 
-    private DialogFlowRequest mRequest;
     private JSONObject mParameters;
 
-    public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters) {
-        mRequest = request;
+    public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters, IntentExtras extras) {
+        super(request, extras);
         mParameters = parameters;
     }
 
@@ -68,28 +68,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
             if (things.isEmpty()) {
                 resultMessage = MSG_DEVICE_NOT_FOUND;
             } else if (things.size() > 1) {
-                resultMessage = MSG_MULTIPLE_DEVICES_PREFIX;
-
-                JSONArray choices = new JSONArray();
-                for(int i = 0; i < things.size(); ++i) {
-                    Thing thing = things.get(i);
-                    choices.put(thing.getName());
-                    resultMessage += thing.getName();
-                    if(i < things.size() - 2) {
-                        resultMessage += ", ";
-                    } else if(i < things.size() - 1) {
-                        resultMessage += " or ";
-                    }
-                }
-                resultMessage += ".";
-                response.addFulfillmentMessage(resultMessage);
-
-                DialogFlowContext context = new DialogFlowContext(Config.DF_CONFIRM_THING_INTENT_CONTEXT, 1);
-                context.addParameter(ConfirmThingIntent.KEY_INTENT, TAG);
-                context.addParameter(ConfirmThingIntent.KEY_PARAMETERS, mParameters);
-                context.addParameter(ConfirmThingIntent.KEY_CHOICES, choices);
-                response.addOutContext(context);
-                return response;
+                return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
             } else if (things.get(0) instanceof Toggleable) {
                 Toggleable device = (Toggleable) things.get(0);
                 if (isStateDifferent(device, status)) {

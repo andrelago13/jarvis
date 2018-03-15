@@ -4,6 +4,7 @@ import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
@@ -19,10 +20,8 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
     public static final String MSG_SUCCESS = "Cancelled!";
     public static final String MSG_ERROR = "Sorry, I was not able to cancel that event.";
 
-    private DialogFlowRequest mRequest;
-
-    public ConfirmCancelIntent(DialogFlowRequest request) {
-        mRequest = request;
+    public ConfirmCancelIntent(DialogFlowRequest request, IntentExtras extras) {
+        super(request, extras);
     }
 
     @Override

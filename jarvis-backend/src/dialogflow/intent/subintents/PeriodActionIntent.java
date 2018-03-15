@@ -3,6 +3,7 @@ package dialogflow.intent.subintents;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import jarvis.actions.command.DelayedCommand;
 import jarvis.actions.command.PeriodCommand;
 import jarvis.actions.command.definitions.Command;
@@ -17,19 +18,18 @@ public class PeriodActionIntent extends DialogFlowIntent {
     public static final String MSG_SUCCESS = "Done, the action was scheduled!";
     public static final String MSG_ERROR = "Invalid parameters for \"Delayed Action\" intent.";
 
-    private DialogFlowRequest mRequest;
     private Date[] mDates;
     private JSONObject mAction;
 
-    public PeriodActionIntent(DialogFlowRequest request, Date[] dates, JSONObject action) {
-        mRequest = request;
+    public PeriodActionIntent(DialogFlowRequest request, Date[] dates, JSONObject action, IntentExtras extras) {
+        super(request, extras);
         mDates = dates;
         mAction = action;
     }
 
     @Override
     public QueryResponse execute() throws JarvisException {
-        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, mAction);
+        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, mAction, mExtras);
         if(subIntent == null) {
             return getErrorResponse();
         }

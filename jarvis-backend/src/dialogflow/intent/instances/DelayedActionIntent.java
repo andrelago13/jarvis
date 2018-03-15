@@ -3,6 +3,7 @@ package dialogflow.intent.instances;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
 import dialogflow.intent.subintents.PeriodActionIntent;
 import jarvis.actions.command.DelayedCommand;
@@ -31,10 +32,8 @@ public class DelayedActionIntent extends DialogFlowIntent {
     public static final String MSG_ERROR = "Invalid parameters for \"Delayed Action\" intent.";
     public static final String MSG_INVALID_TIME = "Sorry, I can't set an action for the time you specified.";
 
-    private DialogFlowRequest mRequest;
-
-    public DelayedActionIntent(DialogFlowRequest request) {
-        mRequest = request;
+    public DelayedActionIntent(DialogFlowRequest request, IntentExtras extras) {
+        super(request, extras);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
             if(datetime.length() != TimeUtils.LENGTH_DATETIME) {
                 Date[] dates = TimeUtils.parsePeriod(datetime);
                 if(dates != null) {
-                    return new PeriodActionIntent(mRequest, dates, action).execute();
+                    return new PeriodActionIntent(mRequest, dates, action, mExtras).execute();
                 } else {
                     return getInvalidTimeResponse();
                 }
@@ -70,7 +69,7 @@ public class DelayedActionIntent extends DialogFlowIntent {
         }
         long targetTimestamp = TimeUtils.calculateTargetTimestamp(timeInfo);
 
-        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action);
+        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
         if(subIntent == null) {
             return getErrorResponse();
         }

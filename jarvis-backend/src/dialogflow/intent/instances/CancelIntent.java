@@ -4,6 +4,7 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.DialogFlowContext;
 import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.IntentExtras;
 import jarvis.actions.command.DelayedCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
@@ -23,10 +24,8 @@ public class CancelIntent extends DialogFlowIntent {
 
     public static final String MSG_ERROR = "Sorry, I found no command to cancel.";
 
-    private DialogFlowRequest mRequest;
-
-    public CancelIntent(DialogFlowRequest request) {
-        mRequest = request;
+    public CancelIntent(DialogFlowRequest request, IntentExtras extras) {
+        super(request, extras);
     }
 
     @Override

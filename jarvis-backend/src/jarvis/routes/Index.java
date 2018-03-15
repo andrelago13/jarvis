@@ -38,8 +38,6 @@ public class Index {
             if (mobj != null) {
                 return mobj;
             }
-            List<Thing> t = MongoDB.getThingsWithNameLike("light");
-            res += t.size();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
