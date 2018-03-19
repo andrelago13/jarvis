@@ -58,8 +58,10 @@ public class Config {
     public static final String DF_CANCEL_INTENT_ID = "62544394-9d76-42da-a40b-6a6cda34066b";
     public static final String DF_CONFIRM_CANCEL_INTENT_NAME = "Confirm Cancel";
     public static final String DF_CONFIRM_CANCEL_INTENT_ID = "145e7d3b-9105-4bfb-8c6a-78c3e5c2783b";
-    public static final String DF_CONFIRM_THING_INTENT_ID = "5f3f7eb8-c2dc-42db-9f59-38a9bf0c3a52";
     public static final String DF_CONFIRM_THING_INTENT_NAME = "Confirm Thing Choice";
+    public static final String DF_CONFIRM_THING_INTENT_ID = "5f3f7eb8-c2dc-42db-9f59-38a9bf0c3a52";
+    public static final String DF_REPEATING_ACTION_INTENT_NAME = "Repeating Intent";
+    public static final String DF_REPEATING_ACTION_INTENT_ID = "977ef8d4-1096-4733-b724-82bad2931fc8";
 
     /**
      * DialogFlow context constants.
@@ -75,7 +77,12 @@ public class Config {
     public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
     public static final String DF_ACTION_ENTITY_NAME = "action";
     public static final String DF_TIME_ENTITY_NAME = "time";
+    public static final String DF_PERIODTIME_ENTITY_NAME = "periodtime";
+    public static final String DF_STARTTIME_ENTITY_NAME = "starttime";
+    public static final String DF_ENDTIME_ENTITY_NAME = "endtime";
     public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
+
+    public static final String DF_TIME_PERIOD_SYS_ENTITY_NAME = "time-period";
 
     /**
      * RabbitMQ constants

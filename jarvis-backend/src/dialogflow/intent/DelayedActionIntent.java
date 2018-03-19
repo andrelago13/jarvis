@@ -1,9 +1,9 @@
-package dialogflow.intent.instances;
+package dialogflow.intent;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
 import dialogflow.intent.subintents.PeriodActionIntent;
 import jarvis.actions.command.DelayedCommand;
@@ -18,15 +18,12 @@ import res.Config;
 import java.util.Date;
 import java.util.Optional;
 
+import static jarvis.util.TimeUtils.KEY_DATETIME;
+import static jarvis.util.TimeUtils.TimeInfoOrPeriod;
+
 public class DelayedActionIntent extends DialogFlowIntent {
     public static final String INTENT_NAME = Config.DF_DELAYED_ACTION_INTENT_NAME;
     public static final String INTENT_ID = Config.DF_DELAYED_ACTION_INTENT_ID;
-
-    public static final String KEY_DATETIME = "date-time"; // tomorrow, on Jan 20th
-    public static final String KEY_DURATION= "duration"; // in X minutes
-    public static final String KEY_TIME = "time"; // at X
-    public static final String KEY_AMOUNT = "amount"; // at X
-    public static final String KEY_UNIT = "unit"; // at X
 
     public static final String MSG_SUCCESS = "Done, the action was scheduled!";
     public static final String MSG_ERROR = "Invalid parameters for \"Delayed Action\" intent.";
@@ -51,43 +48,59 @@ public class DelayedActionIntent extends DialogFlowIntent {
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
         JSONObject timeJson = parameters.getJSONObject(Config.DF_TIME_ENTITY_NAME);
 
-        if(timeJson.has(KEY_DATETIME)) {
-            String datetime = timeJson.getString(KEY_DATETIME);
-            if(datetime.length() != TimeUtils.LENGTH_DATETIME) {
-                Date[] dates = TimeUtils.parsePeriod(datetime);
-                if(dates != null) {
-                    return new PeriodActionIntent(mRequest, dates, action, mExtras).execute();
-                } else {
-                    return getInvalidTimeResponse();
-                }
-            }
+        TimeInfoOrPeriod parsedResult = TimeUtils.parseTimeValueFromNow(timeJson);
+        if(parsedResult == null) {
+            return getInvalidTimeResponse();
         }
 
-        TimeInfo timeInfo = parseTimeToSeconds(timeJson);
-        if(timeInfo == null || timeInfo.value < 0) {
+        if (parsedResult.hasDates()) {
+            return executePeriodCommand(action, parsedResult.getDates());
+        } else if (parsedResult.hasTimeInfo()) {
+            return executeDelayedCommand(action, parsedResult.getTimeInfo());
+        }
+
+        return getErrorResponse();
+    }
+
+    protected QueryResponse executeDelayedCommand(JSONObject action, TimeInfo timeInfo) {
+        // Only schedule actions in the future
+        if(timeInfo.value < 0) {
             return getInvalidTimeResponse();
         }
         long targetTimestamp = TimeUtils.calculateTargetTimestamp(timeInfo);
 
+        // Get action subintent
         final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
         if(subIntent == null) {
             return getErrorResponse();
         }
 
+        // Check if device name is good
         QueryResponse followUpRequest = subIntent.getFollowUpRequest();
         if(followUpRequest != null) {
             return followUpRequest;
         }
 
+        // Intent must be "commandable"
         Optional<Command> intentCommand = subIntent.getCommand();
         if(!intentCommand.isPresent()) {
             return getErrorResponse();
         }
 
+        // Create delayed command
         Command cmd = new DelayedCommand(intentCommand.get(), timeInfo, targetTimestamp);
         JarvisEngine.getInstance().executeCommand(cmd);
 
         return getSuccessResponse();
+    }
+
+    protected QueryResponse executePeriodCommand(JSONObject action, Date[] dates) throws JarvisException {
+        long now = System.currentTimeMillis();
+        if(now > dates[0].getTime()) {
+            return getInvalidTimeResponse();
+        }
+
+        return new PeriodActionIntent(mRequest, dates, action, mExtras).execute();
     }
 
     @Override
@@ -111,22 +124,5 @@ public class DelayedActionIntent extends DialogFlowIntent {
         QueryResponse response = new QueryResponse();
         response.addFulfillmentMessage(MSG_SUCCESS);
         return response;
-    }
-
-    private TimeInfo parseTimeToSeconds(JSONObject time) {
-        if(time.has(KEY_DATETIME)) {
-            // "2017-07-12T16:30:00Z"
-            return TimeUtils.dateTimeToInfo(time.getString(KEY_DATETIME));
-        } else if(time.has(KEY_DURATION)) {
-            // {"amount":10,"unit":"min"}
-            JSONObject duration = time.getJSONObject(KEY_DURATION);
-            if(duration.has(KEY_AMOUNT) && duration.has(KEY_UNIT)) {
-                return TimeUtils.timeUnitToInfo(duration.getString(KEY_UNIT), duration.getInt(KEY_AMOUNT));
-            }
-        } else if(time.has(KEY_TIME)) {
-            // "16:30:00"
-            return TimeUtils.dayTimeToInfo(time.getString(KEY_TIME));
-        }
-        return null;
     }
 }

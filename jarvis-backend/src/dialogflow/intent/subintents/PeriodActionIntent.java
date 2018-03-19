@@ -2,9 +2,8 @@ package dialogflow.intent.subintents;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
-import jarvis.actions.command.DelayedCommand;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
 import jarvis.actions.command.PeriodCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;

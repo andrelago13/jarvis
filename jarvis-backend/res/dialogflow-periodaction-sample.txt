@@ -1,0 +1,48 @@
+{
+  "id": "d0616836-4331-4b23-895d-182f9aedb94c",
+  "timestamp": "2018-03-19T12:43:38.313Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "turn on the light everyday at 5pm",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "light"
+          }
+        }
+      },
+      "periodtime": {
+        "time": "17:00:00"
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "977ef8d4-1096-4733-b724-82bad2931fc8",
+      "webhookUsed": "false",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Repeating Intent"
+    },
+    "fulfillment": {
+      "speech": "Well, okay",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Well, okay"
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "7c3e8cc7-b596-4dcf-9709-a4f4d618e8b5",
+  "alternativeResultsFromKnowledgeService": {}
+}

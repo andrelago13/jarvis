@@ -1,11 +1,10 @@
 package dialogflow.intent.subintents;
 
-import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
-import dialogflow.intent.instances.ConfirmThingIntent;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
+import dialogflow.intent.ConfirmThingIntent;
 import jarvis.actions.command.OnOffCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
@@ -14,9 +13,7 @@ import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.properties.OnOffStatus;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import res.Config;
 
 import java.util.List;
 import java.util.Optional;
@@ -148,7 +145,7 @@ public class OnOffSubIntent extends DialogFlowIntent {
         List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
         if (things.size() > 1) {
             return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
-        } else if (things.size() == 0 && things.get(0) instanceof Toggleable) {
+        } else if (things.size() == 1 && things.get(0) instanceof Toggleable) {
             mToggleable = (Toggleable) things.get(0);
         }
 

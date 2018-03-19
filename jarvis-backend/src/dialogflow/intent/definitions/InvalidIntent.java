@@ -1,7 +1,7 @@
-package dialogflow.intent.instances;
+package dialogflow.intent.definitions;
 
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
+import dialogflow.intent.definitions.DialogFlowIntent;
 import jarvis.actions.command.definitions.Command;
 
 import java.util.Optional;

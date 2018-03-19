@@ -1,9 +1,9 @@
-package dialogflow.intent.instances;
+package dialogflow.intent;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 import res.Config;

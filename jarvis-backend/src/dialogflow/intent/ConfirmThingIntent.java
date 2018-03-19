@@ -1,17 +1,15 @@
-package dialogflow.intent.instances;
+package dialogflow.intent;
 
 import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
 import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.definitions.Thing;
 import jarvis.engine.JarvisEngine;
-import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import res.Config;
 
 import java.util.ArrayList;
@@ -118,7 +116,7 @@ public class ConfirmThingIntent extends DialogFlowIntent {
                 resultMessage += " or ";
             }
         }
-        resultMessage += ".";
+        resultMessage += "?";
         response.addFulfillmentMessage(resultMessage);
 
         DialogFlowContext context = new DialogFlowContext(Config.DF_CONFIRM_THING_INTENT_CONTEXT, 1);

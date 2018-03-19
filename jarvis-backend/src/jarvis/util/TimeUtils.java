@@ -1,5 +1,8 @@
 package jarvis.util;
 
+import org.json.JSONObject;
+import res.Config;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -29,6 +32,12 @@ public class TimeUtils {
     public static final String UNIT_YEAR = "yr";
     public static final String UNIT_DECADE = "decade";
     public static final String UNIT_CENTURY = "century";
+
+    public static final String KEY_DATETIME = "date-time"; // tomorrow, on Jan 20th
+    public static final String KEY_DURATION = "duration"; // in X minutes
+    public static final String KEY_TIME = "time"; // at X
+    public static final String KEY_AMOUNT = "amount"; // at X
+    public static final String KEY_UNIT = "unit"; // at X
 
     private static final Map<String, TimeUnit> unitValues = new HashMap<>();
 
@@ -64,16 +73,16 @@ public class TimeUtils {
         return new TimeInfo(LocalTime.now().until(localTime, ChronoUnit.SECONDS), TimeUnit.SECONDS);
     }
 
-    public static Date[] parsePeriod(String dateTime) {
-        if(dateTime.length() == LENGTH_DATE_PERIOD) {
+    protected static Date[] parsePeriod(String dateTime) {
+        if (dateTime.length() == LENGTH_DATE_PERIOD) {
             return dateTimeToDatePeriod(dateTime);
         } else if (dateTime.length() == LENGTH_TIME_PERIOD) {
-            return dateTimeToPeriod(dateTime);
+            return timeToDatePeriod(dateTime);
         }
         return null;
     }
 
-    public static Date[] dateTimeToDatePeriod(String dateTime) {
+    protected static Date[] dateTimeToDatePeriod(String dateTime) {
         // "2017-07-12T12:00:00Z/2017-07-12T16:00:00Z"
         if (dateTime.length() != LENGTH_DATE_PERIOD) {
             return null;
@@ -100,7 +109,32 @@ public class TimeUtils {
         return null;
     }
 
-    public static Date[] dateTimeToPeriod(String period) {
+    protected static Date[] timeToDatePeriod(String period) {
+        // "12:00:00/16:00:00"
+        LocalTime[] times = timeToPeriod(period);
+        if (times == null) {
+            return null;
+        }
+
+        LocalTime time1 = times[0];
+        LocalTime time2 = times[1];
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.set(Calendar.HOUR_OF_DAY, time1.get(ChronoField.CLOCK_HOUR_OF_DAY));
+        cal1.set(Calendar.MINUTE, time1.get(ChronoField.MINUTE_OF_HOUR));
+        cal1.set(Calendar.SECOND, time1.get(ChronoField.SECOND_OF_MINUTE));
+        cal1.set(Calendar.MILLISECOND, 0);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(Calendar.HOUR_OF_DAY, time2.get(ChronoField.CLOCK_HOUR_OF_DAY));
+        cal2.set(Calendar.MINUTE, time2.get(ChronoField.MINUTE_OF_HOUR));
+        cal2.set(Calendar.SECOND, time2.get(ChronoField.SECOND_OF_MINUTE));
+        cal2.set(Calendar.MILLISECOND, 0);
+
+        return new Date[]{cal1.getTime(), cal2.getTime()};
+    }
+
+    protected static LocalTime[] timeToPeriod(String period) {
         // "12:00:00/16:00:00"
         if (period.length() != LENGTH_TIME_PERIOD) {
             return null;
@@ -111,31 +145,12 @@ public class TimeUtils {
         }
 
         LocalTime time1 = LocalTime.parse(times[0], DateTimeFormatter.ofPattern("HH:mm:ss"));
-        int hour1 = time1.get(ChronoField.CLOCK_HOUR_OF_DAY);
-        int minute1 = time1.get(ChronoField.MINUTE_OF_HOUR);
-        int second1 = time1.get(ChronoField.SECOND_OF_MINUTE);
-
         LocalTime time2 = LocalTime.parse(times[1], DateTimeFormatter.ofPattern("HH:mm:ss"));
-        int hour2 = time2.get(ChronoField.CLOCK_HOUR_OF_DAY);
-        int minute2 = time2.get(ChronoField.MINUTE_OF_HOUR);
-        int second2 = time2.get(ChronoField.SECOND_OF_MINUTE);
 
-        Calendar cal1 = Calendar.getInstance();
-        cal1.set(Calendar.HOUR_OF_DAY, hour1);
-        cal1.set(Calendar.MINUTE, minute1);
-        cal1.set(Calendar.SECOND, second1);
-        cal1.set(Calendar.MILLISECOND, 0);
-
-        Calendar cal2 = Calendar.getInstance();
-        cal2.set(Calendar.HOUR_OF_DAY, hour2);
-        cal2.set(Calendar.MINUTE, minute2);
-        cal2.set(Calendar.SECOND, second2);
-        cal2.set(Calendar.MILLISECOND, 0);
-
-        return new Date[] {cal1.getTime(), cal2.getTime()};
+        return new LocalTime[]{time1, time2};
     }
 
-    public static TimeInfo dateTimeToInfo(String dateTime) {
+    protected static TimeInfo dateTimeToInfo(String dateTime) {
         // "2017-07-12T12:00:00Z"
         if (dateTime.length() != LENGTH_DATETIME) {
             return null;
@@ -216,7 +231,7 @@ public class TimeUtils {
         int timeId = c.get(Calendar.DAY_OF_YEAR);
         c.setTime(end);
 
-        if(timeId == c.get(Calendar.DAY_OF_YEAR)) {
+        if (timeId == c.get(Calendar.DAY_OF_YEAR)) {
             String result = "from " + friendlyFormat(startDate) + " to ";
             result += TIME_FORMATTER.format(endDate);
             return result;
@@ -229,6 +244,79 @@ public class TimeUtils {
         return System.currentTimeMillis() + info.unit.toMillis(info.value);
     }
 
+    public static TimeInfo parseTimeToSecondsFromNow(JSONObject time) {
+        if (time.has(KEY_DATETIME)) {
+            // "2017-07-12T16:30:00Z"
+            return dateTimeToInfo(time.getString(KEY_DATETIME));
+        } else if (time.has(KEY_DURATION)) {
+            // {"amount":10,"unit":"min"}
+            JSONObject duration = time.getJSONObject(KEY_DURATION);
+            if (duration.has(KEY_AMOUNT) && duration.has(KEY_UNIT)) {
+                return timeUnitToInfo(duration.getString(KEY_UNIT), duration.getInt(KEY_AMOUNT));
+            }
+        } else if (time.has(KEY_TIME)) {
+            // "16:30:00"
+            return dayTimeToInfo(time.getString(KEY_TIME));
+        }
+        return null;
+    }
+
+    public static TimeInfoOrPeriod parseTimeValueFromNow(JSONObject json) {
+        if (json.has(KEY_DATETIME)) {
+            String datetime = json.getString(KEY_DATETIME);
+            if (datetime.length() == LENGTH_DATE_PERIOD) {
+                Date[] dates = TimeUtils.parsePeriod(datetime);
+                if (dates != null) {
+                    return new TimeInfoOrPeriod(dates);
+                }
+            }
+        }
+        return new TimeInfoOrPeriod(TimeUtils.parseTimeToSecondsFromNow(json));
+    }
+
+    public static LocalTime[] parseTimeOrTimePeriod(JSONObject json) {
+        //time-period: "12:00:00/16:00:00"
+        if (json.has(Config.DF_TIME_PERIOD_SYS_ENTITY_NAME)) {
+            LocalTime[] times = timeToPeriod(json.getString(Config.DF_TIME_PERIOD_SYS_ENTITY_NAME));
+            if (times == null || times.length != 2) {
+                return null;
+            }
+            return times;
+        }
+
+        //start / end: 2x"16:30:00"
+        if (json.has(Config.DF_STARTTIME_ENTITY_NAME) && json.has(Config.DF_ENDTIME_ENTITY_NAME)) {
+            LocalTime time1 = LocalTime.parse(json.getString(Config.DF_STARTTIME_ENTITY_NAME),
+                    DateTimeFormatter.ofPattern("HH:mm:ss"));
+            LocalTime time2 = LocalTime.parse(json.getString(Config.DF_ENDTIME_ENTITY_NAME),
+                    DateTimeFormatter.ofPattern("HH:mm:ss"));
+            return new LocalTime[]{time1, time2};
+        }
+
+        //time: "16:30:00"
+        if (json.has(Config.DF_TIME_ENTITY_NAME)) {
+            return new LocalTime[]{parseTime(json.getString(Config.DF_TIME_ENTITY_NAME))};
+        }
+
+        return null;
+    }
+
+    public static LocalTime parseTime(String time) {
+        return LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    public static String localTimeToString(LocalTime time) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(time.get(ChronoField.CLOCK_HOUR_OF_DAY));
+        builder.append(":");
+        builder.append(time.get(ChronoField.MINUTE_OF_HOUR));
+        builder.append(":");
+        builder.append(time.get(ChronoField.SECOND_OF_MINUTE));
+        return builder.toString();
+    }
+
+    ////////////////////////////////////////////////////////////////////
+
     public static class TimeInfo {
         public final long value;
         public final TimeUnit unit;
@@ -240,6 +328,39 @@ public class TimeUtils {
 
         public String toString() {
             return "" + value + " " + unit.toString().toLowerCase();
+        }
+    }
+
+    public static class TimeInfoOrPeriod {
+        private TimeInfo mTimeInfo;
+        private Date[] mDates;
+
+        public TimeInfoOrPeriod(TimeInfo info) {
+            mTimeInfo = info;
+        }
+
+        public TimeInfoOrPeriod(Date[] dates) {
+            mDates = dates;
+        }
+
+        public TimeInfoOrPeriod(Date date1, Date date2) {
+            mDates = new Date[]{date1, date2};
+        }
+
+        public TimeInfo getTimeInfo() {
+            return mTimeInfo;
+        }
+
+        public Date[] getDates() {
+            return mDates;
+        }
+
+        public boolean hasTimeInfo() {
+            return mTimeInfo != null;
+        }
+
+        public boolean hasDates() {
+            return mDates != null && mDates.length == 2;
         }
     }
 }

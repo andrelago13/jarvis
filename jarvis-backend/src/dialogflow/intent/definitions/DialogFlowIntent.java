@@ -1,8 +1,8 @@
-package dialogflow.intent;
+package dialogflow.intent.definitions;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
-import dialogflow.intent.instances.*;
+import dialogflow.intent.*;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.JarvisException;
 
@@ -37,6 +37,8 @@ public abstract class DialogFlowIntent {
             return new ConfirmCancelIntent(request, extras);
         } else if (ConfirmThingIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new ConfirmThingIntent(request, extras);
+        } else if (RepeatingActionIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+            return new RepeatingActionIntent(request, extras);
         }
 
         return new InvalidIntent();

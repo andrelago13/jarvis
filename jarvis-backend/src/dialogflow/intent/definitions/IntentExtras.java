@@ -1,4 +1,4 @@
-package dialogflow.intent;
+package dialogflow.intent.definitions;
 
 import java.util.HashMap;
 import java.util.Map;

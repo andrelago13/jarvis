@@ -1,8 +1,8 @@
 package dialogflow.intent.subintents;
 
 import dialogflow.DialogFlowRequest;
-import dialogflow.intent.DialogFlowIntent;
-import dialogflow.intent.IntentExtras;
+import dialogflow.intent.definitions.DialogFlowIntent;
+import dialogflow.intent.definitions.IntentExtras;
 import org.json.JSONObject;
 import res.Config;
 

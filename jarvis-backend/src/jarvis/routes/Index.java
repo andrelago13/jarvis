@@ -24,22 +24,6 @@ public class Index {
             if (mobj != null) {
                 return mobj;
             }
-
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("jarvis-iot.ml");
-            factory.setUsername("rabbitmq");
-            factory.setPassword("rabbitmq");
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-
-            String queue = "/house/bedroom_light/actions";
-            channel.queueDeclare(queue, false, false, false, null);
-            String message = "on";
-            channel.basicPublish("", queue, null, message.getBytes());
-            System.out.println(" [x] Sent '" + message + "'");
-
-            channel.close();
-            connection.close();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
