@@ -11,6 +11,7 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
+import rabbitmq.RabbitMQ;
 import res.Config;
 
 import java.sql.Timestamp;

@@ -1,29 +1,15 @@
 package jarvis.routes;
 
-import jarvis.controllers.definitions.Thing;
-import jarvis.util.TimeUtils;
-import mongodb.MongoDB;
-import org.json.JSONObject;
-import slack.SlackUtil;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
 
 @Path("/")
 public class Index {
@@ -38,6 +24,22 @@ public class Index {
             if (mobj != null) {
                 return mobj;
             }
+
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("jarvis-iot.ml");
+            factory.setUsername("rabbitmq");
+            factory.setPassword("rabbitmq");
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+
+            String queue = "/house/bedroom_light/actions";
+            channel.queueDeclare(queue, false, false, false, null);
+            String message = "on";
+            channel.basicPublish("", queue, null, message.getBytes());
+            System.out.println(" [x] Sent '" + message + "'");
+
+            channel.close();
+            connection.close();
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
