@@ -130,6 +130,7 @@ public class JarvisEngine {
         ScheduledAction action = new ScheduledAction(id, cmd, future);
         mScheduledActions.put(id, action);
 
+        logCommand(getRuleJSON(cmd, false));
         logRule(getRuleJSON(cmd, false));
     }
 
