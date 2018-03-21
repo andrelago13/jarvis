@@ -13,8 +13,10 @@ import mongodb.MongoDB;
 import org.json.JSONObject;
 import rabbitmq.RabbitMQ;
 import res.Config;
+import slack.SlackUtil;
 
 import java.sql.Timestamp;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,10 +34,12 @@ public class JarvisEngine {
 
     private Map<Long, ScheduledAction> mScheduledActions;
 
-    private JarvisEngine() {init();}
+    private JarvisEngine() {
+        init();
+    }
 
     public static JarvisEngine getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new JarvisEngine();
         }
         return instance;
@@ -64,7 +68,7 @@ public class JarvisEngine {
 
     public List<Thing> findThing(JSONObject thing) {
         String name = getThingName(thing);
-        if(name == null) {
+        if (name == null) {
             return new ArrayList<>();
         }
         return findThing(name);
@@ -76,7 +80,7 @@ public class JarvisEngine {
 
     public List<Thing> findThingLike(JSONObject thing) {
         String name = getThingName(thing);
-        if(name == null) {
+        if (name == null) {
             return new ArrayList<>();
         }
         return findThingLike(name);
@@ -103,13 +107,30 @@ public class JarvisEngine {
         ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
         ScheduledAction action = new ScheduledAction(id, cmd, future);
         mScheduledActions.put(id, action);
+        logRule(getRuleJSON(cmd, false));
     }
 
     public void scheduleAction(long id, Command cmd, long timestamp) {
-        long diff = (new Date().getTime()) - timestamp;
-        long secs = TimeUnit.MILLISECONDS.toSeconds(diff);
         scheduleAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
-        logRule(getRuleJSON(cmd, false));
+    }
+
+    public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
+        LocalDateTime localNow = LocalDateTime.now();
+        ZoneId currentZone = ZoneId.systemDefault();
+        ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
+        ZonedDateTime zonedNext5;
+        zonedNext5 = zonedNow.withHour(desiredTime.getHour())
+                .withMinute(desiredTime.getMinute())
+                .withSecond(desiredTime.getSecond());
+
+        Duration duration = Duration.between(zonedNow, zonedNext5);
+        SlackUtil.sendIoTMessage("" + duration.getSeconds());
+
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), duration.getSeconds(), TimeUnit.SECONDS);
+        ScheduledAction action = new ScheduledAction(id, cmd, future);
+        mScheduledActions.put(id, action);
     }
 
     public void actionCompleted(long id) {
@@ -117,7 +138,7 @@ public class JarvisEngine {
     }
 
     public boolean cancelAction(long id) {
-        if(!mScheduledActions.containsKey(id)) {
+        if (!mScheduledActions.containsKey(id)) {
             return false;
         }
         ScheduledFuture future = mScheduledActions.get(id).getFuture();
@@ -138,6 +159,10 @@ public class JarvisEngine {
     }
 
     private boolean logCommand(JSONObject commandJSON) {
+        return MongoDB.logCommand(commandJSON);
+    }
+
+    private boolean logScheduling(JSONObject commandJSON) {
         return MongoDB.logCommand(commandJSON);
     }
 
@@ -166,7 +191,7 @@ public class JarvisEngine {
     }
 
     private static void addStringParameters(JSONObject obj, Command cmd, boolean undo) {
-        if(undo) {
+        if (undo) {
             obj.put(KEY_COMMAND_TEXT, cmd.undoString());
             obj.put(KEY_UNDO, true);
         } else {

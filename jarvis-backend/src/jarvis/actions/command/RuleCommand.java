@@ -1,6 +1,7 @@
 package jarvis.actions.command;
 
 import jarvis.actions.CommandBuilder;
+import jarvis.actions.CommandRunnable;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
@@ -9,8 +10,11 @@ import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RuleCommand extends Command {
     public static final String TAG = "ruleCommand";
@@ -45,28 +49,16 @@ public class RuleCommand extends Command {
     @Override
     public CommandResult execute() {
         // TODO implement
-//        switch (mStage) {
-//            case 0:
-//                JarvisEngine.getInstance().scheduleAction(mId, this, mStartTimestamp);
-//                mStage = 1;
-//                break;
-//            case 1:
-//                CommandResult res = mCommand.execute();
-//                if(res.isSuccessful()) {
-//                    JarvisEngine.getInstance().scheduleAction(mId, this, mEndTimestamp);
-//                    mStage = 2;
-//                } else {
-//                    mStage = 3;
-//                    done();
-//                }
-//                return res;
-//            case 2:
-//                CommandResult result = mCommand.undo();
-//                mStage = 3;
-//                done();
-//                return result;
-//
-//        }
+        switch (mStage) {
+            case 0:
+                JarvisEngine.getInstance().scheduleDailyRule(mId, this, mLocalTime);
+                mStage = 1;
+                break;
+            case 1:
+                CommandResult res = mCommand.execute();
+                //JarvisEngine.getInstance().scheduleAction(mId, this, mEndTimestamp);
+                return res;
+        }
         return new CommandResult(false);
     }
 
@@ -78,21 +70,17 @@ public class RuleCommand extends Command {
 
     @Override
     public String executeString() {
-        // TODO implement
-        return "";//return "[PeriodAction] Scheduled period action " + TimeUtils.friendlyFormatPeriod(mStartTimestamp, mEndTimestamp)
-        //        + " : " + mCommand.executeString();
+        return "[PeriodAction] Scheduled daily rule for " + TimeUtils.localTimeToString(mLocalTime) + " : " + mCommand.executeString();
     }
 
     @Override
     public String undoString() {
-        // TODO implement
-        return "[PeriodAction] Canceled period action : " + mCommand.executeString();
+        return "[PeriodAction] Canceled daily rule scheduling for " + TimeUtils.localTimeToString(mLocalTime) + " : " + mCommand.executeString();
     }
 
     @Override
     public String friendlyExecuteString() {
-        // TODO implement
-        return "";//return "Scheduled action " + mCommand.friendlyExecuteString().toLowerCase() + TimeUtils.friendlyFormatPeriod(mStartTimestamp, mEndTimestamp);
+        return mCommand.friendlyExecuteString() + " everyday at " + TimeUtils.localTimeToString(mLocalTime);
     }
 
     @Override
