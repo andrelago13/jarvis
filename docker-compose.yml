@@ -15,6 +15,7 @@ services:
       - db
     depends_on:
       - db
+      - rabbit
   
   db:
     image: mongo:3.2
@@ -44,7 +45,7 @@ services:
     labels:
       NAME: "rabbitmq1"
     volumes:
-      - "./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+      - "./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
 
 volumes:
   db-data:
