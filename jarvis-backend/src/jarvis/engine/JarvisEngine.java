@@ -11,9 +11,7 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
-import rabbitmq.RabbitMQ;
 import res.Config;
-import slack.SlackUtil;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -118,19 +116,30 @@ public class JarvisEngine {
         LocalDateTime localNow = LocalDateTime.now();
         ZoneId currentZone = ZoneId.systemDefault();
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
-        ZonedDateTime zonedNext5;
-        zonedNext5 = zonedNow.withHour(desiredTime.getHour())
+        ZonedDateTime zonedDesiredTime;
+        zonedDesiredTime = zonedNow.withHour(desiredTime.getHour())
                 .withMinute(desiredTime.getMinute())
                 .withSecond(desiredTime.getSecond());
 
-        Duration duration = Duration.between(zonedNow, zonedNext5);
-        SlackUtil.sendIoTMessage("" + duration.getSeconds());
+        long initialDelay = Duration.between(zonedNow, zonedDesiredTime).getSeconds();
+        long repeatInterval = TimeUnit.DAYS.toSeconds(1);
 
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
-        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), duration.getSeconds(), TimeUnit.SECONDS);
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.scheduleAtFixedRate(
+                new CommandRunnable(cmd), initialDelay, repeatInterval, TimeUnit.SECONDS);
         ScheduledAction action = new ScheduledAction(id, cmd, future);
         mScheduledActions.put(id, action);
+
+        logRule(getRuleJSON(cmd, false));
+    }
+
+    public boolean cancelDailyRule(long id) {
+        if (!mScheduledActions.containsKey(id)) {
+            return false;
+        }
+        ScheduledFuture future = mScheduledActions.get(id).getFuture();
+        mScheduledActions.remove(id);
+        return future.cancel(false);
     }
 
     public void actionCompleted(long id) {

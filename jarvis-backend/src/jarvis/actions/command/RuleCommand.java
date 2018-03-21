@@ -55,17 +55,14 @@ public class RuleCommand extends Command {
                 mStage = 1;
                 break;
             case 1:
-                CommandResult res = mCommand.execute();
-                //JarvisEngine.getInstance().scheduleAction(mId, this, mEndTimestamp);
-                return res;
+                return JarvisEngine.getInstance().executeCommand(mCommand);
         }
         return new CommandResult(false);
     }
 
     @Override
     public CommandResult undo() {
-        // TODO implement
-        return new CommandResult(JarvisEngine.getInstance().cancelAction(mId));
+        return new CommandResult(JarvisEngine.getInstance().cancelDailyRule(mId));
     }
 
     @Override
@@ -95,13 +92,11 @@ public class RuleCommand extends Command {
 
     @Override
     public List<Thing> targetThings() {
-        // TODO implement
         return mCommand.targetThings();
     }
 
     @Override
     public boolean isCancellable() {
-        // TODO implement
-        return false;//return mStartTimestamp > System.currentTimeMillis();
+        return true;
     }
 }
