@@ -152,7 +152,7 @@ public class JarvisEngine {
     // Undoes and logs a thing command
     public CommandResult undoCommand(Command cmd) {
         CommandResult res = cmd.undo();
-        logCommand(getCommandJSON(cmd, res, true));
+        logUserCommand(getCommandJSON(cmd, res, true));
         return res;
     }
 
@@ -216,7 +216,12 @@ public class JarvisEngine {
 
     // Logs a user command
     public boolean logUserCommand(Command cmd, CommandResult result) {
-        return MongoDB.logUserCommand(getCommandJSON(cmd, result, false));
+        return logUserCommand(getCommandJSON(cmd, result, false));
+    }
+
+    // Logs a user command
+    public boolean logUserCommand(JSONObject cmdJSON) {
+        return MongoDB.logUserCommand(cmdJSON);
     }
 
     ///////////////////////////////////

@@ -1,7 +1,6 @@
 package jarvis.actions.command;
 
 import jarvis.actions.CommandBuilder;
-import jarvis.actions.CommandRunnable;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
@@ -10,32 +9,32 @@ import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
-import java.time.*;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-public class RuleCommand extends Command {
-    public static final String TAG = "ruleCommand";
+public class PeriodRuleCommand extends Command {
+    public static final String TAG = "periodRuleCommand";
 
-    private static final String KEY_TIME_STRING = "timeString";
+    private static final String KEY_START_TIME_STRING = "startTimeString";
+    private static final String KEY_END_TIME_STRING = "endTimeString";
     private static final String KEY_COMMAND = "command";
 
     private Command mCommand;
-    private LocalTime mLocalTime;
+    private LocalTime mStartTime;
+    private LocalTime mEndTime;
     private int mStage;
 
-    public RuleCommand(Command command, LocalTime time) {
-        mId = generateID();
+    public PeriodRuleCommand(Command command, LocalTime startTime, LocalTime endTime) {
         mCommand = command;
-        mLocalTime = time;
+        mStartTime = startTime;
+        mEndTime = endTime;
         mStage = 0;
     }
 
-    public RuleCommand(JSONObject command) throws JarvisException {
+    public PeriodRuleCommand(JSONObject command) throws JarvisException {
         mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
-        mLocalTime = TimeUtils.parseTime(command.getString(KEY_TIME_STRING));
+        mStartTime = TimeUtils.parseTime(command.getString(KEY_START_TIME_STRING));
+        mEndTime = TimeUtils.parseTime(command.getString(KEY_END_TIME_STRING));
 
         JSONObject subCommand = command.getJSONObject(KEY_COMMAND);
         mCommand = CommandBuilder.buildFromJSON(subCommand);
@@ -48,15 +47,8 @@ public class RuleCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        switch (mStage) {
-            case 0:
-                JarvisEngine.getInstance().scheduleDailyRule(mId, this, mLocalTime);
-                mStage = 1;
-                return new CommandResult(true);
-            case 1:
-                return JarvisEngine.getInstance().executeCommand(mCommand);
-        }
-        return new CommandResult(false);
+        // TODO
+        return null;
     }
 
     @Override
@@ -66,17 +58,20 @@ public class RuleCommand extends Command {
 
     @Override
     public String executeString() {
-        return "[RuleCommand] Scheduled daily rule for " + TimeUtils.localTimeToString(mLocalTime) + " : " + mCommand.executeString();
+        // TODO
+        return null;
     }
 
     @Override
     public String undoString() {
-        return "[RuleCommand] Canceled daily rule scheduling for " + TimeUtils.localTimeToString(mLocalTime) + " : " + mCommand.executeString();
+        // TODO
+        return null;
     }
 
     @Override
     public String friendlyExecuteString() {
-        return mCommand.friendlyExecuteString() + " everyday at " + TimeUtils.localTimeToString(mLocalTime);
+        // TODO
+        return null;
     }
 
     @Override
@@ -84,18 +79,14 @@ public class RuleCommand extends Command {
         JSONObject res = new JSONObject();
         res.put(KEY_ID, mId);
         res.put(KEY_TYPE, TAG);
-        res.put(KEY_TIME_STRING, TimeUtils.localTimeToString(mLocalTime));
+        res.put(KEY_START_TIME_STRING, TimeUtils.localTimeToString(mStartTime));
+        res.put(KEY_END_TIME_STRING, TimeUtils.localTimeToString(mEndTime));
         res.put(KEY_COMMAND, mCommand.getJSON());
         return res;
     }
 
     @Override
     public List<Thing> targetThings() {
-        return mCommand.targetThings();
-    }
-
-    @Override
-    public boolean isCancellable() {
-        return true;
+        return null;
     }
 }

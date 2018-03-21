@@ -7,6 +7,7 @@ import dialogflow.intent.definitions.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
 import dialogflow.intent.subintents.PeriodActionIntent;
 import jarvis.actions.command.DelayedCommand;
+import jarvis.actions.command.PeriodRuleCommand;
 import jarvis.actions.command.RuleCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
@@ -55,20 +56,10 @@ public class RepeatingActionIntent extends DialogFlowIntent {
             return getInvalidTimeResponse();
         }
 
-        if (times.length == 1) {
-            return setupRule(action, times[0]);
-        } else if (times.length == 2) {
-            return setupPeriodRule(action, times[0], times[1]);
-        }
-
-        return getErrorResponse();
+        return setupRepeatingRule(action, times);
     }
 
-    private QueryResponse setupPeriodRule(JSONObject action, LocalTime time, LocalTime time1) {
-        return null;
-    }
-
-    private QueryResponse setupRule(JSONObject action, LocalTime time) {
+    private QueryResponse setupRepeatingRule(JSONObject action, LocalTime[] times) {
         // Get action subintent
         final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
         if(subIntent == null) {
@@ -87,11 +78,18 @@ public class RepeatingActionIntent extends DialogFlowIntent {
             return getErrorResponse();
         }
 
-        // Create delayed command
-        Command cmd = new RuleCommand(intentCommand.get(), time);
+        Command cmd = null;
+        if(times.length == 1) {
+            // Create daily rule command
+            cmd = new RuleCommand(intentCommand.get(), times[0]);
+        } else if (times.length == 2) {
+            // Create daily start/finish rule command
+            cmd = new PeriodRuleCommand(intentCommand.get(), times[0], times[1]);
+        } else {
+            return getErrorResponse();
+        }
 
         JarvisEngine.getInstance().logUserCommand(cmd, cmd.execute());
-
         return getSuccessResponse();
     }
 
