@@ -12,6 +12,6 @@ public class CommandRunnable implements Runnable {
 
     @Override
     public void run() {
-        JarvisEngine.getInstance().executeCommand(mCommand);
+        mCommand.execute();
     }
 }

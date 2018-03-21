@@ -24,6 +24,7 @@ public class DelayedCommand extends Command {
     private Command mCommand;
     private TimeUtils.TimeInfo mTimeInfo;
     private long mTargetTimestamp;
+    private int mStage = 0;
 
     public DelayedCommand(Command command, TimeUtils.TimeInfo timeInfo, long targetTimestamp) {
         mId = generateID();
@@ -47,8 +48,17 @@ public class DelayedCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        JarvisEngine.getInstance().scheduleDelayedAction(mId, mCommand, mTimeInfo);
-        return new CommandResult(true);
+        switch (mStage) {
+            case 0:
+                JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mTimeInfo);
+                ++mStage;
+                return new CommandResult(true);
+            case 1:
+                ++mStage;
+                JarvisEngine.getInstance().actionCompleted(mId);
+                return JarvisEngine.getInstance().executeCommand(mCommand);
+        }
+        return new CommandResult(false);
     }
 
     @Override

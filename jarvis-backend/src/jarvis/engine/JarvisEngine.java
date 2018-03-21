@@ -12,6 +12,7 @@ import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
 import res.Config;
+import slack.SlackUtil;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -104,10 +105,12 @@ public class JarvisEngine {
     ///////////////////////////////////
 
     private void addScheduling(long id, ScheduledAction action) {
+        // TODO add to active schedulings
         mScheduledActions.put(id, action);
     }
 
     private void removeScheduling(long id) {
+        // TODO remove from active schedulings
         mScheduledActions.remove(id);
     }
 
@@ -139,14 +142,14 @@ public class JarvisEngine {
     ////////// EXECUTION API //////////
     ///////////////////////////////////
 
-    // Executes a thing command
+    // Executes and logs a thing command
     public CommandResult executeCommand(Command cmd) {
         CommandResult res = cmd.execute();
         logCommand(getCommandJSON(cmd, res, false));
         return res;
     }
 
-    // Undoes a thing command
+    // Undoes and logs a thing command
     public CommandResult undoCommand(Command cmd) {
         CommandResult res = cmd.undo();
         logCommand(getCommandJSON(cmd, res, true));
@@ -240,6 +243,4 @@ public class JarvisEngine {
             obj.put(KEY_UNDO, false);
         }
     }
-
-    ///////////
 }
