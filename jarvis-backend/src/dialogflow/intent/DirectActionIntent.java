@@ -6,6 +6,7 @@ import dialogflow.intent.definitions.DialogFlowIntent;
 import dialogflow.intent.definitions.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
 import jarvis.actions.command.definitions.Command;
+import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
 import org.json.JSONObject;
 import res.Config;
@@ -40,6 +41,10 @@ public class DirectActionIntent extends DialogFlowIntent {
             return getErrorResponse();
         }
 
+        Optional<Command> subIntentCommand = subIntent.getCommand();
+        if(subIntentCommand.isPresent()) {
+            JarvisEngine.getInstance().logUserCommand(subIntentCommand.get());
+        }
         return subIntent.execute();
     }
 

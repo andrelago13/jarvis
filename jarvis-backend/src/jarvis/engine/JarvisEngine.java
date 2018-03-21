@@ -155,15 +155,17 @@ public class JarvisEngine {
 
     // Logs a thing command
     private boolean logCommand(JSONObject commandJSON) {
-        return MongoDB.logCommand(commandJSON);
+        return LoggerCommunication.logCommand(commandJSON);
     }
 
     // Schedules a one-time delayed action
+    // Command must call actionCompleted when finished
     public void scheduleDelayedAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
         createScheduling(id, cmd, timeInfo.value, timeInfo.unit);
     }
 
     // Schedules a one-time delayed action
+    // Command must call actionCompleted when finished
     public void scheduleDelayedAction(long id, Command cmd, long timestamp) {
         scheduleDelayedAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
     }
@@ -179,6 +181,7 @@ public class JarvisEngine {
     }
 
     // Schedules a daily repeating rule
+    // Command must call actionCompleted when finished
     public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
         LocalDateTime localNow = LocalDateTime.now();
         ZoneId currentZone = ZoneId.systemDefault();
@@ -205,7 +208,12 @@ public class JarvisEngine {
 
     // Logs a user command
     public boolean logUserCommand(Command cmd, boolean success) {
-        return MongoDB.logUserCommand(getCommandJSON(cmd, new CommandResult(success), false));
+        return logUserCommand(cmd, new CommandResult(success));
+    }
+
+    // Logs a user command
+    public boolean logUserCommand(Command cmd, CommandResult result) {
+        return MongoDB.logUserCommand(getCommandJSON(cmd, result, false));
     }
 
     ///////////////////////////////////

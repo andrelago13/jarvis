@@ -89,7 +89,8 @@ public class RepeatingActionIntent extends DialogFlowIntent {
 
         // Create delayed command
         Command cmd = new RuleCommand(intentCommand.get(), time);
-        JarvisEngine.getInstance().executeCommand(cmd);
+
+        JarvisEngine.getInstance().logUserCommand(cmd, cmd.execute());
 
         return getSuccessResponse();
     }
