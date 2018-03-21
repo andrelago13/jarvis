@@ -23,8 +23,8 @@ public class ThingInterface {
         return MongoDB.getThingsWithNameLike(name);
     }
 
-    public static List<Command> getLatestNCommands(int n) {
-        return MongoDB.getLatestNCommands(n);
+    public static List<Command> getLatestNUserCommands(int n) {
+        return MongoDB.getLatestNUserCommands(n);
     }
 
     public static boolean sendThingsMessage(String url, String message) {
@@ -37,22 +37,7 @@ public class ThingInterface {
         if(!MongoDB.isInitialized()) {
             MongoDB.initialize(defaultThings);
         }
-        String[] rabbitCreds = getRabbitCredentials();
+        String[] rabbitCreds = Config.getRabbitCredentials();
         RabbitMQ.getInstance().init(rabbitCreds[0], rabbitCreds[1], rabbitCreds[2]);
-    }
-
-    private static String[] getRabbitCredentials() {
-        if(System.getenv(Config.RABBITMQ_HOST_ENV) != null) {
-            return new String[] {
-                    System.getenv(Config.RABBITMQ_HOST_ENV),
-                    System.getenv(Config.RABBITMQ_USERNAME_ENV),
-                    System.getenv(Config.RABBITMQ_PASSWORD_ENV)
-            };
-        }
-        return new String[] {
-                Config.RABBITMQ_HOST,
-                Config.RABBITMQ_USERNAME,
-                Config.RABBITMQ_PASSWORD
-        };
     }
 }

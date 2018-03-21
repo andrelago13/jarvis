@@ -47,7 +47,7 @@ public class DelayedCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        JarvisEngine.getInstance().scheduleAction(mId, mCommand, mTimeInfo);
+        JarvisEngine.getInstance().scheduleDelayedAction(mId, mCommand, mTimeInfo);
         return new CommandResult(true);
     }
 

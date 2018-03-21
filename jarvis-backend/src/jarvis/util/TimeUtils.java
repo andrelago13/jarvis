@@ -307,11 +307,11 @@ public class TimeUtils {
 
     public static String localTimeToString(LocalTime time) {
         StringBuilder builder = new StringBuilder();
-        builder.append(time.get(ChronoField.CLOCK_HOUR_OF_DAY));
+        builder.append(String.format("%02d", time.get(ChronoField.CLOCK_HOUR_OF_DAY)));
         builder.append(":");
-        builder.append(time.get(ChronoField.MINUTE_OF_HOUR));
+        builder.append(String.format("%02d", time.get(ChronoField.MINUTE_OF_HOUR)));
         builder.append(":");
-        builder.append(time.get(ChronoField.SECOND_OF_MINUTE));
+        builder.append(String.format("%02d", time.get(ChronoField.SECOND_OF_MINUTE)));
         return builder.toString();
     }
 

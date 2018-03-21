@@ -34,12 +34,14 @@ public class Config {
     public static final String MONGO_JARVIS_DB = "jarvis";
     public static final String MONGO_THINGS_COLLECTION = "things";
     public static final String MONGO_COMMANDS_COLLECTION = "commands";
-    public static final String MONGO_RULES_COLLECTION = "rules";
+    public static final String MONGO_USER_COMMANDS_COLLECTION = "userCommands";
+    public static final String MONGO_ACTIVE_RULES_COLLECTION = "activeRules";
 
     /**
      * Timeout for Mongo connections.
      */
     public static final int MONGO_TIMEOUT_MS = 5000;
+    public static final int MONGO_PORT = 27017;
 
     public static final String JARVIS_DEFAULT_ERROR = "Sorry, there was a problem. Please try again later.";
 
@@ -93,4 +95,21 @@ public class Config {
     public static final String RABBITMQ_HOST = "jarvis-iot.ml";
     public static final String RABBITMQ_USERNAME = "rabbitmq";
     public static final String RABBITMQ_PASSWORD = "rabbitmq";
+
+
+
+    public static String[] getRabbitCredentials() {
+        if(System.getenv(Config.RABBITMQ_HOST_ENV) != null) {
+            return new String[] {
+                    System.getenv(Config.RABBITMQ_HOST_ENV),
+                    System.getenv(Config.RABBITMQ_USERNAME_ENV),
+                    System.getenv(Config.RABBITMQ_PASSWORD_ENV)
+            };
+        }
+        return new String[] {
+                Config.RABBITMQ_HOST,
+                Config.RABBITMQ_USERNAME,
+                Config.RABBITMQ_PASSWORD
+        };
+    }
 }

@@ -22,35 +22,6 @@ import java.util.Optional;
 import static jarvis.actions.CommandBuilder.KEY_COMMAND;
 
 public class MongoDB {
-    public static final int MONGO_PORT = 27017;
-
-    private static String test() {
-        String result = "1";
-        try {
-            MongoClient m = buildClient();
-            result = "7";
-            try {
-                MongoDatabase db = m.getDatabase("test");
-                result = "8";
-                //db.createCollection("testcol");
-                db.listCollectionNames().first();
-                result = "9";
-                m.close();
-                //MongoCollection<Document> col = db.getCollection("testcol");
-                result = "10";
-                //col.insertOne(new Document().append("k", "v"));
-                return db.getName();
-                //return m.getAddress().toString();
-            } catch (Exception e) {
-                throw e;
-                //return e.getStackTrace().toString();
-            }
-        } catch (Exception e) {
-            result += " " + e.getMessage();
-        }
-        return result;
-    }
-
     public static boolean isInitialized() {
         return dbExists() && thingsCollectionExists();
     }
@@ -102,19 +73,21 @@ public class MongoDB {
         return client.getDatabase(Config.MONGO_JARVIS_DB);
     }
 
-    private static MongoCollection getThingsCollection(MongoClient client) {
+    private static MongoCollection getCollection(MongoClient client, String collection) {
         MongoDatabase database = getJarvisDatabase(client);
-        return database.getCollection(Config.MONGO_THINGS_COLLECTION);
+        return database.getCollection(collection);
+    }
+
+    private static MongoCollection getThingsCollection(MongoClient client) {
+        return getCollection(client, Config.MONGO_THINGS_COLLECTION);
     }
 
     private static MongoCollection getCommandsCollection(MongoClient client) {
-        MongoDatabase database = getJarvisDatabase(client);
-        return database.getCollection(Config.MONGO_COMMANDS_COLLECTION);
+        return getCollection(client, Config.MONGO_COMMANDS_COLLECTION);
     }
 
-    private static MongoCollection getRulesCollection(MongoClient client) {
-        MongoDatabase database = getJarvisDatabase(client);
-        return database.getCollection(Config.MONGO_RULES_COLLECTION);
+    private static MongoCollection getUserCommandsCollection(MongoClient client) {
+        return getCollection(client, Config.MONGO_USER_COMMANDS_COLLECTION);
     }
 
     public static boolean initialize(List<Thing> defaultThings) {
@@ -198,36 +171,15 @@ public class MongoDB {
         return things;
     }
 
-    public static List<Command> getLatestNCommands(int n) {
+    public static List<Command> getLatestNUserCommands(int n) {
         List<Command> commands = new ArrayList<>();
 
         MongoClient m = null;
         try {
             m = buildClient();
-            MongoCollection col = getCommandsCollection(m);
+            MongoCollection col = getUserCommandsCollection(m);
 
             FindIterable<Document> documents = col.find().sort(new Document("timestamp", -1)).limit(n);
-            commands = getCommandsFromDocument(documents);
-        } catch (Exception e) {
-            AdminAlertUtil.alertUnexpectedException(e);
-            e.printStackTrace();
-        } finally {
-            if(m != null) {
-                m.close();
-            }
-        }
-        return commands;
-    }
-
-    public static List<Command> getRules() {
-        List<Command> commands = new ArrayList<>();
-
-        MongoClient m = null;
-        try {
-            m = buildClient();
-            MongoCollection col = getRulesCollection(m);
-
-            FindIterable<Document> documents = col.find().sort(new Document("timestamp", -1));
             commands = getCommandsFromDocument(documents);
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
@@ -291,29 +243,19 @@ public class MongoDB {
     }
 
     public static boolean logCommand(JSONObject command) {
-        MongoClient m = null;
-        try {
-            m = buildClient();
-            MongoCollection col = getCommandsCollection(m);
-            col.insertOne(Document.parse(command.toString()));
-        } catch (Exception e) {
-            AdminAlertUtil.alertUnexpectedException(e);
-            e.printStackTrace();
-            return false;
-        } finally {
-            if(m != null) {
-                m.close();
-            }
-        }
-        return true;
+        return insertOne(command, Config.MONGO_COMMANDS_COLLECTION);
     }
 
-    public static boolean logRule(JSONObject rule) {
+    public static boolean logUserCommand(JSONObject command) {
+        return insertOne(command, Config.MONGO_USER_COMMANDS_COLLECTION);
+    }
+
+    private static boolean insertOne(JSONObject obj, String colName) {
         MongoClient m = null;
         try {
             m = buildClient();
-            MongoCollection col = getRulesCollection(m);
-            col.insertOne(Document.parse(rule.toString()));
+            MongoCollection col = getCollection(m, colName);
+            col.insertOne(Document.parse(obj.toString()));
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();
@@ -335,7 +277,7 @@ public class MongoDB {
         optionsBuilder.serverSelectionTimeout(Config.MONGO_TIMEOUT_MS);
         MongoClientOptions options = optionsBuilder.build();
 
-        return new MongoClient(new ServerAddress(Config.JARVIS_DOMAIN , MONGO_PORT), creds, options);
+        return new MongoClient(new ServerAddress(Config.JARVIS_DOMAIN , Config.MONGO_PORT), creds, options);
     }
 
     private static List<MongoCredential> getCredentials() {

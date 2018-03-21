@@ -47,13 +47,13 @@ public class PeriodCommand extends Command {
     public CommandResult execute() {
         switch (mStage) {
             case 0:
-                JarvisEngine.getInstance().scheduleAction(mId, this, mStartTimestamp);
+                JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mStartTimestamp);
                 mStage = 1;
                 break;
             case 1:
                 CommandResult res = mCommand.execute();
                 if(res.isSuccessful()) {
-                    JarvisEngine.getInstance().scheduleAction(mId, this, mEndTimestamp);
+                    JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mEndTimestamp);
                     mStage = 2;
                 } else {
                     mStage = 3;

@@ -29,7 +29,7 @@ public class CancelIntent extends DialogFlowIntent {
 
     @Override
     public QueryResponse execute() throws JarvisException {
-        List<Command> commands = JarvisEngine.getInstance().getLatestNCommands(MAX_COMMANDS_FETCHED);
+        List<Command> commands = JarvisEngine.getInstance().getLatestNUserCommands(MAX_COMMANDS_FETCHED);
         Command cancelCommand = getCommandToCancel(commands);
         if(cancelCommand == null) {
             return getErrorResponse();

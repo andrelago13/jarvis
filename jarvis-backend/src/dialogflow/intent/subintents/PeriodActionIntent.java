@@ -44,7 +44,7 @@ public class PeriodActionIntent extends DialogFlowIntent {
         }
 
         Command cmd = new PeriodCommand(intentCommand.get(), mDates[0].getTime(), mDates[1].getTime());
-        JarvisEngine.getInstance().executeCommand(cmd);
+        cmd.execute();
 
         return getSuccessResponse();
     }

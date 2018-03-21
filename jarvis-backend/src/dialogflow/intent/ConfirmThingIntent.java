@@ -68,7 +68,7 @@ public class ConfirmThingIntent extends DialogFlowIntent {
         if(thing == null) {
             String thingTemp = JarvisEngine.getThingName(mRequest.getParameters().get().getJSONObject(KEY_THING).getJSONObject(KEY_THING));
             for(String c : choices) {
-                if(c.equals(thingTemp)) {
+                if(c.equals(thingTemp) || c.contains(thingTemp)) {
                     thing = thingTemp;
                 }
             }

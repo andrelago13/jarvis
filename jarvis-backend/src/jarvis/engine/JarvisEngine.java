@@ -91,27 +91,94 @@ public class JarvisEngine {
         return null;
     }
 
-    public List<Command> getLatestNCommands(int n) {
-        return ThingInterface.getLatestNCommands(n);
-    }
-
     public Map<Long, ScheduledAction> getScheduledActions() {
         return mScheduledActions;
     }
 
-    public void scheduleAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
-        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeInfo.value, timeInfo.unit);
-        ScheduledAction action = new ScheduledAction(id, cmd, future);
+    public List<Command> getLatestNUserCommands(int n) {
+        return ThingInterface.getLatestNUserCommands(n);
+    }
+
+    ///////////////////////////////////
+    /////////// INTERNALS /////////////
+    ///////////////////////////////////
+
+    private void addScheduling(long id, ScheduledAction action) {
         mScheduledActions.put(id, action);
-        logRule(getRuleJSON(cmd, false));
     }
 
-    public void scheduleAction(long id, Command cmd, long timestamp) {
-        scheduleAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
+    private void removeScheduling(long id) {
+        mScheduledActions.remove(id);
     }
 
+    private void createScheduling(long id, Command cmd, long timeValue, TimeUnit timeUnit) {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.schedule(new CommandRunnable(cmd), timeValue, timeUnit);
+        ScheduledAction action = new ScheduledAction(id, cmd, future);
+        addScheduling(id, action);
+    }
+
+    private void createRepeatedScheduling(long id, Command cmd, long initialDelay, long interval, TimeUnit timeUnit) {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ScheduledFuture future = executor.scheduleAtFixedRate(
+                new CommandRunnable(cmd), initialDelay, interval, TimeUnit.SECONDS);
+        ScheduledAction action = new ScheduledAction(id, cmd, future);
+        addScheduling(id, action);
+    }
+
+    private boolean cancelScheduling(long id) {
+        if (!mScheduledActions.containsKey(id)) {
+            return false;
+        }
+        ScheduledFuture future = mScheduledActions.get(id).getFuture();
+        removeScheduling(id);
+        return future.cancel(false);
+    }
+
+    ///////////////////////////////////
+    ////////// EXECUTION API //////////
+    ///////////////////////////////////
+
+    // Executes a thing command
+    public CommandResult executeCommand(Command cmd) {
+        CommandResult res = cmd.execute();
+        logCommand(getCommandJSON(cmd, res, false));
+        return res;
+    }
+
+    // Undoes a thing command
+    public CommandResult undoCommand(Command cmd) {
+        CommandResult res = cmd.undo();
+        logCommand(getCommandJSON(cmd, res, true));
+        return res;
+    }
+
+    // Logs a thing command
+    private boolean logCommand(JSONObject commandJSON) {
+        return MongoDB.logCommand(commandJSON);
+    }
+
+    // Schedules a one-time delayed action
+    public void scheduleDelayedAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
+        createScheduling(id, cmd, timeInfo.value, timeInfo.unit);
+    }
+
+    // Schedules a one-time delayed action
+    public void scheduleDelayedAction(long id, Command cmd, long timestamp) {
+        scheduleDelayedAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
+    }
+
+    // Marks a one-time delayed action as completed, removing its object from the active schedulings list
+    public void actionCompleted(long id) {
+        removeScheduling(id);
+    }
+
+    // Cancels a one-time delayed action
+    public boolean cancelAction(long id) {
+        return cancelScheduling(id);
+    }
+
+    // Schedules a daily repeating rule
     public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
         LocalDateTime localNow = LocalDateTime.now();
         ZoneId currentZone = ZoneId.systemDefault();
@@ -123,63 +190,29 @@ public class JarvisEngine {
 
         long initialDelay = Duration.between(zonedNow, zonedDesiredTime).getSeconds();
         long repeatInterval = TimeUnit.DAYS.toSeconds(1);
-
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        ScheduledFuture future = executor.scheduleAtFixedRate(
-                new CommandRunnable(cmd), initialDelay, 10, TimeUnit.SECONDS);
-        ScheduledAction action = new ScheduledAction(id, cmd, future);
-        mScheduledActions.put(id, action);
-
-        //logCommand(getRuleJSON(cmd, false));
-        logRule(getRuleJSON(cmd, false));
+        createRepeatedScheduling(id, cmd, initialDelay, repeatInterval, TimeUnit.SECONDS);
     }
 
+    // Cancels a daily repeating rule
     public boolean cancelDailyRule(long id) {
-        if (!mScheduledActions.containsKey(id)) {
-            return false;
-        }
-        ScheduledFuture future = mScheduledActions.get(id).getFuture();
-        mScheduledActions.remove(id);
-        return future.cancel(false);
+        return cancelScheduling(id);
     }
 
-    public void actionCompleted(long id) {
-        mScheduledActions.remove(id);
+    // Logs a user command
+    public boolean logUserCommand(Command cmd) {
+        return logUserCommand(cmd, true);
     }
 
-    public boolean cancelAction(long id) {
-        if (!mScheduledActions.containsKey(id)) {
-            return false;
-        }
-        ScheduledFuture future = mScheduledActions.get(id).getFuture();
-        mScheduledActions.remove(id);
-        return future.cancel(false);
+    // Logs a user command
+    public boolean logUserCommand(Command cmd, boolean success) {
+        return MongoDB.logUserCommand(getCommandJSON(cmd, new CommandResult(success), false));
     }
 
-    public CommandResult executeCommand(Command cmd) {
-        CommandResult res = cmd.execute();
-        logCommand(getCommandJSON(cmd, res, false));
-        return res;
-    }
+    ///////////////////////////////////
+    ////////// JSON UTILS /////////////
+    ///////////////////////////////////
 
-    public CommandResult undoCommand(Command cmd) {
-        CommandResult res = cmd.undo();
-        logCommand(getCommandJSON(cmd, res, true));
-        return res;
-    }
-
-    private boolean logCommand(JSONObject commandJSON) {
-        return MongoDB.logCommand(commandJSON);
-    }
-
-    private boolean logScheduling(JSONObject commandJSON) {
-        return MongoDB.logCommand(commandJSON);
-    }
-
-    public boolean logRule(JSONObject rule) {
-        return MongoDB.logRule(rule);
-    }
-
+    // Converts a command to a loggable JSON object
     private static JSONObject getCommandJSON(Command cmd, CommandResult result, boolean undo) {
         JSONObject json = new JSONObject();
         addStringParameters(json, cmd, undo);
@@ -187,16 +220,6 @@ public class JarvisEngine {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         json.put(KEY_TIMESTAMP, timestamp.getTime());
         json.put(KEY_SUCCESS, result.isSuccessful());
-        return json;
-    }
-
-
-    private static JSONObject getRuleJSON(Command cmd, boolean undo) {
-        JSONObject json = new JSONObject();
-        addStringParameters(json, cmd, undo);
-        json.put(KEY_COMMAND, cmd.getJSON());
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        json.put(KEY_TIMESTAMP, timestamp.getTime());
         return json;
     }
 
@@ -209,4 +232,6 @@ public class JarvisEngine {
             obj.put(KEY_UNDO, false);
         }
     }
+
+    ///////////
 }
