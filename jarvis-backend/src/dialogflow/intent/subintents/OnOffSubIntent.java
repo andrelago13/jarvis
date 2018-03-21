@@ -32,7 +32,9 @@ public class OnOffSubIntent extends DialogFlowIntent {
     private static final String KEY_ACTUATOR = "actuator";
 
     private JSONObject mParameters;
-    private Toggleable mToggleable;
+    private Command mCommand;
+    private String mResultMessage;
+    private QueryResponse mResponse;
 
     public OnOffSubIntent(DialogFlowRequest request, JSONObject parameters, IntentExtras extras) {
         super(request, extras);
@@ -53,86 +55,66 @@ public class OnOffSubIntent extends DialogFlowIntent {
     @Override
     public QueryResponse execute() throws JarvisException {
         QueryResponse response = new QueryResponse();
-        OnOffStatus status = new OnOffStatus(mParameters.getString(KEY_STATUS));
-        JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
+        if(mResponse != null) {
+            return mResponse;
+        }
 
-        String resultMessage = MSG_ERROR;
-        Command cmd = null;
-
-        if(mToggleable == null) {
-            List<Thing> things;
-            if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
-                String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
-                things = JarvisEngine.getInstance().findThing(thingName);
-            } else {
-                things = JarvisEngine.getInstance().findThingLike(actuator);
+        Optional<Command> cmd = getCommand();
+        if (cmd.isPresent()) {
+            CommandResult result = JarvisEngine.getInstance().executeCommand(cmd.get());
+            if (result.isSuccessful()) {
+                mResultMessage = MSG_SUCCESS;
             }
+        }
 
-            if (things.isEmpty()) {
-                resultMessage = MSG_DEVICE_NOT_FOUND;
-            } else if (things.size() > 1) {
-                return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
-            } else if (things.get(0) instanceof Toggleable) {
-                Toggleable device = (Toggleable) things.get(0);
-                if (isStateDifferent(device, status)) {
-                    cmd = new OnOffCommand(device, status);
-                } else {
-                    resultMessage = MSG_ALREADY_STATE + status.getStatusString();
-                }
+        response.addFulfillmentMessage(mResultMessage);
+        return response;
+    }
+
+    private List<Thing> getThings(JSONObject actuator) {
+        List<Thing> things;
+        if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
+            String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
+            things = JarvisEngine.getInstance().findThing(thingName);
+        } else {
+            things = JarvisEngine.getInstance().findThingLike(actuator);
+        }
+        return things;
+    }
+
+    private Optional<Command> computeCommand(JSONObject actuator, OnOffStatus status) {
+        List<Thing> things = getThings(actuator);
+
+        if (things.isEmpty()) {
+            mResultMessage = MSG_DEVICE_NOT_FOUND;
+        } else if (things.size() > 1) {
+            mResponse = ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
+        } else if (things.get(0) instanceof Toggleable) {
+            Toggleable device = (Toggleable) things.get(0);
+            if (isStateDifferent(device, status)) {
+                mCommand = new OnOffCommand(device, status);
             } else {
-                resultMessage = MSG_DEVICE_NOT_SUPPORTED;
+                mResultMessage = MSG_ALREADY_STATE + status.getStatusString();
             }
         } else {
-            if (isStateDifferent(mToggleable, status)) {
-                cmd = new OnOffCommand(mToggleable, status);
-            } else {
-                resultMessage = MSG_ALREADY_STATE + status.getStatusString();
-            }
+            mResultMessage = MSG_DEVICE_NOT_SUPPORTED;
         }
 
-        if (cmd != null) {
-            CommandResult result = JarvisEngine.getInstance().executeCommand(cmd);
-            if (result.isSuccessful()) {
-                resultMessage = MSG_SUCCESS;
-            }
+        if(mCommand == null) {
+            return Optional.empty();
         }
-
-        response.addFulfillmentMessage(resultMessage);
-        return response;
+        return Optional.of(mCommand);
     }
 
     @Override
     public Optional<Command> getCommand() {
+        if(mCommand != null) {
+            return Optional.of(mCommand);
+        }
         OnOffStatus status = new OnOffStatus(mParameters.getString(KEY_STATUS));
         JSONObject actuator = mParameters.getJSONObject(KEY_ACTUATOR);
-        Command cmd = null;
 
-        if(mToggleable == null) {
-            List<Thing> things;
-            if(mExtras.hasKey(ConfirmThingIntent.EXTRA_CHOSEN_THING)) {
-                String thingName = (String) mExtras.get(ConfirmThingIntent.EXTRA_CHOSEN_THING);
-                things = JarvisEngine.getInstance().findThing(thingName);
-            } else {
-                things = JarvisEngine.getInstance().findThingLike(actuator);
-            }
-
-            if (things.get(0) instanceof Toggleable) {
-                Toggleable device = (Toggleable) things.get(0);
-                if (isStateDifferent(device, status)) {
-                    mToggleable = device;
-                    cmd = new OnOffCommand(device, status);
-                }
-            }
-        } else {
-            if (isStateDifferent(mToggleable, status)) {
-                cmd = new OnOffCommand(mToggleable, status);
-            }
-        }
-
-        if (cmd != null) {
-            return Optional.of(cmd);
-        }
-        return Optional.empty();
+        return computeCommand(actuator, status);
     }
 
     @Override
@@ -145,8 +127,6 @@ public class OnOffSubIntent extends DialogFlowIntent {
         List<Thing> things = JarvisEngine.getInstance().findThingLike(actuator);
         if (things.size() > 1) {
             return ConfirmThingIntent.getMultipleDeviceResponse(things, MSG_MULTIPLE_DEVICES_PREFIX, TAG, mRequest);
-        } else if (things.size() == 1 && things.get(0) instanceof Toggleable) {
-            mToggleable = (Toggleable) things.get(0);
         }
 
         return null;
