@@ -52,6 +52,7 @@ public class PeriodRuleCommand extends Command {
     public CommandResult execute() {
         switch (mStage) {
             case 0:
+                JarvisEngine.getInstance().addActiveRule(this);
                 long initialDelay = TimeUtils.calculateSecondsToLocalTime(mStartTime);
                 TimeUtils.TimeInfo initInfo = new TimeUtils.TimeInfo(initialDelay, TimeUnit.SECONDS);
                 JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, initInfo);
@@ -77,6 +78,7 @@ public class PeriodRuleCommand extends Command {
 
     @Override
     public CommandResult undo() {
+        JarvisEngine.getInstance().removeActiveRule(mId);
         return new CommandResult(JarvisEngine.getInstance().cancelAction(mId));
     }
 

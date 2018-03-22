@@ -5,6 +5,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.util.JSON;
 import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
@@ -89,6 +90,10 @@ public class MongoDB {
 
     private static MongoCollection getUserCommandsCollection(MongoClient client) {
         return getCollection(client, Config.MONGO_USER_COMMANDS_COLLECTION);
+    }
+
+    private static MongoCollection getActiveRulesCollection(MongoClient client) {
+        return getCollection(client, Config.MONGO_ACTIVE_RULES_COLLECTION);
     }
 
     public static boolean initialize(List<Thing> defaultThings) {
@@ -276,6 +281,49 @@ public class MongoDB {
 
     public static boolean logUserCommand(JSONObject command) {
         return insertOne(command, Config.MONGO_USER_COMMANDS_COLLECTION);
+    }
+
+    public static boolean logActiveRule(JSONObject rule) {
+        return insertOne(rule, Config.MONGO_ACTIVE_RULES_COLLECTION);
+    }
+
+    public static boolean deleteActiveRule(long id) {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getActiveRulesCollection(m);
+
+            BasicDBObject document = new BasicDBObject();
+            document.put("command.id", id);
+            DeleteResult res = col.deleteOne(document);
+            return res.getDeletedCount() == 1;
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return false;
+    }
+
+    public static boolean deleteActiveRules() {
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getActiveRulesCollection(m);
+            col.drop();
+            return true;
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+        return false;
     }
 
     private static boolean insertOne(JSONObject obj, String colName) {

@@ -50,11 +50,13 @@ public class DelayedCommand extends Command {
         switch (mStage) {
             case 0:
                 JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, mTimeInfo);
+                JarvisEngine.getInstance().addActiveRule(this);
                 ++mStage;
                 return new CommandResult(true);
             case 1:
                 ++mStage;
                 JarvisEngine.getInstance().actionCompleted(mId);
+                JarvisEngine.getInstance().removeActiveRule(mId);
                 return JarvisEngine.getInstance().executeCommand(mCommand);
         }
         return new CommandResult(false);
@@ -62,6 +64,7 @@ public class DelayedCommand extends Command {
 
     @Override
     public CommandResult undo() {
+        JarvisEngine.getInstance().removeActiveRule(mId);
         return new CommandResult(JarvisEngine.getInstance().cancelAction(mId));
     }
 

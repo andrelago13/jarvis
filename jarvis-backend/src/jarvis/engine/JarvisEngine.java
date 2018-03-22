@@ -108,12 +108,10 @@ public class JarvisEngine {
     ///////////////////////////////////
 
     private void addScheduling(long id, ScheduledAction action) {
-        // TODO add to active schedulings
         mScheduledActions.put(id, action);
     }
 
     private void removeScheduling(long id) {
-        // TODO remove from active schedulings
         mScheduledActions.remove(id);
     }
 
@@ -217,6 +215,16 @@ public class JarvisEngine {
     // Logs a user command
     public boolean logUserCommand(JSONObject cmdJSON) {
         return MongoDB.logUserCommand(cmdJSON);
+    }
+
+    // Adds a active rule log
+    public boolean addActiveRule(Command rule) {
+        return MongoDB.logActiveRule(getCommandJSON(rule, new CommandResult(true), false));
+    }
+
+    // Removes an active rule log
+    public boolean removeActiveRule(long id) {
+        return MongoDB.deleteActiveRule(id);
     }
 
     ///////////////////////////////////

@@ -50,6 +50,7 @@ public class RuleCommand extends Command {
     public CommandResult execute() {
         switch (mStage) {
             case 0:
+                JarvisEngine.getInstance().addActiveRule(this);
                 JarvisEngine.getInstance().scheduleDailyRule(mId, this, mLocalTime);
                 mStage = 1;
                 return new CommandResult(true);
@@ -61,6 +62,7 @@ public class RuleCommand extends Command {
 
     @Override
     public CommandResult undo() {
+        JarvisEngine.getInstance().removeActiveRule(mId);
         return new CommandResult(JarvisEngine.getInstance().cancelDailyRule(mId));
     }
 
