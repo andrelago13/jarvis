@@ -10,7 +10,6 @@ import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class PeriodCommand extends Command {
     public static final String TAG = "periodCommand";
@@ -47,13 +46,13 @@ public class PeriodCommand extends Command {
     public CommandResult execute() {
         switch (mStage) {
             case 0:
-                JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mStartTimestamp);
+                JarvisEngine.getInstance().scheduleDelayedActionForTimestamp(mId, this, mStartTimestamp);
                 mStage = 1;
                 break;
             case 1:
                 CommandResult res = mCommand.execute();
                 if(res.isSuccessful()) {
-                    JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mEndTimestamp);
+                    JarvisEngine.getInstance().scheduleDelayedActionForTimestamp(mId, this, mEndTimestamp);
                     mStage = 2;
                 } else {
                     mStage = 3;

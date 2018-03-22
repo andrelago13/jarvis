@@ -4,6 +4,7 @@ import com.mongodb.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.util.JSON;
 import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
@@ -190,6 +191,33 @@ public class MongoDB {
             }
         }
         return commands;
+    }
+
+    public static Optional<Command> getCommand(long id) {
+        Command result = null;
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getCommandsCollection(m);
+            FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
+            List<Command> commands = getCommandsFromDocument(documents);
+            if(commands.size() == 1) {
+                result = commands.get(0);
+            }
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+
+        if(result == null) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
     }
 
     public static List<Thing> getThingsWithNameLike(String name) {

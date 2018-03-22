@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PeriodRuleCommand extends Command {
     public static final String TAG = "periodRuleCommand";
@@ -22,9 +23,11 @@ public class PeriodRuleCommand extends Command {
     private Command mCommand;
     private LocalTime mStartTime;
     private LocalTime mEndTime;
+    // 0 - unstarted; 1 - must do first action; 2 - must do second action
     private int mStage;
 
     public PeriodRuleCommand(Command command, LocalTime startTime, LocalTime endTime) {
+        mId = generateID();
         mCommand = command;
         mStartTime = startTime;
         mEndTime = endTime;
@@ -47,31 +50,52 @@ public class PeriodRuleCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        // TODO
-        return null;
+        switch (mStage) {
+            case 0:
+                long initialDelay = TimeUtils.calculateSecondsToLocalTime(mStartTime);
+                TimeUtils.TimeInfo initInfo = new TimeUtils.TimeInfo(initialDelay, TimeUnit.SECONDS);
+                JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, initInfo);
+                mStage = 1;
+                return new CommandResult(true);
+            case 1:
+                JarvisEngine.getInstance().executeCommand(mCommand);
+                long secondTaskDelay = TimeUtils.calculateSecondsToLocalTime(mEndTime);
+                TimeUtils.TimeInfo secondInfo = new TimeUtils.TimeInfo(secondTaskDelay, TimeUnit.SECONDS);
+                JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, secondInfo);
+                mStage = 2;
+                return new CommandResult(true);
+            case 2:
+                JarvisEngine.getInstance().undoCommand(mCommand);
+                long firstTaskDelay = TimeUtils.calculateSecondsToLocalTime(mEndTime);
+                TimeUtils.TimeInfo firstInfo = new TimeUtils.TimeInfo(firstTaskDelay, TimeUnit.SECONDS);
+                JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, firstInfo);
+                mStage = 1;
+                return new CommandResult(true);
+        }
+        return new CommandResult(false);
     }
 
     @Override
     public CommandResult undo() {
-        return new CommandResult(JarvisEngine.getInstance().cancelDailyRule(mId));
+        return new CommandResult(JarvisEngine.getInstance().cancelAction(mId));
     }
 
     @Override
     public String executeString() {
-        // TODO
-        return null;
+        return "[PeriodRuleCommand] Scheduled daily rule from " + TimeUtils.localTimeToString(mStartTime)
+                + " to " + TimeUtils.localTimeToString(mEndTime) + " : " + mCommand.executeString();
     }
 
     @Override
     public String undoString() {
-        // TODO
-        return null;
+        return "[PeriodRuleCommand] Cancelled daily rule scheduling from " + TimeUtils.localTimeToString(mStartTime)
+                + " to " + TimeUtils.localTimeToString(mEndTime) + " : " + mCommand.executeString();
     }
 
     @Override
     public String friendlyExecuteString() {
-        // TODO
-        return null;
+        return mCommand.friendlyExecuteString() + " everyday from " + TimeUtils.localTimeToString(mStartTime)
+                + " to " + TimeUtils.localTimeToString(mEndTime);
     }
 
     @Override
@@ -87,6 +111,11 @@ public class PeriodRuleCommand extends Command {
 
     @Override
     public List<Thing> targetThings() {
-        return null;
+        return mCommand.targetThings();
+    }
+
+    @Override
+    public boolean isCancellable() {
+        return true;
     }
 }

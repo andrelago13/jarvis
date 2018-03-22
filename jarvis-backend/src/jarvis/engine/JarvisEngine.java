@@ -12,7 +12,6 @@ import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
 import res.Config;
-import slack.SlackUtil;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -100,6 +99,10 @@ public class JarvisEngine {
         return ThingInterface.getLatestNUserCommands(n);
     }
 
+    public Optional<Command> getCommand(long id) {
+        return ThingInterface.getCommand(id);
+    }
+
     ///////////////////////////////////
     /////////// INTERNALS /////////////
     ///////////////////////////////////
@@ -163,14 +166,14 @@ public class JarvisEngine {
 
     // Schedules a one-time delayed action
     // Command must call actionCompleted when finished
-    public void scheduleDelayedAction(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
+    public void scheduleDelayedActionForTimeFromNow(long id, Command cmd, TimeUtils.TimeInfo timeInfo) {
         createScheduling(id, cmd, timeInfo.value, timeInfo.unit);
     }
 
     // Schedules a one-time delayed action
     // Command must call actionCompleted when finished
-    public void scheduleDelayedAction(long id, Command cmd, long timestamp) {
-        scheduleDelayedAction(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
+    public void scheduleDelayedActionForTimestamp(long id, Command cmd, long timestamp) {
+        scheduleDelayedActionForTimeFromNow(id, cmd, new TimeUtils.TimeInfo(timestamp - (new Date().getTime()), TimeUnit.MILLISECONDS));
     }
 
     // Marks a one-time delayed action as completed, removing its object from the active schedulings list
@@ -186,15 +189,7 @@ public class JarvisEngine {
     // Schedules a daily repeating rule
     // Command must call actionCompleted when finished
     public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
-        LocalDateTime localNow = LocalDateTime.now();
-        ZoneId currentZone = ZoneId.systemDefault();
-        ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
-        ZonedDateTime zonedDesiredTime;
-        zonedDesiredTime = zonedNow.withHour(desiredTime.getHour())
-                .withMinute(desiredTime.getMinute())
-                .withSecond(desiredTime.getSecond());
-
-        long initialDelay = Duration.between(zonedNow, zonedDesiredTime).getSeconds();
+        long initialDelay = TimeUtils.calculateSecondsToLocalTime(desiredTime);
         long repeatInterval = TimeUnit.DAYS.toSeconds(1);
         createRepeatedScheduling(id, cmd, initialDelay, repeatInterval, TimeUnit.SECONDS);
     }

@@ -9,6 +9,7 @@ import slack.SlackUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ThingInterface {
     public static List<Thing> getThings() {
@@ -25,6 +26,10 @@ public class ThingInterface {
 
     public static List<Command> getLatestNUserCommands(int n) {
         return MongoDB.getLatestNUserCommands(n);
+    }
+
+    public static Optional<Command> getCommand(long id) {
+        return MongoDB.getCommand(id);
     }
 
     public static boolean sendThingsMessage(String url, String message) {

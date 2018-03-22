@@ -1,9 +1,6 @@
 package jarvis.actions;
 
-import jarvis.actions.command.DelayedCommand;
-import jarvis.actions.command.OnOffCommand;
-import jarvis.actions.command.PeriodCommand;
-import jarvis.actions.command.RuleCommand;
+import jarvis.actions.command.*;
 import jarvis.actions.command.definitions.Command;
 import jarvis.util.AdminAlertUtil;
 import jarvis.util.JarvisException;
@@ -29,6 +26,8 @@ public abstract class CommandBuilder {
                 return new PeriodCommand(json);
             } else if (RuleCommand.TAG.equals(cmdType)) {
                 return new RuleCommand(json);
+            } else if (PeriodRuleCommand.TAG.equals(cmdType)) {
+                return new PeriodRuleCommand(json);
             }
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);

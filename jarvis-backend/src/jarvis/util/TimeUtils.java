@@ -5,7 +5,7 @@ import res.Config;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -313,6 +313,22 @@ public class TimeUtils {
         builder.append(":");
         builder.append(String.format("%02d", time.get(ChronoField.SECOND_OF_MINUTE)));
         return builder.toString();
+    }
+
+    public static long calculateSecondsToLocalTime(LocalTime desiredTime) {
+        LocalDateTime localNow = LocalDateTime.now();
+        ZoneId currentZone = ZoneId.systemDefault();
+        ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
+        ZonedDateTime zonedDesiredTime;
+        zonedDesiredTime = zonedNow.withHour(desiredTime.getHour())
+                .withMinute(desiredTime.getMinute())
+                .withSecond(desiredTime.getSecond());
+
+        long duration = Duration.between(zonedNow, zonedDesiredTime).getSeconds();
+        if(duration < 0) {
+            duration += TimeUnit.DAYS.toSeconds(1);
+        }
+        return duration;
     }
 
     ////////////////////////////////////////////////////////////////////

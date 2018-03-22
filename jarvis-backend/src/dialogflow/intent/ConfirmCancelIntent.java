@@ -30,7 +30,8 @@ public class ConfirmCancelIntent extends DialogFlowIntent {
         for(DialogFlowContext c : contexts) {
             if(Config.DF_CANCEL_INTENT_CONTEXT.equals(c.getName())) {
                 long commandId = Long.parseLong(c.getParameters().get(Config.DF_CANCEL_INTENT_COMMAND_ID).toString());
-                if(JarvisEngine.getInstance().undoCommand(commandId)) {
+                Optional<Command> cmd = JarvisEngine.getInstance().getCommand(commandId);
+                if(cmd.isPresent() && JarvisEngine.getInstance().undoCommand(cmd.get()).isSuccessful()) {
                     return getSuccessResponse();
                 }
             }

@@ -9,7 +9,6 @@ import jarvis.util.JarvisException;
 import jarvis.util.TimeUtils;
 import org.json.JSONObject;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +49,7 @@ public class DelayedCommand extends Command {
     public CommandResult execute() {
         switch (mStage) {
             case 0:
-                JarvisEngine.getInstance().scheduleDelayedAction(mId, this, mTimeInfo);
+                JarvisEngine.getInstance().scheduleDelayedActionForTimeFromNow(mId, this, mTimeInfo);
                 ++mStage;
                 return new CommandResult(true);
             case 1:
