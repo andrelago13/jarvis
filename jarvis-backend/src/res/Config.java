@@ -17,6 +17,11 @@ public class Config {
     public static final String SLACK_IOT_URL = "https://hooks.slack.com/services/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";
 
     /**
+     * URL used to send debug messages to Slack.
+     */
+    public static final String SLACK_DEBUG_URL = "https://hooks.slack.com/services/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";
+
+    /**
      * File containing MongoDB credentials
      */
     public static final String MONGO_CREDENTIALS_FILE = "WEB-INF/classes/res/credentials/mongo-creds-example.txt";

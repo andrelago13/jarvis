@@ -3,7 +3,10 @@ package rabbitmq;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DefaultConsumer;
+import jarvis.listeners.EventConsumer;
 import jarvis.util.AdminAlertUtil;
+import slack.SlackUtil;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -65,6 +68,22 @@ public class RabbitMQ {
             e.printStackTrace();
             return false;
         } catch (TimeoutException e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean addQueueReceiver(String queue, EventConsumer consumer) {
+        queue = queue.toLowerCase();
+        SlackUtil.sendDebugMessage("Listening to " + queue);
+        try {
+            Channel channel = mConnection.createChannel();
+            channel.queueDeclare(queue, false, false, false, null);
+            RabbitConsumer rabbitConsumer = new RabbitConsumer(channel, consumer);
+            channel.basicConsume(queue, true, rabbitConsumer);
+        } catch (IOException e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();
             return false;

@@ -1,0 +1,21 @@
+package jarvis.listeners;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultConsumer;
+import jarvis.controllers.definitions.Thing;
+import jarvis.controllers.definitions.events.ThingEvent;
+import jarvis.engine.JarvisEngine;
+
+public class EventConsumer {
+    private Thing mThing;
+    private ThingEvent mEvent;
+
+    public EventConsumer(Thing thing, ThingEvent event) {
+        mThing = thing;
+        mEvent = event;
+    }
+
+    public void consume(String message) {
+        JarvisEngine.getInstance().handleEvent(mThing, mEvent, message);
+    }
+}

@@ -8,10 +8,14 @@ import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
+import jarvis.controllers.definitions.events.ThingEvent;
+import jarvis.listeners.EventConsumer;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
 import org.json.JSONObject;
+import rabbitmq.RabbitMQ;
 import res.Config;
+import slack.SlackUtil;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -48,6 +52,18 @@ public class JarvisEngine {
         LoggerCommunication.init(getDefaultThings());
         // TODO get actions from backup
         mScheduledActions = new HashMap<>();
+
+        initEventListeners();
+    }
+
+    private void initEventListeners() {
+        List<Thing> things = ThingInterface.getThings();
+        for(Thing t : things) {
+            List<ThingEvent> events = t.getEvents();
+            for(ThingEvent e : events) {
+                RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new EventConsumer(t, e));
+            }
+        }
     }
 
     public List<Thing> getDefaultThings() {
@@ -137,6 +153,14 @@ public class JarvisEngine {
         ScheduledFuture future = mScheduledActions.get(id).getFuture();
         removeScheduling(id);
         return future.cancel(false);
+    }
+
+    ///////////////////////////////////
+    //////////// EVENTS API ///////////
+    ///////////////////////////////////
+
+    public void handleEvent(Thing thing, ThingEvent event, String message) {
+        SlackUtil.sendIoTMessage(message);
     }
 
     ///////////////////////////////////

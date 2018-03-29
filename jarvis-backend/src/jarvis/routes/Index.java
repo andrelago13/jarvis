@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import jarvis.controllers.definitions.events.ThingEvent;
 import mongodb.MongoDB;
 
 @Path("/")

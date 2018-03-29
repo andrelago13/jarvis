@@ -6,6 +6,7 @@ import jarvis.communication.ThingInterface;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.actionables.Toggleable;
+import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.ThingProperty;
 import org.json.JSONObject;
 
@@ -23,8 +24,9 @@ public class OnOffLight extends Thing implements Toggleable {
     protected OnOffLight(@NotNull String name,
                          @Nullable String description,
                          @NotNull ThingLinks links,
-                         @NotNull List<ThingProperty> properties) {
-        super(name, Type.ON_OFF_LIGHT, description, links, properties);
+                         @NotNull List<ThingProperty> properties,
+                         @NotNull List<ThingEvent> events) {
+        super(name, Type.ON_OFF_LIGHT, description, links, properties, events);
     }
 
     protected OnOffLight(@NotNull JSONObject json) {
@@ -73,6 +75,9 @@ public class OnOffLight extends Thing implements Toggleable {
             ThingProperty statusProperty = new ThingProperty("status", ThingProperty.Type.BOOLEAN);
             statusProperty.setDescription(DEFAULT_PROPERTY_DESCRIPTION);
             builder.addProperty(statusProperty);
+            builder.addEvent(new ThingEvent(ThingEvent.Type.ON_OFF, "boolean", "boolean",
+                    "Whether light is on", basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH + '/' +
+                    ThingEvent.Type.ON_OFF.toString().toLowerCase()));
             ThingLinks.Builder linksBuilder = new ThingLinks.Builder();
             linksBuilder.setProperties(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH);
             linksBuilder.setActions(basePath + '/' + name + '/' + DEFAULT_ACTIONS_PATH);
@@ -84,37 +89,7 @@ public class OnOffLight extends Thing implements Toggleable {
 
         @Override
         public OnOffLight build() {
-            return new OnOffLight(mName, mDescription, mLinks, mProperties);
-        }
-
-        @Override
-        public void setName(String name) {
-            super.setName(name);
-        }
-
-        @Override
-        public void setDescription(String description) {
-            super.setDescription(description);
-        }
-
-        @Override
-        public void setLinks(ThingLinks links) {
-            super.setLinks(links);
-        }
-
-        @Override
-        public void setProperties(List<ThingProperty> properties) {
-            super.setProperties(properties);
-        }
-
-        @Override
-        public void addProperty(ThingProperty property) {
-            super.addProperty(property);
-        }
-
-        @Override
-        public boolean isValid() {
-            return super.isValid();
+            return new OnOffLight(mName, mDescription, mLinks, mProperties, mEvents);
         }
 
         public static OnOffLight buildFromCopy(OnOffLight t) {

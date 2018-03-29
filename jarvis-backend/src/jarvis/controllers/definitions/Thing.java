@@ -3,7 +3,9 @@ package jarvis.controllers.definitions;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import jarvis.controllers.OnOffLight;
+import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.ThingProperty;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -14,12 +16,14 @@ public class Thing {
     public final static String DESCRIPTION_KEY = "description";
     public final static String LINKS_KEY = "links";
     public final static String PROPERTIES_KEY = "properties";
+    public final static String EVENTS_KEY = "events";
 
     protected String mName;
     protected Type mType;
     protected String mDescription;
     protected ThingLinks mLinks;
     protected List<ThingProperty> mProperties;
+    protected List<ThingEvent> mEvents;
 
     /**
      * Enum to represent the different IoT device types (from https://iot.mozilla.org/wot).
@@ -79,7 +83,8 @@ public class Thing {
                     @NotNull Type type,
                     @Nullable String description,
                     @NotNull ThingLinks links,
-                    @NotNull List<ThingProperty> properties) {
+                    @NotNull List<ThingProperty> properties,
+                    @NotNull List<ThingEvent> events) {
         if (name == null || type == null || links == null || properties == null) {
             throw new IllegalArgumentException(
                     "Not nullable constructor parameters were null, please read documentation.");
@@ -89,6 +94,7 @@ public class Thing {
         mDescription = description;
         mLinks = links;
         mProperties = properties;
+        mEvents = events;
     }
 
     protected Thing(Thing t) {
@@ -99,6 +105,10 @@ public class Thing {
         mProperties = new ArrayList<>();
         for(ThingProperty property : t.mProperties) {
             mProperties.add(new ThingProperty(property));
+        }
+        mEvents = new ArrayList<>();
+        for(ThingEvent event : t.mEvents) {
+            mEvents.add(new ThingEvent(event));
         }
     }
 
@@ -121,6 +131,14 @@ public class Thing {
                 mProperties.add(new ThingProperty(k, (properties.getJSONObject(k))));
             }
         }
+        mEvents = new ArrayList<>();
+        if(json.has(EVENTS_KEY)) {
+            JSONObject events = json.getJSONObject(EVENTS_KEY);
+            Set<String> keys = events.keySet();
+            for(String k : keys) {
+                mEvents.add(new ThingEvent(events.getJSONObject(k), k, this));
+            }
+        }
     }
 
     public JSONObject toJSON() {
@@ -140,6 +158,15 @@ public class Thing {
                 properties.put(property.getName(), property.toJSON());
             }
             result.put(PROPERTIES_KEY, properties);
+        }
+
+        //events
+        if(!mEvents.isEmpty()) {
+            JSONObject events = new JSONObject();
+            for(ThingEvent event : mEvents) {
+                events.put(event.getType().toString(), event.toJSON());
+            }
+            result.put(EVENTS_KEY, events);
         }
 
         //links
@@ -164,6 +191,14 @@ public class Thing {
 
     public Type getType() {
         return mType;
+    }
+
+    public List<ThingProperty> getProperties() {
+        return mProperties;
+    }
+
+    public List<ThingEvent> getEvents() {
+        return mEvents;
     }
 
     public boolean hasDescription() {
@@ -200,13 +235,15 @@ public class Thing {
         protected String mDescription;
         protected ThingLinks mLinks;
         protected List<ThingProperty> mProperties;
+        protected List<ThingEvent> mEvents;
 
         protected Builder() {
             mProperties = new ArrayList<>();
+            mEvents = new ArrayList<>();
         }
 
         protected Thing build() {
-            return new Thing(mName, mType, mDescription, mLinks, mProperties);
+            return new Thing(mName, mType, mDescription, mLinks, mProperties, mEvents);
         }
 
         protected void setName(String name) {
@@ -236,8 +273,19 @@ public class Thing {
             mProperties.add(property);
         }
 
+        protected void setEvents(List<ThingEvent> events) {
+            mEvents = events;
+        }
+
+        protected void addEvent(ThingEvent event) {
+            if(mEvents == null) {
+                mEvents = new ArrayList<>();
+            }
+            mEvents.add(event);
+        }
+
         protected boolean isValid() {
-            return mName != null && mType != null && mLinks != null && mProperties != null;
+            return mName != null && mType != null && mLinks != null && mProperties != null && mEvents != null;
         }
 
         protected static Thing buildFromCopy(Thing t) {
