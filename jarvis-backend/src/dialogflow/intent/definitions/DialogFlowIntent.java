@@ -39,6 +39,8 @@ public abstract class DialogFlowIntent {
             return new ConfirmThingIntent(request, extras);
         } else if (RepeatingActionIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new RepeatingActionIntent(request, extras);
+        } else if (UndoIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+            return new UndoIntent(request, extras);
         }
 
         return new InvalidIntent();

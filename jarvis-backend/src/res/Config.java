@@ -69,6 +69,8 @@ public class Config {
     public static final String DF_CONFIRM_THING_INTENT_ID = "5f3f7eb8-c2dc-42db-9f59-38a9bf0c3a52";
     public static final String DF_REPEATING_ACTION_INTENT_NAME = "Repeating Intent";
     public static final String DF_REPEATING_ACTION_INTENT_ID = "977ef8d4-1096-4733-b724-82bad2931fc8";
+    public static final String DF_UNDO_INTENT_NAME = "Undo Command";
+    public static final String DF_UNDO_INTENT_ID = "121d6b5e-2104-4359-8f10-196f8c2e5ae1";
 
     /**
      * DialogFlow context constants.
