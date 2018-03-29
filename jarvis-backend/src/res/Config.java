@@ -71,6 +71,8 @@ public class Config {
     public static final String DF_REPEATING_ACTION_INTENT_ID = "977ef8d4-1096-4733-b724-82bad2931fc8";
     public static final String DF_UNDO_INTENT_NAME = "Undo Command";
     public static final String DF_UNDO_INTENT_ID = "121d6b5e-2104-4359-8f10-196f8c2e5ae1";
+    public static final String DF_EVENT_INTENT_NAME = "Event Intent";
+    public static final String DF_EVENT_INTENT_ID = "d234e808-2fd7-420f-9aef-1852750f8bc6";
 
     /**
      * DialogFlow context constants.
@@ -85,6 +87,7 @@ public class Config {
      */
     public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
     public static final String DF_ACTION_ENTITY_NAME = "action";
+    public static final String DF_EVENT_ENTITY_NAME = "event";
     public static final String DF_TIME_ENTITY_NAME = "time";
     public static final String DF_PERIODTIME_ENTITY_NAME = "periodtime";
     public static final String DF_STARTTIME_ENTITY_NAME = "starttime";

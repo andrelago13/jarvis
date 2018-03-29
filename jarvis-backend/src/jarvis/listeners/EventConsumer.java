@@ -18,4 +18,12 @@ public class EventConsumer {
     public void consume(String message) {
         JarvisEngine.getInstance().handleEvent(mThing, mEvent, message);
     }
+
+    public Thing getThing() {
+        return mThing;
+    }
+
+    public ThingEvent getEvent() {
+        return mEvent;
+    }
 }

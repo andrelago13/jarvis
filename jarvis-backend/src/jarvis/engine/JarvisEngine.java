@@ -9,6 +9,7 @@ import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
+import jarvis.events.definitions.EventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.TimeUtils;
 import mongodb.MongoDB;
@@ -35,6 +36,8 @@ public class JarvisEngine {
     private static JarvisEngine instance;
 
     private Map<Long, ScheduledAction> mScheduledActions;
+    private Set<EventConsumer> mActiveConsumers;
+    private Set<EventHandler> mActiveHandlers;
 
     private JarvisEngine() {
         init();
@@ -52,6 +55,8 @@ public class JarvisEngine {
         LoggerCommunication.init(getDefaultThings());
         // TODO get actions from backup
         mScheduledActions = new HashMap<>();
+        mActiveConsumers = new HashSet<>();
+        mActiveHandlers = new HashSet<>();
 
         initEventListeners();
     }
@@ -61,9 +66,14 @@ public class JarvisEngine {
         for(Thing t : things) {
             List<ThingEvent> events = t.getEvents();
             for(ThingEvent e : events) {
-                RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new EventConsumer(t, e));
+                addEventListener(t, e);
             }
         }
+    }
+
+    private void addEventListener(Thing t, ThingEvent e) {
+        RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new EventConsumer(t, e));
+        mActiveConsumers.add(new EventConsumer(t, e));
     }
 
     public List<Thing> getDefaultThings() {
@@ -159,8 +169,23 @@ public class JarvisEngine {
     //////////// EVENTS API ///////////
     ///////////////////////////////////
 
+    public Set<EventConsumer> getActiveConsumers() {
+        return mActiveConsumers;
+    }
+
+    public void addEventHandler(EventHandler handler) {
+        mActiveHandlers.add(handler);
+    }
+
+    public boolean removeEventHandler(EventHandler handler) {
+        return mActiveHandlers.remove(handler);
+    }
+
     public void handleEvent(Thing thing, ThingEvent event, String message) {
-        SlackUtil.sendIoTMessage(message);
+        SlackUtil.sendDebugMessage("Event received: " + message);
+        for(EventHandler h : mActiveHandlers) {
+            h.handleMessage(thing, event, message);
+        }
     }
 
     ///////////////////////////////////

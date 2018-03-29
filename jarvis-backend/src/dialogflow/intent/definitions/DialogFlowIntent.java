@@ -41,6 +41,8 @@ public abstract class DialogFlowIntent {
             return new RepeatingActionIntent(request, extras);
         } else if (UndoIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
             return new UndoIntent(request, extras);
+        } else if (EventIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+            return new EventIntent(request, extras);
         }
 
         return new InvalidIntent();
