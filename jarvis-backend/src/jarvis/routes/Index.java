@@ -10,8 +10,12 @@ import java.io.StringWriter;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import jarvis.actions.CommandBuilder;
+import jarvis.actions.command.OnOffCommand;
+import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.definitions.events.ThingEvent;
 import mongodb.MongoDB;
+import org.json.JSONObject;
 
 @Path("/")
 public class Index {

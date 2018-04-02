@@ -1,19 +1,18 @@
 package jarvis.events;
 
-import dialogflow.intent.definitions.DialogFlowIntent;
+import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.OnOffStatus;
+import jarvis.engine.JarvisEngine;
 import jarvis.events.definitions.EventHandler;
 import jarvis.listeners.EventConsumer;
-import jarvis.util.AdminAlertUtil;
-import jarvis.util.JarvisException;
 
 public class BooleanEventHandler extends EventHandler {
     public final boolean value;
 
-    public BooleanEventHandler(EventConsumer consumer, DialogFlowIntent intent, boolean value) {
-        super(consumer, intent);
+    public BooleanEventHandler(EventConsumer consumer, Command command, boolean value) {
+        super(consumer, command);
         this.value = value;
     }
 
@@ -24,14 +23,19 @@ public class BooleanEventHandler extends EventHandler {
         }
 
         if(OnOffStatus.isValueEqualToBoolean(message, value)) {
-            try {
-                handlerIntent.execute();
-            } catch (JarvisException e1) {
-                AdminAlertUtil.alertJarvisException(e1);
-                e1.printStackTrace();
-                return false;
-            }
+            JarvisEngine.getInstance().executeCommand(command);
         }
         return true;
     }
+
+    @Override
+    public String friendlyString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(eventConsumer.getThing().getName());
+        builder.append(" is ");
+        builder.append(OnOffStatus.getValueString(value));
+        return builder.toString();
+    }
+
+
 }

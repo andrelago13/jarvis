@@ -27,7 +27,7 @@ public class PeriodRuleCommand extends Command {
     private int mStage;
 
     public PeriodRuleCommand(Command command, LocalTime startTime, LocalTime endTime) {
-        mId = generateID();
+        super();
         mCommand = command;
         mStartTime = startTime;
         mEndTime = endTime;
@@ -35,7 +35,7 @@ public class PeriodRuleCommand extends Command {
     }
 
     public PeriodRuleCommand(JSONObject command) throws JarvisException {
-        mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        super(command);
         mStartTime = TimeUtils.parseTime(command.getString(KEY_START_TIME_STRING));
         mEndTime = TimeUtils.parseTime(command.getString(KEY_END_TIME_STRING));
 

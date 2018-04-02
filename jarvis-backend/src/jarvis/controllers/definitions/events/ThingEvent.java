@@ -77,4 +77,8 @@ public class ThingEvent {
         event.put(KEY_HREF, mHref);
         return event;
     }
+
+    public String toString() {
+        return mValueType;
+    }
 }

@@ -25,14 +25,14 @@ public class PeriodCommand extends Command {
     private int mStage = 0;
 
     public PeriodCommand(Command command, long startTimestamp, long endTimestamp) {
-        mId = generateID();
+        super();
         mCommand = command;
         mStartTimestamp = startTimestamp;
         mEndTimestamp = endTimestamp;
     }
 
     public PeriodCommand(JSONObject command) throws JarvisException {
-        mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        super(command);
         mStartTimestamp = Long.parseLong(command.getJSONObject(KEY_START_TIMESTAMP).getString("$numberLong"));
         mEndTimestamp = Long.parseLong(command.getJSONObject(KEY_END_TIMESTAMP).getString("$numberLong"));
         JSONObject subCommand = command.getJSONObject(KEY_COMMAND);

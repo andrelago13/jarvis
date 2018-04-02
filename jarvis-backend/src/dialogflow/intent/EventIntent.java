@@ -5,6 +5,7 @@ import dialogflow.QueryResponse;
 import dialogflow.intent.definitions.DialogFlowIntent;
 import dialogflow.intent.definitions.IntentExtras;
 import dialogflow.intent.subintents.ActionFinder;
+import jarvis.actions.command.EventCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.engine.JarvisEngine;
 import jarvis.events.EventManager;
@@ -46,14 +47,19 @@ public class EventIntent extends DialogFlowIntent {
         }
 
         JSONObject event = parameters.getJSONObject(Config.DF_EVENT_ENTITY_NAME);
-        Optional<EventHandler> optHandler = EventManager.findThingEvent(event, subIntent);
+        Optional<Command> cmd = subIntent.getCommand();
+        if(!cmd.isPresent()) {
+            return getErrorResponse();
+        }
+
+        Optional<EventHandler> optHandler = EventManager.findThingEvent(event, cmd.get());
 
         if(!optHandler.isPresent()) {
             return getErrorResponse();
         }
 
-        JarvisEngine.getInstance().addEventHandler(optHandler.get());
-
+        EventCommand eventCommand = new EventCommand(event, cmd.get(), optHandler.get());
+        JarvisEngine.getInstance().logUserCommand(eventCommand, eventCommand.execute());
         return getSuccessResponse();
     }
 
