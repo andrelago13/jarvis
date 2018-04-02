@@ -9,20 +9,44 @@ import jarvis.util.AdminAlertUtil;
 import slack.SlackUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public class RabbitMQ {
     private static RabbitMQ instance;
 
     private Connection mConnection;
+    private List<Channel> mActiveChannels;
 
-    private RabbitMQ() {}
+    private RabbitMQ() {
+        mActiveChannels = new ArrayList<>();
+    }
 
     public static RabbitMQ getInstance() {
         if(instance == null) {
             instance = new RabbitMQ();
         }
         return instance;
+    }
+
+    public void terminate() {
+        clearActiveChannels();
+    }
+
+    private void clearActiveChannels() {
+        for(Channel c : mActiveChannels) {
+            try {
+                c.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        mActiveChannels.clear();
     }
 
     public boolean init(String host, String username, String password) {
@@ -83,6 +107,7 @@ public class RabbitMQ {
             channel.queueDeclare(queue, false, false, false, null);
             RabbitConsumer rabbitConsumer = new RabbitConsumer(channel, consumer);
             channel.basicConsume(queue, true, rabbitConsumer);
+            mActiveChannels.add(channel);
         } catch (IOException e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();

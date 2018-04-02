@@ -34,12 +34,23 @@ public class OnOffStatus {
         return !isValueOn(value);
     }
 
+    public static boolean isValueEqualToBoolean(String value, boolean compare) {
+        if(value != null && getValueString(compare).equals(value.toLowerCase())) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isOn() {
         return mValue;
     }
 
     public String getStatusString() {
-        if(isOn()) {
+        return getValueString(isOn());
+    }
+
+    public static String getValueString(boolean value) {
+        if(value) {
             return ON_STATUS;
         } else {
             return OFF_STATUS;

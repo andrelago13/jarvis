@@ -54,7 +54,6 @@ public class EventIntent extends DialogFlowIntent {
 
         JarvisEngine.getInstance().addEventHandler(optHandler.get());
 
-        // TODO act on event
         return getSuccessResponse();
     }
 

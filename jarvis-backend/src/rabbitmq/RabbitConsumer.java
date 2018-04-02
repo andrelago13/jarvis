@@ -4,7 +4,9 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import jarvis.engine.JarvisEngine;
 import jarvis.listeners.EventConsumer;
+import slack.SlackUtil;
 
 import java.io.UnsupportedEncodingException;
 

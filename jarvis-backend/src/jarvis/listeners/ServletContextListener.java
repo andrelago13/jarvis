@@ -6,6 +6,7 @@ import mongodb.MongoDB;
 import slack.SlackUtil;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Startup;
 import javax.ejb.Singleton;
 
@@ -20,5 +21,10 @@ public class ServletContextListener {
         }
 
         JarvisEngine.getInstance();
+    }
+
+    @PreDestroy
+    public void terminate() {
+        JarvisEngine.getInstance().terminate();
     }
 }

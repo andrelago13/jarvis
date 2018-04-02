@@ -71,6 +71,10 @@ public class JarvisEngine {
         }
     }
 
+    public void terminate() {
+        RabbitMQ.getInstance().terminate();
+    }
+
     private void addEventListener(Thing t, ThingEvent e) {
         RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new EventConsumer(t, e));
         mActiveConsumers.add(new EventConsumer(t, e));
@@ -182,7 +186,7 @@ public class JarvisEngine {
     }
 
     public void handleEvent(Thing thing, ThingEvent event, String message) {
-        SlackUtil.sendDebugMessage("Event received: " + message);
+        //SlackUtil.sendDebugMessage("Event received: " + message);
         for(EventHandler h : mActiveHandlers) {
             h.handleMessage(thing, event, message);
         }

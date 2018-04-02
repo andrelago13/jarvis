@@ -4,10 +4,12 @@ import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.actionables.Toggleable;
+import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.OnOffStatus;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
 import org.json.JSONObject;
+import rabbitmq.RabbitMQ;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,16 @@ public class OnOffCommand extends Command {
             result = mToggleable.turnOn();
         } else {
             result = mToggleable.turnOff();
+        }
+
+        if(mToggleable instanceof Thing) {
+            Thing thing = (Thing) mToggleable;
+            for(ThingEvent e : thing.getEvents()) {
+                if(e.getType() == ThingEvent.Type.ON_OFF) {
+                    String queue = e.getHref().toLowerCase();
+                    RabbitMQ.getInstance().sendMessage(queue, mTargetStatus.getStatusString());
+                }
+            }
         }
 
         if(result.isPresent()) {
