@@ -101,7 +101,7 @@ public class RabbitMQ {
 
     public boolean addQueueReceiver(String queue, EventConsumer consumer) {
         queue = queue.toLowerCase();
-        SlackUtil.sendDebugMessage("Listening to " + queue);
+        //SlackUtil.sendDebugMessage("Listening to " + queue);
         try {
             Channel channel = mConnection.createChannel();
             channel.queueDeclare(queue, false, false, false, null);

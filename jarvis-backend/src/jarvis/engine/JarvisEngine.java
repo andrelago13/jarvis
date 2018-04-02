@@ -133,6 +133,10 @@ public class JarvisEngine {
         return ThingInterface.getCommand(id);
     }
 
+    public Optional<Command> getUserCommand(long id) {
+        return ThingInterface.getUserCommand(id);
+    }
+
     ///////////////////////////////////
     /////////// INTERNALS /////////////
     ///////////////////////////////////
