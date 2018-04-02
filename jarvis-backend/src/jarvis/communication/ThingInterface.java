@@ -32,6 +32,10 @@ public class ThingInterface {
         return MongoDB.getCommand(id);
     }
 
+    public static Optional<Command> getUserCommand(long id) {
+        return MongoDB.getUserCommand(id);
+    }
+
     public static boolean sendThingsMessage(String url, String message) {
         String formattedPath = url.replace(' ', '_');
         SlackUtil.sendIoTMessage(formattedPath + " " + message);

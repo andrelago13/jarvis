@@ -225,6 +225,33 @@ public class MongoDB {
         return Optional.of(result);
     }
 
+    public static Optional<Command> getUserCommand(long id) {
+        Command result = null;
+
+        MongoClient m = null;
+        try {
+            m = buildClient();
+            MongoCollection col = getUserCommandsCollection(m);
+            FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
+            List<Command> commands = getCommandsFromDocument(documents);
+            if(commands.size() == 1) {
+                result = commands.get(0);
+            }
+        } catch (Exception e) {
+            AdminAlertUtil.alertUnexpectedException(e);
+            e.printStackTrace();
+        } finally {
+            if(m != null) {
+                m.close();
+            }
+        }
+
+        if(result == null) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
+    }
+
     public static List<Thing> getThingsWithNameLike(String name) {
         List<Thing> things = new ArrayList<>();
 
