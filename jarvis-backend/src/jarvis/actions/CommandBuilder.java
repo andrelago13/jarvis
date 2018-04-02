@@ -28,6 +28,8 @@ public abstract class CommandBuilder {
                 return new RuleCommand(json);
             } else if (PeriodRuleCommand.TAG.equals(cmdType)) {
                 return new PeriodRuleCommand(json);
+            } else if (EventCommand.TAG.equals(cmdType)) {
+                return new EventCommand(json);
             }
         } catch (JarvisException e) {
             AdminAlertUtil.alertJarvisException(e);

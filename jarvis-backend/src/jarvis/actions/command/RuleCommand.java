@@ -27,14 +27,14 @@ public class RuleCommand extends Command {
     private int mStage;
 
     public RuleCommand(Command command, LocalTime time) {
-        mId = generateID();
+        super();
         mCommand = command;
         mLocalTime = time;
         mStage = 0;
     }
 
     public RuleCommand(JSONObject command) throws JarvisException {
-        mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        super(command);
         mLocalTime = TimeUtils.parseTime(command.getString(KEY_TIME_STRING));
 
         JSONObject subCommand = command.getJSONObject(KEY_COMMAND);

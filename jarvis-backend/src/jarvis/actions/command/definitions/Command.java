@@ -13,6 +13,18 @@ public abstract class Command {
 
     protected long mId;
 
+    protected Command() {
+        mId = generateID();
+    }
+
+    protected Command(JSONObject json) {
+        try {
+            mId = json.getLong(KEY_ID);
+        } catch (Exception e) {
+            mId = Long.parseLong(json.getJSONObject(KEY_ID).getString("$numberLong"));
+        }
+    }
+
     protected static long generateID() {
         return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
     }

@@ -26,14 +26,14 @@ public class DelayedCommand extends Command {
     private int mStage = 0;
 
     public DelayedCommand(Command command, TimeUtils.TimeInfo timeInfo, long targetTimestamp) {
-        mId = generateID();
+        super();
         mCommand = command;
         mTimeInfo = timeInfo;
         mTargetTimestamp = targetTimestamp;
     }
 
     public DelayedCommand(JSONObject command) throws JarvisException {
-        mId = Long.parseLong(command.getJSONObject(KEY_ID).getString("$numberLong"));
+        super(command);
         mTargetTimestamp = Long.parseLong(command.getJSONObject(KEY_TARGET_TIMESTAMP).getString("$numberLong"));
         int timeValue = command.getInt(KEY_TIME_VALUE);
         String timeUnit = command.getString(KEY_TIME_UNIT);

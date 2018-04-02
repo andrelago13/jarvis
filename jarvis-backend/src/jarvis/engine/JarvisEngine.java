@@ -37,7 +37,7 @@ public class JarvisEngine {
 
     private Map<Long, ScheduledAction> mScheduledActions;
     private Set<EventConsumer> mActiveConsumers;
-    private Set<EventHandler> mActiveHandlers;
+    private Map<Long, EventHandler> mActiveHandlers;
 
     private JarvisEngine() {
         init();
@@ -56,7 +56,7 @@ public class JarvisEngine {
         // TODO get actions from backup
         mScheduledActions = new HashMap<>();
         mActiveConsumers = new HashSet<>();
-        mActiveHandlers = new HashSet<>();
+        mActiveHandlers = new HashMap<>();
 
         initEventListeners();
     }
@@ -177,18 +177,22 @@ public class JarvisEngine {
         return mActiveConsumers;
     }
 
-    public void addEventHandler(EventHandler handler) {
-        mActiveHandlers.add(handler);
+    public void addEventHandler(long id, EventHandler handler) {
+        mActiveHandlers.put(id, handler);
     }
 
-    public boolean removeEventHandler(EventHandler handler) {
-        return mActiveHandlers.remove(handler);
+    public boolean removeEventHandler(long id) {
+        if(!mActiveHandlers.containsKey(id)) {
+            return false;
+        }
+        mActiveHandlers.remove(id);
+        return true;
     }
 
     public void handleEvent(Thing thing, ThingEvent event, String message) {
-        //SlackUtil.sendDebugMessage("Event received: " + message);
-        for(EventHandler h : mActiveHandlers) {
-            h.handleMessage(thing, event, message);
+        Set<Long> keys = mActiveHandlers.keySet();
+        for(Long k : keys) {
+            mActiveHandlers.get(k).handleMessage(thing, event, message);
         }
     }
 

@@ -25,13 +25,13 @@ public class OnOffCommand extends Command {
     private OnOffStatus mTargetStatus;
 
     public OnOffCommand(Toggleable toggleable, OnOffStatus targetStatus) {
-        mId = generateID();
+        super();
         mTargetStatus = targetStatus;
         mToggleable = toggleable;
     }
 
     public OnOffCommand(JSONObject json) throws JarvisException {
-        mId = Long.parseLong(json.getJSONObject(KEY_ID).getString("$numberLong"));
+        super(json);
         boolean targetStatus = json.getBoolean(KEY_STATUS);
         String toggleableName = json.getString(KEY_THING);
         List<Thing> things = JarvisEngine.getInstance().findThing(toggleableName);
