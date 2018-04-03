@@ -40,6 +40,7 @@ public abstract class Command {
     public abstract String friendlyExecuteString();
     public abstract JSONObject getJSON();
     public abstract List<Thing> targetThings();
+    public abstract boolean equals(Command c2);
 
     public long getId() {
         return mId;

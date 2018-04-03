@@ -108,6 +108,17 @@ public class PeriodCommand extends Command {
     }
 
     @Override
+    public boolean equals(Command c2) {
+        if(!(c2 instanceof PeriodCommand)) {
+            return false;
+        }
+
+        // TODO compare command and timestamps
+
+        return true;
+    }
+
+    @Override
     public boolean isCancellable() {
         return mStartTimestamp > System.currentTimeMillis();
     }

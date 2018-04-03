@@ -130,4 +130,15 @@ public class OnOffCommand extends Command {
         }
         return result;
     }
+
+    @Override
+    public boolean equals(Command c2) {
+        if(!(c2 instanceof OnOffCommand)) {
+            return false;
+        }
+
+        // TODO compare thing and status
+
+        return true;
+    }
 }

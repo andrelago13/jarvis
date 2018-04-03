@@ -117,6 +117,17 @@ public class PeriodRuleCommand extends Command {
     }
 
     @Override
+    public boolean equals(Command c2) {
+        if(!(c2 instanceof PeriodRuleCommand)) {
+            return false;
+        }
+
+        // TODO compare command and timestamp
+
+        return true;
+    }
+
+    @Override
     public boolean isCancellable() {
         return true;
     }

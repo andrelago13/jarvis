@@ -108,6 +108,9 @@ public class MongoDB {
                 Document doc = Document.parse(t.toString());
                 col.insertOne(doc);
             }
+
+            MongoCollection userCommands = jarvisDb.getCollection(Config.MONGO_USER_COMMANDS_COLLECTION);
+            userCommands.drop();
         } catch (Exception e) {
             AdminAlertUtil.alertUnexpectedException(e);
             e.printStackTrace();

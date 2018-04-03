@@ -45,7 +45,7 @@ public class Config {
     /**
      * Timeout for Mongo connections.
      */
-    public static final int MONGO_TIMEOUT_MS = 5000;
+    public static final int MONGO_TIMEOUT_MS = 10000;
     public static final int MONGO_PORT = 27017;
 
     public static final String JARVIS_DEFAULT_ERROR = "Sorry, there was a problem. Please try again later.";

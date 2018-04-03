@@ -94,6 +94,17 @@ public class EventCommand extends Command {
     }
 
     @Override
+    public boolean equals(Command c2) {
+        if(!(c2 instanceof EventCommand)) {
+            return false;
+        }
+
+        // TODO compare event and command
+
+        return true;
+    }
+
+    @Override
     public boolean isCancellable() {
         return true;
     }

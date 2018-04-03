@@ -26,4 +26,16 @@ public class EventConsumer {
     public ThingEvent getEvent() {
         return mEvent;
     }
+
+    public boolean equals(EventConsumer consumer) {
+        if(!mThing.getName().equals(consumer.mThing.getName())) {
+            return false;
+        }
+
+        if(!mEvent.equals(consumer.mEvent)) {
+            return false;
+        }
+
+        return true;
+    }
 }

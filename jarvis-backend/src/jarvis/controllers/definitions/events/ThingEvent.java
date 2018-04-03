@@ -81,4 +81,24 @@ public class ThingEvent {
     public String toString() {
         return mValueType;
     }
+
+    public boolean equals(ThingEvent event) {
+        if(!mHref.equals(event.mHref)) {
+            return false;
+        }
+
+        if(mType != event.mType) {
+            return false;
+        }
+
+        if(!mValueType.equals(event.mValueType)) {
+            return false;
+        }
+
+        if(!mValueUnit.equals(event.mValueUnit)) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -20,4 +20,14 @@ public abstract class EventHandler {
     }
 
     public abstract String friendlyString();
+
+    public boolean equals(EventHandler handler) {
+        if(!eventConsumer.equals(handler.eventConsumer)) {
+            return false;
+        }
+
+        // TODO compare command
+
+        return true;
+    }
 }

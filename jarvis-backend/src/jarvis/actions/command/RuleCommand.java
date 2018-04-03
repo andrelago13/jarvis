@@ -97,6 +97,17 @@ public class RuleCommand extends Command {
     }
 
     @Override
+    public boolean equals(Command c2) {
+        if(!(c2 instanceof RuleCommand)) {
+            return false;
+        }
+
+        // TODO compare command and timestamp
+
+        return true;
+    }
+
+    @Override
     public boolean isCancellable() {
         return true;
     }

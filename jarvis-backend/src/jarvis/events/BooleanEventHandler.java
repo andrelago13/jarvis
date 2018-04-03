@@ -37,5 +37,21 @@ public class BooleanEventHandler extends EventHandler {
         return builder.toString();
     }
 
+    @Override
+    public boolean equals(EventHandler handler) {
+        if(!super.equals(handler)) {
+            return false;
+        }
+
+        if(!(handler instanceof BooleanEventHandler)) {
+            return false;
+        }
+
+        if (((BooleanEventHandler) handler).value != value) {
+            return false;
+        }
+
+        return true;
+    }
 
 }

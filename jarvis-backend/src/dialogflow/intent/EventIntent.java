@@ -29,7 +29,6 @@ public class EventIntent extends DialogFlowIntent {
 
     @Override
     public QueryResponse execute() throws JarvisException {
-        // TODO check how to cancel dis thing
         Optional<JSONObject> optParameters = mRequest.getParameters();
         if (!optParameters.isPresent()) {
             return getErrorResponse();
