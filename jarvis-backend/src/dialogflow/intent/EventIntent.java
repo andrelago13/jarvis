@@ -58,6 +58,8 @@ public class EventIntent extends DialogFlowIntent {
             return getErrorResponse();
         }
 
+        // TODO check if event already exists
+
         EventCommand eventCommand = new EventCommand(event, cmd.get(), optHandler.get());
         JarvisEngine.getInstance().logUserCommand(eventCommand, eventCommand.execute());
         return getSuccessResponse();

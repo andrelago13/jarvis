@@ -26,7 +26,9 @@ public abstract class EventHandler {
             return false;
         }
 
-        // TODO compare command
+        if(!command.equals(handler.command)) {
+            return false;
+        }
 
         return true;
     }
