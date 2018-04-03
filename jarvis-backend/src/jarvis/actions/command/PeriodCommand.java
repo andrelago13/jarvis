@@ -113,7 +113,15 @@ public class PeriodCommand extends Command {
             return false;
         }
 
-        // TODO compare command and timestamps
+        PeriodCommand periodCommand = (PeriodCommand) c2;
+
+        if(!mCommand.equals(periodCommand.mCommand)) {
+            return false;
+        }
+
+        if(mStartTimestamp != periodCommand.mStartTimestamp && mEndTimestamp != periodCommand.mEndTimestamp) {
+            return false;
+        }
 
         return true;
     }

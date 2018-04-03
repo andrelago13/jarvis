@@ -102,7 +102,15 @@ public class RuleCommand extends Command {
             return false;
         }
 
-        // TODO compare command and timestamp
+        RuleCommand ruleCommand = (RuleCommand) c2;
+
+        if(!mCommand.equals(ruleCommand.mCommand)) {
+            return false;
+        }
+
+        if(!mLocalTime.equals(ruleCommand.mLocalTime)) {
+            return false;
+        }
 
         return true;
     }

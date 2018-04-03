@@ -107,7 +107,15 @@ public class DelayedCommand extends Command {
             return false;
         }
 
-        // TODO compare command and timestamp
+        DelayedCommand delayedCommand = (DelayedCommand) c2;
+
+        if(!mCommand.equals(delayedCommand.mCommand)) {
+            return false;
+        }
+
+        if(mTimeInfo.value != delayedCommand.mTimeInfo.value && mTimeInfo.unit != delayedCommand.mTimeInfo.unit) {
+            return false;
+        }
 
         return true;
     }

@@ -122,7 +122,15 @@ public class PeriodRuleCommand extends Command {
             return false;
         }
 
-        // TODO compare command and timestamp
+        PeriodRuleCommand periodRuleCommand = (PeriodRuleCommand) c2;
+
+        if(!mCommand.equals(periodRuleCommand.mCommand)) {
+            return false;
+        }
+
+        if(!mStartTime.equals(periodRuleCommand.mStartTime) && !mEndTime.equals(periodRuleCommand.mEndTime)) {
+            return false;
+        }
 
         return true;
     }

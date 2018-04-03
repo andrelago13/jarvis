@@ -99,7 +99,9 @@ public class EventCommand extends Command {
             return false;
         }
 
-        // TODO compare event and command
+        if(!mEvent.toString().equals(((EventCommand) c2).mCommand.toString())) {
+            return false;
+        }
 
         return true;
     }

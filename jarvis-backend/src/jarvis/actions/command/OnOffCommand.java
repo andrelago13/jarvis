@@ -35,7 +35,7 @@ public class OnOffCommand extends Command {
         boolean targetStatus = json.getBoolean(KEY_STATUS);
         String toggleableName = json.getString(KEY_THING);
         List<Thing> things = JarvisEngine.getInstance().findThing(toggleableName);
-        if(things.size() < 1 || !(things.get(0) instanceof Toggleable)) {
+        if (things.size() < 1 || !(things.get(0) instanceof Toggleable)) {
             throw new JarvisException("Unable to create OnOffCommand from provided JSON (no toggleable things found).");
         }
 
@@ -46,23 +46,23 @@ public class OnOffCommand extends Command {
     @Override
     public CommandResult execute() {
         Optional<Boolean> result;
-        if(mTargetStatus.isOn()) {
+        if (mTargetStatus.isOn()) {
             result = mToggleable.turnOn();
         } else {
             result = mToggleable.turnOff();
         }
 
-        if(mToggleable instanceof Thing) {
+        if (mToggleable instanceof Thing) {
             Thing thing = (Thing) mToggleable;
-            for(ThingEvent e : thing.getEvents()) {
-                if(e.getType() == ThingEvent.Type.ON_OFF) {
+            for (ThingEvent e : thing.getEvents()) {
+                if (e.getType() == ThingEvent.Type.ON_OFF) {
                     String queue = e.getHref().toLowerCase();
                     RabbitMQ.getInstance().sendMessage(queue, mTargetStatus.getStatusString());
                 }
             }
         }
 
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             return new CommandResult(result.get());
         }
         return new CommandResult(true);
@@ -71,13 +71,13 @@ public class OnOffCommand extends Command {
     @Override
     public CommandResult undo() {
         Optional<Boolean> result;
-        if(mTargetStatus.isOn()) {
+        if (mTargetStatus.isOn()) {
             result = mToggleable.turnOff();
         } else {
             result = mToggleable.turnOn();
         }
 
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             return new CommandResult(result.get());
         }
         return new CommandResult(true);
@@ -86,7 +86,7 @@ public class OnOffCommand extends Command {
     @Override
     public String executeString() {
         String result = mTargetStatus.isOn() ? "[OnOffCommand] Executed device on" : "[OnOffCommand] Executed device off";
-        if(mToggleable instanceof Thing) {
+        if (mToggleable instanceof Thing) {
             result += " (" + ((Thing) mToggleable).getName() + ")";
         }
         return result;
@@ -95,7 +95,7 @@ public class OnOffCommand extends Command {
     @Override
     public String undoString() {
         String result = mTargetStatus.isOn() ? "[OnOffCommand] Undo device on" : "[OnOffCommand] Undo device off";
-        if(mToggleable instanceof Thing) {
+        if (mToggleable instanceof Thing) {
             result += " (" + ((Thing) mToggleable).getName() + ")";
         }
         return result;
@@ -103,7 +103,7 @@ public class OnOffCommand extends Command {
 
     @Override
     public String friendlyExecuteString() {
-        if(mToggleable instanceof Thing) {
+        if (mToggleable instanceof Thing) {
             return "Turn " + ((Thing) mToggleable).getName() + " " + mTargetStatus.getStatusString();
         } else {
             return "Turn device " + mTargetStatus.getStatusString();
@@ -115,8 +115,8 @@ public class OnOffCommand extends Command {
         JSONObject res = new JSONObject();
         res.put(KEY_ID, mId);
         res.put(KEY_TYPE, TAG);
-        if(mToggleable instanceof Thing) {
-             res.put(KEY_THING, ((Thing) mToggleable).getName());
+        if (mToggleable instanceof Thing) {
+            res.put(KEY_THING, ((Thing) mToggleable).getName());
         }
         res.put(KEY_STATUS, mTargetStatus.isOn());
         return res;
@@ -125,7 +125,7 @@ public class OnOffCommand extends Command {
     @Override
     public List<Thing> targetThings() {
         List<Thing> result = new ArrayList<>();
-        if(mToggleable instanceof Thing) {
+        if (mToggleable instanceof Thing) {
             result.add((Thing) mToggleable);
         }
         return result;
@@ -133,11 +133,25 @@ public class OnOffCommand extends Command {
 
     @Override
     public boolean equals(Command c2) {
-        if(!(c2 instanceof OnOffCommand)) {
+        if (!(c2 instanceof OnOffCommand)) {
             return false;
         }
 
-        // TODO compare thing and status
+        OnOffCommand onOffCommand = (OnOffCommand) c2;
+
+        if (onOffCommand.mTargetStatus.isOn() != mTargetStatus.isOn()) {
+            return false;
+        }
+
+        if ((mToggleable instanceof Thing) && (onOffCommand.mToggleable instanceof Thing)) {
+            if (!((Thing) mToggleable).getName().equals(((Thing) onOffCommand.mToggleable).getName())) {
+                return false;
+            }
+        } else {
+            if (mToggleable != onOffCommand.mToggleable) {
+                return false;
+            }
+        }
 
         return true;
     }
