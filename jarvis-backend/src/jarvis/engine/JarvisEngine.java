@@ -200,6 +200,16 @@ public class JarvisEngine {
         }
     }
 
+    public boolean eventHandlerExists(EventHandler handler) {
+        Set<Long> keys = mActiveHandlers.keySet();
+        for(Long k : keys) {
+            if(mActiveHandlers.get(k).equals(handler)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ///////////////////////////////////
     ////////// EXECUTION API //////////
     ///////////////////////////////////

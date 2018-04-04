@@ -21,6 +21,7 @@ public class EventIntent extends DialogFlowIntent {
     public static final String INTENT_ID = Config.DF_EVENT_INTENT_ID;
 
     public static final String MSG_ERROR = "Sorry, I was not able to set up that event.";
+    public static final String MSG_EVENT_EXISTS = "That event has already been created.";
     public static final String MSG_SUCCESS_PREFIX = "Done, I will ";
 
     public EventIntent(DialogFlowRequest request, IntentExtras extras) {
@@ -58,7 +59,9 @@ public class EventIntent extends DialogFlowIntent {
             return getErrorResponse();
         }
 
-        // TODO check if event already exists
+        if(JarvisEngine.getInstance().eventHandlerExists(optHandler.get())) {
+            return getEventExistsResponse();
+        }
 
         EventCommand eventCommand = new EventCommand(event, cmd.get(), optHandler.get());
         JarvisEngine.getInstance().logUserCommand(eventCommand, eventCommand.execute());
@@ -68,6 +71,12 @@ public class EventIntent extends DialogFlowIntent {
     private QueryResponse getErrorResponse() {
         QueryResponse r = new QueryResponse();
         r.addFulfillmentMessage(MSG_ERROR);
+        return r;
+    }
+
+    private QueryResponse getEventExistsResponse() {
+        QueryResponse r = new QueryResponse();
+        r.addFulfillmentMessage(MSG_EVENT_EXISTS);
         return r;
     }
 
