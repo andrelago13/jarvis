@@ -33,7 +33,7 @@ public class ThingEvent {
         init(type, valueType, valueUnit, description, href);
     }
 
-    public ThingEvent(JSONObject event, String typeStr, Thing thing) {
+    public ThingEvent(JSONObject event, String typeStr) {
         init(Type.valueOf(typeStr),
                 event.getString(KEY_TYPE),
                 event.getString(KEY_UNIT),

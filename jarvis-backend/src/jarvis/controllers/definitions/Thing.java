@@ -136,7 +136,8 @@ public class Thing {
             JSONObject events = json.getJSONObject(EVENTS_KEY);
             Set<String> keys = events.keySet();
             for(String k : keys) {
-                mEvents.add(new ThingEvent(events.getJSONObject(k), k, this));
+                // TODO change constructor of thing event to get only a json
+                mEvents.add(new ThingEvent(events.getJSONObject(k), k));
             }
         }
     }
@@ -174,9 +175,8 @@ public class Thing {
             result.put(LINKS_KEY, mLinks.toJSON());
         }
 
-        // TODO: implement actions and events
+        // TODO: implement actions
         //actions
-        //events
 
         return result;
     }
