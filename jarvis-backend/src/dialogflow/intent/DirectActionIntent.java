@@ -36,16 +36,16 @@ public class DirectActionIntent extends DialogFlowIntent {
         }
 
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
-        DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
-        if(subIntent == null) {
+        Optional<DialogFlowIntent> subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
+        if(!subIntent.isPresent()) {
             return getErrorResponse();
         }
 
-        Optional<Command> subIntentCommand = subIntent.getCommand();
+        Optional<Command> subIntentCommand = subIntent.get().getCommand();
         if(subIntentCommand.isPresent()) {
             JarvisEngine.getInstance().logUserCommand(subIntentCommand.get());
         }
-        return subIntent.execute();
+        return subIntent.get().execute();
     }
 
     @Override
@@ -55,9 +55,9 @@ public class DirectActionIntent extends DialogFlowIntent {
             JSONObject parameters = optParameters.get();
             if (parameters.has(Config.DF_ACTION_ENTITY_NAME)) {
                 JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
-                DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
-                if(subIntent == null) {
-                    return subIntent.getCommand();
+                Optional<DialogFlowIntent> subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
+                if(subIntent.isPresent()) {
+                    return subIntent.get().getCommand();
                 }
             }
         }

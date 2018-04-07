@@ -70,19 +70,19 @@ public class DelayedActionIntent extends DialogFlowIntent {
         long targetTimestamp = TimeUtils.calculateTargetTimestamp(timeInfo);
 
         // Get action subintent
-        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
-        if(subIntent == null) {
+        final Optional<DialogFlowIntent> subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
+        if(!subIntent.isPresent()) {
             return getErrorResponse();
         }
 
         // Check if device name is good
-        QueryResponse followUpRequest = subIntent.getFollowUpRequest();
+        QueryResponse followUpRequest = subIntent.get().getFollowUpRequest();
         if(followUpRequest != null) {
             return followUpRequest;
         }
 
         // Intent must be "commandable"
-        Optional<Command> intentCommand = subIntent.getCommand();
+        Optional<Command> intentCommand = subIntent.get().getCommand();
         if(!intentCommand.isPresent()) {
             return getErrorResponse();
         }

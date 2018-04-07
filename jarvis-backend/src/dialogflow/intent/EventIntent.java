@@ -42,13 +42,13 @@ public class EventIntent extends DialogFlowIntent {
 
 
         JSONObject action = parameters.getJSONObject(Config.DF_ACTION_ENTITY_NAME);
-        DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
-        if(subIntent == null) {
+        Optional<DialogFlowIntent> subIntent = ActionFinder.findIntentForAction(mRequest, action, mExtras);
+        if(!subIntent.isPresent()) {
             return getErrorResponse();
         }
 
         JSONObject event = parameters.getJSONObject(Config.DF_EVENT_ENTITY_NAME);
-        Optional<Command> cmd = subIntent.getCommand();
+        Optional<Command> cmd = subIntent.get().getCommand();
         if(!cmd.isPresent()) {
             return getErrorResponse();
         }

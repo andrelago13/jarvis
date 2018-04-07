@@ -74,6 +74,8 @@ public class Config {
     public static final String DF_UNDO_INTENT_ID = "121d6b5e-2104-4359-8f10-196f8c2e5ae1";
     public static final String DF_EVENT_INTENT_NAME = "Event Intent";
     public static final String DF_EVENT_INTENT_ID = "d234e808-2fd7-420f-9aef-1852750f8bc6";
+    public static final String DF_WHY_HAPPENNED_INTENT_NAME = "Why did something happen?";
+    public static final String DF_WHY_HAPPENNED_INTENT_ID = "a835dba1-f963-4b82-a41f-c8dbf6eb8c19";
 
     /**
      * DialogFlow context constants.
@@ -94,6 +96,8 @@ public class Config {
     public static final String DF_STARTTIME_ENTITY_NAME = "starttime";
     public static final String DF_ENDTIME_ENTITY_NAME = "endtime";
     public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
+    public static final String DF_ACTION_PAST_ENTITY_NAME = "action-past";
+    public static final String DF_ACTION_PAST_ONOFF_NAME = "action-past-onoff";
 
     public static final String DF_TIME_PERIOD_SYS_ENTITY_NAME = "time-period";
 

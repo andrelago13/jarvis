@@ -28,17 +28,17 @@ public class PeriodActionIntent extends DialogFlowIntent {
 
     @Override
     public QueryResponse execute() throws JarvisException {
-        final DialogFlowIntent subIntent = ActionFinder.findIntentForAction(mRequest, mAction, mExtras);
-        if(subIntent == null) {
+        final Optional<DialogFlowIntent> subIntent = ActionFinder.findIntentForAction(mRequest, mAction, mExtras);
+        if(!subIntent.isPresent()) {
             return getErrorResponse();
         }
 
-        QueryResponse followUpRequest = subIntent.getFollowUpRequest();
+        QueryResponse followUpRequest = subIntent.get().getFollowUpRequest();
         if(followUpRequest != null) {
             return followUpRequest;
         }
 
-        Optional<Command> intentCommand = subIntent.getCommand();
+        Optional<Command> intentCommand = subIntent.get().getCommand();
         if(!intentCommand.isPresent()) {
             return getErrorResponse();
         }
