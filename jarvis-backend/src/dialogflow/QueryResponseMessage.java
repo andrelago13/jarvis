@@ -3,36 +3,37 @@ package dialogflow;
 import org.json.JSONObject;
 
 public class QueryResponseMessage {
-    public enum Type {
-        DEFAULT,
-        GOOGLE
-    }
 
-    private Type mType;
-    private String mSpeech;
+  public enum Type {
+    DEFAULT,
+    GOOGLE
+  }
 
-    public QueryResponseMessage(String speech) {
-        this(Type.DEFAULT, speech);
-    }
+  private Type mType;
+  private String mSpeech;
 
-    public QueryResponseMessage(Type type, String speech) {
-        mType = type;
-        mSpeech = speech;
-    }
+  public QueryResponseMessage(String speech) {
+    this(Type.DEFAULT, speech);
+  }
 
-    public JSONObject toJSON() {
-        JSONObject result = new JSONObject();
-        result.put("speech", mSpeech);
-        result.put("type", getTypeIndex(mType));
-        return result;
-    }
+  public QueryResponseMessage(Type type, String speech) {
+    mType = type;
+    mSpeech = speech;
+  }
 
-    public static int getTypeIndex(Type t) {
-        switch (t) {
-            case DEFAULT:
-                return 0;
-            default:
-                return -1;
-        }
+  public JSONObject toJSON() {
+    JSONObject result = new JSONObject();
+    result.put("speech", mSpeech);
+    result.put("type", getTypeIndex(mType));
+    return result;
+  }
+
+  public static int getTypeIndex(Type t) {
+    switch (t) {
+      case DEFAULT:
+        return 0;
+      default:
+        return -1;
     }
+  }
 }

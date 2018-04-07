@@ -6,9 +6,10 @@ import javax.ws.rs.Produces;
 
 @Path("/ping")
 public class Ping {
-    @GET
-    @Produces("text/plain")
-    public String getClichedMessage() {
-        return "I am alive! :D";
-    }
+
+  @GET
+  @Produces("text/plain")
+  public String getClichedMessage() {
+    return "I am alive! :D";
+  }
 }

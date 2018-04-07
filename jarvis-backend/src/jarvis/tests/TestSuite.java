@@ -1,38 +1,38 @@
 package jarvis.tests;
 
 import jarvis.tests.moduletests.ParserAndJsonGeneratorTests;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestSuite {
-    public static boolean runTests() {
-        List<Test> tests = new ArrayList<>();
 
-        tests.add(new ParserAndJsonGeneratorTests());
+  public static boolean runTests() {
+    List<Test> tests = new ArrayList<>();
 
-        for(int i = 0; i < tests.size(); ++i) {
-            int res = tests.get(i).test();
-            if(res != -1) {
-                return false;
-            }
-        }
+    tests.add(new ParserAndJsonGeneratorTests());
 
-        return true;
+    for (int i = 0; i < tests.size(); ++i) {
+      int res = tests.get(i).test();
+      if (res != -1) {
+        return false;
+      }
     }
 
-    public static String runTestsAsString() {
-        List<Test> tests = new ArrayList<>();
+    return true;
+  }
 
-        tests.add(new ParserAndJsonGeneratorTests());
+  public static String runTestsAsString() {
+    List<Test> tests = new ArrayList<>();
 
-        for(int i = 0; i < tests.size(); ++i) {
-            int res = tests.get(i).test();
-            if(res != -1) {
-                return "" + i + " : " + res;
-            }
-        }
+    tests.add(new ParserAndJsonGeneratorTests());
 
-        return "OK";
+    for (int i = 0; i < tests.size(); ++i) {
+      int res = tests.get(i).test();
+      if (res != -1) {
+        return "" + i + " : " + res;
+      }
     }
+
+    return "OK";
+  }
 }

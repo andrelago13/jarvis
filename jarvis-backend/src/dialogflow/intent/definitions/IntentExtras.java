@@ -4,21 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IntentExtras {
-    public Map<Integer, Object> mMap;
 
-    public IntentExtras() {
-        mMap = new HashMap<>();
-    }
+  public Map<Integer, Object> mMap;
 
-    public void put(Integer key, Object obj) {
-        mMap.put(key, obj);
-    }
+  public IntentExtras() {
+    mMap = new HashMap<>();
+  }
 
-    public boolean hasKey(Integer key) {
-        return mMap.containsKey(key);
-    }
+  public void put(Integer key, Object obj) {
+    mMap.put(key, obj);
+  }
 
-    public Object get(Integer key) {
-        return mMap.getOrDefault(key, null);
-    }
+  public boolean hasKey(Integer key) {
+    return mMap.containsKey(key);
+  }
+
+  public Object get(Integer key) {
+    return mMap.getOrDefault(key, null);
+  }
 }
