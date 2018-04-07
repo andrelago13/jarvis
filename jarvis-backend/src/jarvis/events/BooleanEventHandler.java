@@ -61,6 +61,17 @@ public class BooleanEventHandler extends EventHandler {
   }
 
   @Override
+  public String friendlyStringWithCommand() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(command.friendlyExecuteString());
+    builder.append(" when ");
+    builder.append(eventConsumer.getThing().getName());
+    builder.append(" is ");
+    builder.append(OnOffStatus.getValueString(value));
+    return builder.toString();
+  }
+
+  @Override
   public boolean equals(EventHandler handler) {
     if (!super.equals(handler)) {
       return false;

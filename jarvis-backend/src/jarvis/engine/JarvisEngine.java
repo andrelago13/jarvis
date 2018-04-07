@@ -221,6 +221,17 @@ public class JarvisEngine {
     return LoggerCommunication.logEventHandled(json);
   }
 
+  public Set<EventHandler> getEventHandlers() {
+    Set<EventHandler> result = new HashSet<>();
+
+    Set<Long> keys = mActiveHandlers.keySet();
+    for(Long k : keys) {
+      result.add(mActiveHandlers.get(k));
+    }
+
+    return result;
+  }
+
   ///////////////////////////////////
   ////////// EXECUTION API //////////
   ///////////////////////////////////

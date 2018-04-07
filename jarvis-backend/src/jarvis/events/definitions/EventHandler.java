@@ -46,6 +46,7 @@ public abstract class EventHandler {
   public abstract boolean handleMessage(Thing t, ThingEvent e, String message);
 
   public abstract String friendlyString();
+  public abstract String friendlyStringWithCommand();
 
   public boolean equals(EventHandler handler) {
     if (!eventConsumer.equals(handler.eventConsumer)) {

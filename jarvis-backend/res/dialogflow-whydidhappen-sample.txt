@@ -10,10 +10,10 @@
     "parameters": {
       "action-past": {
         "action-past-onoff": {
-          "on-off-actuator": {
-            "light-switch": "living room light"
+          "actuator": {
+            "light-switch": "bedroom light"
           },
-          "on-off-status": "on"
+          "status": "on"
         }
       }
     },
