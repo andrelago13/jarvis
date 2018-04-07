@@ -8,15 +8,19 @@ import java.util.Optional;
 import static jarvis.controllers.definitions.Thing.TYPE_KEY;
 
 public class ThingParser {
-    public static Optional<Thing> parseThingFromJson(String json) {
-        JSONObject jsonObj = new JSONObject(json);
-        if(!jsonObj.has(TYPE_KEY)) {
+    public static Optional<Thing> parseThingFromJson(String jsonStr) {
+        JSONObject jsonObj = new JSONObject(jsonStr);
+        return parseThingFromJson(jsonObj);
+    }
+
+    public static Optional<Thing> parseThingFromJson(JSONObject json) {
+        if(!json.has(TYPE_KEY)) {
             return Optional.empty();
         }
 
-        String docType = jsonObj.getString(TYPE_KEY);
+        String docType = json.getString(TYPE_KEY);
         if(Thing.getTypeString(Thing.Type.ON_OFF_LIGHT).equals(docType)) {
-            return Optional.of(OnOffLight.Builder.buildFromJSON(jsonObj));
+            return Optional.of(OnOffLight.Builder.buildFromJSON(json));
         }
 
         return Optional.empty();

@@ -131,15 +131,7 @@ public class Thing {
                 mProperties.add(new ThingProperty(k, (properties.getJSONObject(k))));
             }
         }
-        mEvents = new ArrayList<>();
-        if(json.has(EVENTS_KEY)) {
-            JSONObject events = json.getJSONObject(EVENTS_KEY);
-            Set<String> keys = events.keySet();
-            for(String k : keys) {
-                // TODO change constructor of thing event to get only a json
-                mEvents.add(new ThingEvent(events.getJSONObject(k), k));
-            }
-        }
+        mEvents = new ArrayList<>(ThingEvent.getThingEvents(json.getJSONObject(EVENTS_KEY)));
     }
 
     public JSONObject toJSON() {

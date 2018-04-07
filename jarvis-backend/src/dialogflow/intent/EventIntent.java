@@ -65,7 +65,7 @@ public class EventIntent extends DialogFlowIntent {
 
         EventCommand eventCommand = new EventCommand(event, cmd.get(), optHandler.get());
         JarvisEngine.getInstance().logUserCommand(eventCommand, eventCommand.execute());
-        return getSuccessResponse();
+        return getSuccessResponse(eventCommand);
     }
 
     private QueryResponse getErrorResponse() {
@@ -80,9 +80,13 @@ public class EventIntent extends DialogFlowIntent {
         return r;
     }
 
-    private QueryResponse getSuccessResponse() {
+    private QueryResponse getSuccessResponse(EventCommand eventCommand) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(MSG_SUCCESS_PREFIX);
+        builder.append(eventCommand.friendlyExecuteString());
+
         QueryResponse r = new QueryResponse();
-        r.addFulfillmentMessage(MSG_SUCCESS_PREFIX);
+        r.addFulfillmentMessage(builder.toString());
         return r;
     }
 

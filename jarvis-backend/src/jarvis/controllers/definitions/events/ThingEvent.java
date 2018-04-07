@@ -3,6 +3,8 @@ package jarvis.controllers.definitions.events;
 import jarvis.controllers.definitions.Thing;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -78,27 +80,48 @@ public class ThingEvent {
         return event;
     }
 
+    public JSONObject getFullJSON() {
+        JSONObject result = new JSONObject();
+        result.put(mType.toString(), toJSON());
+        return result;
+    }
+
     public String toString() {
         return mValueType;
     }
 
     public boolean equals(ThingEvent event) {
-        if(!mHref.equals(event.mHref)) {
+        if (!mHref.equals(event.mHref)) {
             return false;
         }
 
-        if(mType != event.mType) {
+        if (mType != event.mType) {
             return false;
         }
 
-        if(!mValueType.equals(event.mValueType)) {
+        if (!mValueType.equals(event.mValueType)) {
             return false;
         }
 
-        if(!mValueUnit.equals(event.mValueUnit)) {
+        if (!mValueUnit.equals(event.mValueUnit)) {
             return false;
         }
 
         return true;
+    }
+
+    public static List<ThingEvent> getThingEvents(JSONObject json) {
+        ArrayList<ThingEvent> result = new ArrayList<>();
+
+        Set<String> keys = json.keySet();
+        for (String k : keys) {
+            try {
+                result.add(new ThingEvent(json.getJSONObject(k), k));
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+
+        return result;
     }
 }

@@ -46,6 +46,7 @@ public class BooleanEventHandler extends EventHandler {
 
         if(OnOffStatus.isValueEqualToBoolean(message, value)) {
             JarvisEngine.getInstance().executeCommand(command);
+            JarvisEngine.getInstance().logEventHandled(this.toJSON());
         }
         return true;
     }
@@ -95,7 +96,7 @@ public class BooleanEventHandler extends EventHandler {
                 return Optional.empty();
             }
 
-
+            return Optional.of(new BooleanEventHandler(json));
         } catch (Exception e) {
             // do nothing
         }

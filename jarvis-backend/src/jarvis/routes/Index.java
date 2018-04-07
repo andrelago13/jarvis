@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
@@ -14,6 +15,7 @@ import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.OnOffCommand;
 import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.definitions.events.ThingEvent;
+import jarvis.events.definitions.EventHandler;
 import mongodb.MongoDB;
 import org.json.JSONObject;
 

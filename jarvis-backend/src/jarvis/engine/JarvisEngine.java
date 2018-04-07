@@ -210,6 +210,10 @@ public class JarvisEngine {
         return false;
     }
 
+    public boolean logEventHandled(JSONObject json) {
+        return LoggerCommunication.logEventHandled(json);
+    }
+
     ///////////////////////////////////
     ////////// EXECUTION API //////////
     ///////////////////////////////////

@@ -41,6 +41,7 @@ public class Config {
     public static final String MONGO_COMMANDS_COLLECTION = "commands";
     public static final String MONGO_USER_COMMANDS_COLLECTION = "userCommands";
     public static final String MONGO_ACTIVE_RULES_COLLECTION = "activeRules";
+        public static final String MONGO_EVENT_HISTORY_COLLECTION = "eventHistory";
 
     /**
      * Timeout for Mongo connections.

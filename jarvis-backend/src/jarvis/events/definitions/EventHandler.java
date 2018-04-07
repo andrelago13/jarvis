@@ -41,9 +41,7 @@ public abstract class EventHandler {
         if(command == null) {
             throw new JarvisException("Invalid command for EventHandler.");
         }
-
-        // TODO get event consumer from JSON
-        eventConsumer = null;
+        eventConsumer = new EventConsumer(json.getJSONObject(KEY_CONSUMER));
     }
 
     public abstract boolean handleMessage(Thing t, ThingEvent e, String message);
@@ -65,8 +63,7 @@ public abstract class EventHandler {
         JSONObject result = new JSONObject();
 
         result.put(KEY_TAG, mTag);
-        // TODO check child jsons
-        result.put(KEY_CONSUMER, eventConsumer);
+        result.put(KEY_CONSUMER, eventConsumer.toJSON());
         result.put(KEY_COMMAND, command.getJSON());
 
         return result;
