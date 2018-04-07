@@ -1,0 +1,44 @@
+{
+  "id": "49b3c4e3-9317-499e-9464-bdaec4b04b85",
+  "timestamp": "2018-04-07T13:41:07.296Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "why did the living room light turn on",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "action-past": {
+        "action-past-onoff": {
+          "actuator": {
+            "light-switch": "bedroom light"
+          },
+          "status": "on"
+        }
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "a835dba1-f963-4b82-a41f-c8dbf6eb8c19",
+      "webhookUsed": "false",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Why did something happen?"
+    },
+    "fulfillment": {
+      "speech": "I'm sorry but I was not able to help.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "I'm sorry but I was not able to help."
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "8290b4d1-4f06-4fdc-a40e-d01736c58ad7"
+}
