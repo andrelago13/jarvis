@@ -17,8 +17,6 @@ public class UndoIntent extends DialogFlowIntent {
   public static final String INTENT_NAME = Config.DF_UNDO_INTENT_NAME;
   public static final String INTENT_ID = Config.DF_UNDO_INTENT_ID;
 
-  private static final int MAX_COMMANDS_FETCHED = 20;
-
   public static final String MSG_SUCCESS = "Done.";
   public static final String MSG_ERROR = "Sorry, I found no command to undo.";
 
@@ -29,7 +27,7 @@ public class UndoIntent extends DialogFlowIntent {
   @Override
   public QueryResponse execute() throws JarvisException {
     List<Command> commands = JarvisEngine.getInstance()
-        .getLatestNUserCommands(MAX_COMMANDS_FETCHED);
+        .getLatestNUserCommands(Config.MAX_COMMANDS_TO_FETCH);
 
     if (commands.isEmpty()) {
       return getErrorResponse();

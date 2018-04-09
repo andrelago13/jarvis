@@ -17,7 +17,9 @@ import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.ThingParser;
 import jarvis.controllers.definitions.Thing;
 import jarvis.events.definitions.EventHandler;
+import jarvis.events.util.LoggedEventHandler;
 import jarvis.util.AdminAlertUtil;
+import jarvis.util.JarvisException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -284,8 +286,8 @@ public class MongoDB {
     return insertOne(command, Config.MONGO_EVENT_HISTORY_COLLECTION);
   }
 
-  public static List<EventHandler> getLatestNEventsHandled(int n) {
-    List<EventHandler> eventHandlers = new ArrayList<>();
+  public static List<LoggedEventHandler> getLatestNEventsHandled(int n) {
+    List<LoggedEventHandler> eventHandlers = new ArrayList<>();
 
     MongoClient m = null;
     try {
@@ -305,14 +307,14 @@ public class MongoDB {
     return eventHandlers;
   }
 
-  private static List<EventHandler> getEventHandlersFromDocument(FindIterable<Document> documents) {
-    List<EventHandler> events = new ArrayList<>();
+  private static List<LoggedEventHandler> getEventHandlersFromDocument(FindIterable<Document> documents) {
+    List<LoggedEventHandler> events = new ArrayList<>();
     for (Document doc : documents) {
       JSONObject eventHandlerInfo = new JSONObject(doc.toJson());
-      Optional<EventHandler> e = EventHandler
-          .buildFromJSON(eventHandlerInfo.getJSONObject("event"));
-      if (e.isPresent()) {
-        events.add(e.get());
+      try {
+        events.add(new LoggedEventHandler(eventHandlerInfo));
+      } catch (JarvisException e1) {
+        e1.printStackTrace();
       }
     }
     return events;

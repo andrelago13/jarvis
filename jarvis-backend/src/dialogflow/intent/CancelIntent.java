@@ -17,8 +17,6 @@ public class CancelIntent extends DialogFlowIntent {
   public static final String INTENT_NAME = Config.DF_CANCEL_INTENT_NAME;
   public static final String INTENT_ID = Config.DF_CANCEL_INTENT_ID;
 
-  private static final int MAX_COMMANDS_FETCHED = 20;
-
   public static final String MSG_SUCCESS_PREFIX = "Are you sure you want to cancel the following command: ";
 
   public static final String MSG_ERROR = "Sorry, I found no command to cancel.";
@@ -30,7 +28,7 @@ public class CancelIntent extends DialogFlowIntent {
   @Override
   public QueryResponse execute() throws JarvisException {
     List<Command> commands = JarvisEngine.getInstance()
-        .getLatestNUserCommands(MAX_COMMANDS_FETCHED);
+        .getLatestNUserCommands(Config.MAX_COMMANDS_TO_FETCH);
     Command cancelCommand = getCommandToCancel(commands);
     if (cancelCommand == null) {
       return getErrorResponse();

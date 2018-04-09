@@ -4,6 +4,7 @@ import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
+import jarvis.engine.JarvisEngine;
 import jarvis.events.BooleanEventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.JarvisException;
@@ -44,9 +45,12 @@ public abstract class EventHandler {
   }
 
   public abstract boolean handleMessage(Thing t, ThingEvent e, String message);
-
   public abstract String friendlyString();
   public abstract String friendlyStringWithCommand();
+
+  protected void log() {
+    JarvisEngine.getInstance().logEventHandled(this);
+  }
 
   public boolean equals(EventHandler handler) {
     if (!eventConsumer.equals(handler.eventConsumer)) {

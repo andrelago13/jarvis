@@ -10,6 +10,7 @@ import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.events.definitions.EventHandler;
+import jarvis.events.util.LoggedEventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.TimeUtils;
 import java.sql.Timestamp;
@@ -217,15 +218,16 @@ public class JarvisEngine {
     return false;
   }
 
-  public boolean logEventHandled(JSONObject json) {
-    return LoggerCommunication.logEventHandled(json);
+  public boolean logEventHandled(EventHandler handler) {
+    LoggedEventHandler info = new LoggedEventHandler(handler);
+    return LoggerCommunication.logEventHandled(info);
   }
 
   public Set<EventHandler> getEventHandlers() {
     Set<EventHandler> result = new HashSet<>();
 
     Set<Long> keys = mActiveHandlers.keySet();
-    for(Long k : keys) {
+    for (Long k : keys) {
       result.add(mActiveHandlers.get(k));
     }
 
