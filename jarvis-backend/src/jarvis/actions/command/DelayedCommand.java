@@ -125,6 +125,14 @@ public class DelayedCommand extends Command {
   }
 
   @Override
+  public boolean canCauseCommand(Command c2) {
+    if(equals(c2) || mCommand.canCauseCommand(c2)) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
   public boolean isCancellable() {
     return mTargetTimestamp > System.currentTimeMillis();
   }

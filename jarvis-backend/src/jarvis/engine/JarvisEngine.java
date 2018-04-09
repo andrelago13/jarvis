@@ -4,6 +4,7 @@ import jarvis.actions.CommandRunnable;
 import jarvis.actions.ScheduledAction;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
@@ -132,7 +133,7 @@ public class JarvisEngine {
     return mScheduledActions;
   }
 
-  public List<Command> getLatestNUserCommands(int n) {
+  public List<LoggedCommand> getLatestNUserCommands(int n) {
     return ThingInterface.getLatestNUserCommands(n);
   }
 

@@ -140,6 +140,15 @@ public class PeriodRuleCommand extends Command {
   }
 
   @Override
+  public boolean canCauseCommand(Command c2) {
+    // TODO this should check the undo action as well
+    if(equals(c2) || mCommand.canCauseCommand(c2)) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
   public boolean isCancellable() {
     return true;
   }

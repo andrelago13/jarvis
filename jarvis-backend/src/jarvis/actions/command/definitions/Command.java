@@ -49,6 +49,8 @@ public abstract class Command {
 
   public abstract boolean equals(Command c2);
 
+  public abstract boolean canCauseCommand(Command c2);
+
   public long getId() {
     return mId;
   }

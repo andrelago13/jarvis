@@ -6,6 +6,7 @@ import dialogflow.intent.definitions.DialogFlowIntent;
 import dialogflow.intent.definitions.IntentExtras;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.engine.JarvisEngine;
 import jarvis.util.JarvisException;
 import java.util.List;
@@ -26,14 +27,14 @@ public class UndoIntent extends DialogFlowIntent {
 
   @Override
   public QueryResponse execute() throws JarvisException {
-    List<Command> commands = JarvisEngine.getInstance()
+    List<LoggedCommand> commands = JarvisEngine.getInstance()
         .getLatestNUserCommands(Config.MAX_COMMANDS_TO_FETCH);
 
     if (commands.isEmpty()) {
       return getErrorResponse();
     }
 
-    Command cmd = commands.get(0);
+    Command cmd = commands.get(0).getCommand();
     CommandResult res = JarvisEngine.getInstance().undoCommand(cmd);
 
     if (res.isSuccessful()) {

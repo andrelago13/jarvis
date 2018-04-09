@@ -158,4 +158,9 @@ public class OnOffCommand extends Command {
 
     return true;
   }
+
+  @Override
+  public boolean canCauseCommand(Command c2) {
+    return equals(c2);
+  }
 }

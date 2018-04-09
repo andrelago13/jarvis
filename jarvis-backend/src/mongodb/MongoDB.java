@@ -14,6 +14,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.controllers.ThingParser;
 import jarvis.controllers.definitions.Thing;
 import jarvis.events.definitions.EventHandler;
@@ -240,9 +241,9 @@ public class MongoDB {
       m = buildClient();
       MongoCollection col = getCommandsCollection(m);
       FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
-      List<Command> commands = getCommandsFromDocument(documents);
+      List<LoggedCommand> commands = getCommandsFromDocument(documents);
       if (commands.size() == 1) {
-        result = commands.get(0);
+        result = commands.get(0).getCommand();
       }
     } catch (Exception e) {
       AdminAlertUtil.alertUnexpectedException(e);
@@ -259,16 +260,15 @@ public class MongoDB {
     return Optional.of(result);
   }
 
-  private static List<Command> getCommandsFromDocument(FindIterable<Document> documents) {
-    List<Command> commands = new ArrayList<>();
+  private static List<LoggedCommand> getCommandsFromDocument(FindIterable<Document> documents) {
+    List<LoggedCommand> commands = new ArrayList<>();
     for (Document doc : documents) {
       JSONObject commandInfo = new JSONObject(doc.toJson());
-      if (!commandInfo.has(KEY_COMMAND)) {
-        continue;
-      }
-      Command c = CommandBuilder.buildFromJSON(commandInfo.getJSONObject(KEY_COMMAND));
-      if (c != null) {
-        commands.add(c);
+      try {
+        LoggedCommand cmd = new LoggedCommand(commandInfo);
+        commands.add(cmd);
+      } catch (JarvisException e) {
+        // do nothing
       }
     }
     return commands;
@@ -328,8 +328,8 @@ public class MongoDB {
     return insertOne(command, Config.MONGO_USER_COMMANDS_COLLECTION);
   }
 
-  public static List<Command> getLatestNUserCommands(int n) {
-    List<Command> commands = new ArrayList<>();
+  public static List<LoggedCommand> getLatestNUserCommands(int n) {
+    List<LoggedCommand> commands = new ArrayList<>();
 
     MongoClient m = null;
     try {
@@ -357,9 +357,9 @@ public class MongoDB {
       m = buildClient();
       MongoCollection col = getUserCommandsCollection(m);
       FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
-      List<Command> commands = getCommandsFromDocument(documents);
+      List<LoggedCommand> commands = getCommandsFromDocument(documents);
       if (commands.size() == 1) {
-        result = commands.get(0);
+        result = commands.get(0).getCommand();
       }
     } catch (Exception e) {
       AdminAlertUtil.alertUnexpectedException(e);
