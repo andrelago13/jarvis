@@ -83,7 +83,8 @@ public class EventCommand extends Command {
   @Override
   public List<Thing> targetThings() {
     List<Thing> res = new ArrayList<>();
-    res.add(mEventHandler.eventConsumer.getThing());
+    res.addAll(mCommand.targetThings());
+//    res.add(mEventHandler.eventConsumer.getThing());
     return res;
   }
 

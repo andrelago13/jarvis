@@ -9,6 +9,7 @@ import dialogflow.intent.DelayedActionIntent;
 import dialogflow.intent.DirectActionIntent;
 import dialogflow.intent.EventIntent;
 import dialogflow.intent.RepeatingActionIntent;
+import dialogflow.intent.RulesDefinedIntent;
 import dialogflow.intent.UndoIntent;
 import dialogflow.intent.WelcomeIntent;
 import dialogflow.intent.WhyHappenedIntent;
@@ -55,6 +56,8 @@ public abstract class DialogFlowIntent {
       return new EventIntent(request, extras);
     } else if (WhyHappenedIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
       return new WhyHappenedIntent(request, extras);
+    } else if (RulesDefinedIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+      return new RulesDefinedIntent(request, extras);
     }
 
     return new InvalidIntent();

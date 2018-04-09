@@ -79,6 +79,8 @@ public class Config {
   public static final String DF_EVENT_INTENT_ID = "d234e808-2fd7-420f-9aef-1852750f8bc6";
   public static final String DF_WHY_HAPPENNED_INTENT_NAME = "Why did something happen?";
   public static final String DF_WHY_HAPPENNED_INTENT_ID = "a835dba1-f963-4b82-a41f-c8dbf6eb8c19";
+  public static final String DF_RULES_DEFINED_INTENT_NAME = "Rules Defined";
+  public static final String DF_RULES_DEFINED_INTENT_ID = "51d173a2-2efd-4641-befa-b06dc692f155";
 
   /**
    * DialogFlow context constants.

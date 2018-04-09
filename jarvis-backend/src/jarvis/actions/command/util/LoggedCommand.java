@@ -15,7 +15,11 @@ public class LoggedCommand {
 
   public LoggedCommand(JSONObject json) throws JarvisException {
     try {
-      mTimestamp = json.getLong(KEY_TIMESTAMP);
+      try {
+        mTimestamp = json.getLong(KEY_TIMESTAMP);
+      } catch (Exception e) {
+        mTimestamp = Long.parseLong(json.getJSONObject(KEY_TIMESTAMP).getString("$numberLong"));
+      }
       mCommand = CommandBuilder.buildFromJSON(json.getJSONObject(KEY_COMMAND));
       if(mCommand == null) {
         throw new Exception();

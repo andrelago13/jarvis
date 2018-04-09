@@ -17,15 +17,15 @@ public class CauseHelper {
 
     String resultString = null;
     Object resultCause = null;
-    if(latestCommand != null && latestEventHandler == null) {
+    if (latestCommand != null && latestEventHandler == null) {
       resultString = latestCommand.getCommand().friendlyExecuteString();
       resultCause = latestCommand;
     }
-    if(latestCommand == null && latestEventHandler != null) {
+    if (latestCommand == null && latestEventHandler != null) {
       resultCause = latestEventHandler;
       resultString = latestEventHandler.getEventHandler().friendlyStringWithCommand();
     }
-    if(latestCommand != null && latestEventHandler != null) {
+    if (latestCommand != null && latestEventHandler != null) {
       if (latestEventHandler.getTimestamp() > latestCommand.getTimestamp()) {
         resultCause = latestEventHandler;
         resultString = latestEventHandler.getEventHandler().friendlyStringWithCommand();
@@ -35,7 +35,7 @@ public class CauseHelper {
       }
     }
 
-    if(resultCause != null && resultString != null) {
+    if (resultCause != null && resultString != null) {
       return Optional.of(new CommandCause(resultCause, resultString));
     }
     return Optional.empty();
