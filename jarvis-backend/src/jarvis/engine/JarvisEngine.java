@@ -190,8 +190,9 @@ public class JarvisEngine {
     return mActiveConsumers;
   }
 
-  public void addEventHandler(long id, EventHandler handler) {
-    mActiveHandlers.put(id, handler);
+  public void addEventHandler(EventHandler handler) {
+    mActiveHandlers.put(handler.getId(), handler);
+    MongoDB.logActiveEventHandler(handler.toJSON());
   }
 
   public boolean removeEventHandler(long id) {
@@ -199,6 +200,7 @@ public class JarvisEngine {
       return false;
     }
     mActiveHandlers.remove(id);
+    MongoDB.deleteActiveEventHandler(id);
     return true;
   }
 

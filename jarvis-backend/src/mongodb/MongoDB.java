@@ -106,6 +106,10 @@ public class MongoDB {
     return getCollection(client, Config.MONGO_EVENT_HISTORY_COLLECTION);
   }
 
+  private static MongoCollection getActiveEventHandlersCollection(MongoClient client) {
+    return getCollection(client, Config.MONGO_ACTIVE_EVENTS_COLLECTION);
+  }
+
   public static boolean initialize(List<Thing> defaultThings) {
     MongoClient m = null;
     try {
@@ -281,6 +285,49 @@ public class MongoDB {
   //////////////////////////////////////
   ////////////// EVENTS ////////////////
   //////////////////////////////////////
+
+  public static boolean logActiveEventHandler(JSONObject event) {
+    return insertOne(event, Config.MONGO_ACTIVE_EVENTS_COLLECTION);
+  }
+
+  public static boolean deleteActiveEventHandler(long id) {
+    MongoClient m = null;
+    try {
+      m = buildClient();
+      MongoCollection col = getActiveEventHandlersCollection(m);
+
+      BasicDBObject document = new BasicDBObject();
+      document.put("id", Long.toString(id));
+      DeleteResult res = col.deleteOne(document);
+      return res.getDeletedCount() == 1;
+    } catch (Exception e) {
+      AdminAlertUtil.alertUnexpectedException(e);
+      e.printStackTrace();
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
+    return false;
+  }
+
+  public static boolean deleteActiveEventHandlers() {
+    MongoClient m = null;
+    try {
+      m = buildClient();
+      MongoCollection col = getActiveEventHandlersCollection(m);
+      col.drop();
+      return true;
+    } catch (Exception e) {
+      AdminAlertUtil.alertUnexpectedException(e);
+      e.printStackTrace();
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
+    return false;
+  }
 
   public static boolean logEventHandled(JSONObject command) {
     return insertOne(command, Config.MONGO_EVENT_HISTORY_COLLECTION);

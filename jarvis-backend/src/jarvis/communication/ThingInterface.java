@@ -49,5 +49,6 @@ public class ThingInterface {
     String[] rabbitCreds = Config.getRabbitCredentials();
     RabbitMQ.getInstance().init(rabbitCreds[0], rabbitCreds[1], rabbitCreds[2]);
     MongoDB.deleteActiveRules();
+    MongoDB.deleteActiveEventHandlers();
   }
 }

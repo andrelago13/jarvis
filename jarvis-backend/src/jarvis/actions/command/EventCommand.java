@@ -45,13 +45,13 @@ public class EventCommand extends Command {
 
   @Override
   public CommandResult execute() {
-    JarvisEngine.getInstance().addEventHandler(mId, mEventHandler);
+    JarvisEngine.getInstance().addEventHandler(mEventHandler);
     return new CommandResult(true);
   }
 
   @Override
   public CommandResult undo() {
-    return new CommandResult(JarvisEngine.getInstance().removeEventHandler(mId));
+    return new CommandResult(JarvisEngine.getInstance().removeEventHandler(mEventHandler.getId()));
   }
 
   @Override

@@ -9,12 +9,14 @@ import jarvis.events.BooleanEventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.JarvisException;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import org.json.JSONObject;
 
 public abstract class EventHandler {
 
   public static final String TAG = "eventHandler";
 
+  protected static final String KEY_ID = "id";
   protected static final String KEY_TAG = "tag";
   protected static final String KEY_CONSUMER = "consumer";
   protected static final String KEY_COMMAND = "command";
@@ -23,8 +25,10 @@ public abstract class EventHandler {
   public final Command command;
 
   protected final String mTag;
+  protected final long mId;
 
   public EventHandler(String tag, EventConsumer consumer, Command command) {
+    mId = generateID();
     eventConsumer = consumer;
     this.command = command;
     mTag = tag;
@@ -35,6 +39,7 @@ public abstract class EventHandler {
   }
 
   public EventHandler(JSONObject json) throws JarvisException {
+    mId = Long.parseLong(json.getString(KEY_ID));
     mTag = json.getString(KEY_TAG);
 
     command = CommandBuilder.buildFromJSON(json.getJSONObject(KEY_COMMAND));
@@ -42,6 +47,14 @@ public abstract class EventHandler {
       throw new JarvisException("Invalid command for EventHandler.");
     }
     eventConsumer = new EventConsumer(json.getJSONObject(KEY_CONSUMER));
+  }
+
+  protected static long generateID() {
+    return ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
+  }
+
+  public long getId() {
+    return mId;
   }
 
   public abstract boolean handleMessage(Thing t, ThingEvent e, String message);
@@ -67,6 +80,7 @@ public abstract class EventHandler {
   public JSONObject toJSON() {
     JSONObject result = new JSONObject();
 
+    result.put(KEY_ID, Long.toString(mId));
     result.put(KEY_TAG, mTag);
     result.put(KEY_CONSUMER, eventConsumer.toJSON());
     result.put(KEY_COMMAND, command.getJSON());

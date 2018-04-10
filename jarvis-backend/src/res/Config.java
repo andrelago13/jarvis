@@ -43,6 +43,7 @@ public class Config {
   public static final String MONGO_USER_COMMANDS_COLLECTION = "userCommands";
   public static final String MONGO_ACTIVE_RULES_COLLECTION = "activeRules";
   public static final String MONGO_EVENT_HISTORY_COLLECTION = "eventHistory";
+  public static final String MONGO_ACTIVE_EVENTS_COLLECTION = "activeEventHandlers";
   public static final int MAX_EVENTS_TO_FETCH = 20;
   public static final int MAX_COMMANDS_TO_FETCH = 20;
 
