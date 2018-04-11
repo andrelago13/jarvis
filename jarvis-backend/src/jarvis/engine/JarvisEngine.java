@@ -129,8 +129,13 @@ public class JarvisEngine {
     return null;
   }
 
-  public Map<Long, ScheduledAction> getScheduledActions() {
-    return mScheduledActions;
+  public List<ScheduledAction> getScheduledActions() {
+    List<ScheduledAction> result = new ArrayList<>();
+    Set<Long> keys = mScheduledActions.keySet();
+    for (Long k : keys) {
+      result.add(mScheduledActions.get(k));
+    }
+    return result;
   }
 
   public List<LoggedCommand> getLatestNUserCommands(int n) {
@@ -164,11 +169,13 @@ public class JarvisEngine {
     addScheduling(id, action);
   }
 
-  private void createRepeatedScheduling(long id, Command cmd, long initialDelay, long interval,
-      TimeUnit timeUnit) {
+  private void createRepeatedScheduling(long id, Command cmd, LocalTime desiredTime) {
+    long initialDelay = TimeUtils.calculateSecondsToLocalTime(desiredTime);
+    long repeatInterval = TimeUnit.DAYS.toSeconds(1);
+
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     ScheduledFuture future = executor.scheduleAtFixedRate(
-        new CommandRunnable(cmd), initialDelay, interval, TimeUnit.SECONDS);
+        new CommandRunnable(cmd), initialDelay, repeatInterval, TimeUnit.SECONDS);
     ScheduledAction action = new ScheduledAction(id, cmd, future);
     addScheduling(id, action);
   }
@@ -287,9 +294,7 @@ public class JarvisEngine {
   // Schedules a daily repeating rule
   // Command must call actionCompleted when finished
   public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
-    long initialDelay = TimeUtils.calculateSecondsToLocalTime(desiredTime);
-    long repeatInterval = TimeUnit.DAYS.toSeconds(1);
-    createRepeatedScheduling(id, cmd, initialDelay, repeatInterval, TimeUnit.SECONDS);
+    createRepeatedScheduling(id, cmd, desiredTime);
   }
 
   // Cancels a daily repeating rule

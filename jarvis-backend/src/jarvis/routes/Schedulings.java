@@ -1,9 +1,11 @@
 package jarvis.routes;
 
+import jarvis.actions.ScheduledAction;
 import jarvis.engine.JarvisEngine;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.GET;
@@ -20,11 +22,10 @@ public class Schedulings {
   @Produces("application/json")
   public String getClichedMessage() throws IOException, ClassNotFoundException {
     try {
-      Map s = JarvisEngine.getInstance().getScheduledActions();
+      List<ScheduledAction> s = JarvisEngine.getInstance().getScheduledActions();
       String result = "Size: " + s.size() + '\n';
-      Set<Long> keys = s.keySet();
-      for (Long k : keys) {
-        result += "" + k + '\n';
+      for (ScheduledAction k : s) {
+        result += "" + k.getId() + " " + k.getCommand().executeString() + '\n';
       }
       return result;
     } catch (Exception e) {

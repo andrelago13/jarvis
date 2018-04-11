@@ -4,14 +4,19 @@ import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.definitions.DialogFlowIntent;
 import dialogflow.intent.definitions.IntentExtras;
+import jarvis.actions.ScheduledAction;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.util.LoggedCommand;
 import jarvis.controllers.definitions.Thing;
 import jarvis.engine.JarvisEngine;
+import jarvis.events.definitions.EventHandler;
 import jarvis.util.JarvisException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import mongodb.MongoDB;
 import org.json.JSONObject;
 import res.Config;
 
@@ -46,42 +51,58 @@ public class RulesDefinedIntent extends DialogFlowIntent {
     }
     Thing thing = things.get(0);
 
-    // TODO check the active rules
-    List<LoggedCommand> commands = JarvisEngine.getInstance()
-        .getLatestNUserCommands(Config.MAX_COMMANDS_TO_FETCH);
+    Set<EventHandler> activeEvents = JarvisEngine.getInstance().getEventHandlers();
+    List<ScheduledAction> scheduledActions = JarvisEngine.getInstance().getScheduledActions();
 
-    List<LoggedCommand> matchingCommands = new ArrayList<>();
-    for (LoggedCommand cmd : commands) {
-      List<Thing> cmdTargets = cmd.getCommand().targetThings();
-      for (Thing t : cmdTargets) {
+    List<Command> activeCommands = new ArrayList<>();
+    for (ScheduledAction action : scheduledActions) {
+      long id = action.getId();
+      Optional<Command> c = MongoDB.getUserCommand(id);
+      c.ifPresent(activeCommands::add);
+    }
+
+    Set<EventHandler> relatedEvents = new HashSet<>();
+    for (EventHandler h : activeEvents) {
+      List<Thing> targetThings = h.command.targetThings();
+      for(Thing t : targetThings) {
         if (t.getName().equals(thing.getName())) {
-          matchingCommands.add(cmd);
+          relatedEvents.add(h);
+          break;
         }
       }
     }
 
-    return getSuccessResponse(thing, matchingCommands);
+    return getSuccessResponse(thing, activeCommands, relatedEvents);
   }
 
-  @Override
-  public Optional<Command> getCommand() {
-    return Optional.empty();
-  }
-
-  private static QueryResponse getSuccessResponse(Thing thing, List<LoggedCommand> commands) {
+  private QueryResponse getSuccessResponse(Thing thing, List<Command> activeCommands,
+      Set<EventHandler> relatedEvents) {
     StringBuilder builder = new StringBuilder();
-    if (commands.size() == 0) {
+    int totalSize = activeCommands.size() + relatedEvents.size();
+
+    if (totalSize == 0) {
       builder.append(MSG_SUCCESS_EMPTY_PREFIX);
       builder.append(thing.getName());
-    } else if (commands.size() == 1) {
+    } else if (totalSize == 1) {
       builder.append(MSG_SUCCESS_SINGLE_PREFIX);
-      builder.append(commands.get(0).getCommand().friendlyExecuteString());
+      String suffix = "";
+      for (Command c : activeCommands) {
+        suffix = c.friendlyExecuteString();
+      }
+      for (EventHandler h : relatedEvents) {
+        suffix = h.friendlyStringWithCommand();
+      }
+      builder.append(suffix);
     } else {
-      builder.append(MSG_SUCCESS_MULTIPLE_PREFIX.replace("#", Integer.toString(commands.size())));
+      builder.append(MSG_SUCCESS_MULTIPLE_PREFIX.replace("#", Integer.toString(totalSize)));
       builder.append(thing.getName());
       builder.append(". ");
-      for(LoggedCommand cmd : commands) {
-        builder.append(cmd.getCommand().friendlyExecuteString());
+      for (Command cmd : activeCommands) {
+        builder.append(cmd.friendlyExecuteString());
+        builder.append(". ");
+      }
+      for (EventHandler h : relatedEvents) {
+        builder.append(h.friendlyStringWithCommand());
         builder.append(". ");
       }
     }
@@ -89,6 +110,11 @@ public class RulesDefinedIntent extends DialogFlowIntent {
     QueryResponse response = new QueryResponse();
     response.addFulfillmentMessage(builder.toString());
     return response;
+  }
+
+  @Override
+  public Optional<Command> getCommand() {
+    return Optional.empty();
   }
 
   private static QueryResponse getErrorResponse() {
