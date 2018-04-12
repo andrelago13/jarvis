@@ -244,6 +244,13 @@ public class JarvisEngine {
     return result;
   }
 
+  public Optional<EventHandler> getEventHandler(long id) {
+    if(!mActiveHandlers.containsKey(id)) {
+      return Optional.empty();
+    }
+    return Optional.of(mActiveHandlers.get(id));
+  }
+
   ///////////////////////////////////
   ////////// EXECUTION API //////////
   ///////////////////////////////////

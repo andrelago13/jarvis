@@ -16,10 +16,10 @@ public abstract class EventHandler {
 
   public static final String TAG = "eventHandler";
 
-  protected static final String KEY_ID = "id";
-  protected static final String KEY_TAG = "tag";
-  protected static final String KEY_CONSUMER = "consumer";
-  protected static final String KEY_COMMAND = "command";
+  public static final String KEY_ID = "id";
+  public static final String KEY_TAG = "tag";
+  public static final String KEY_CONSUMER = "consumer";
+  public static final String KEY_COMMAND = "command";
 
   public final EventConsumer eventConsumer;
   public final Command command;

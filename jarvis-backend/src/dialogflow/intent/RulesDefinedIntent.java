@@ -1,5 +1,6 @@
 package dialogflow.intent;
 
+import dialogflow.DialogFlowContext;
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
 import dialogflow.intent.definitions.DialogFlowIntent;
@@ -12,8 +13,10 @@ import jarvis.engine.JarvisEngine;
 import jarvis.events.definitions.EventHandler;
 import jarvis.util.JarvisException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import mongodb.MongoDB;
@@ -64,7 +67,7 @@ public class RulesDefinedIntent extends DialogFlowIntent {
     Set<EventHandler> relatedEvents = new HashSet<>();
     for (EventHandler h : activeEvents) {
       List<Thing> targetThings = h.command.targetThings();
-      for(Thing t : targetThings) {
+      for (Thing t : targetThings) {
         if (t.getName().equals(thing.getName())) {
           relatedEvents.add(h);
           break;
@@ -79,6 +82,7 @@ public class RulesDefinedIntent extends DialogFlowIntent {
       Set<EventHandler> relatedEvents) {
     StringBuilder builder = new StringBuilder();
     int totalSize = activeCommands.size() + relatedEvents.size();
+    DialogFlowContext outContext = null;
 
     if (totalSize == 0) {
       builder.append(MSG_SUCCESS_EMPTY_PREFIX);
@@ -88,12 +92,19 @@ public class RulesDefinedIntent extends DialogFlowIntent {
       String suffix = "";
       for (Command c : activeCommands) {
         suffix = c.friendlyExecuteString();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(Config.DF_EDIT_RULE_CONTEXT_COMMAND, c.getJSON().toString());
+        outContext = new DialogFlowContext(Config.DF_EDIT_SINGLE_RULE_CONTEXT, 1, parameters);
       }
       for (EventHandler h : relatedEvents) {
         suffix = h.friendlyStringWithCommand();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(Config.DF_EDIT_RULE_CONTEXT_EVENT, h.toJSON().toString());
+        outContext = new DialogFlowContext(Config.DF_EDIT_SINGLE_RULE_CONTEXT, 1, parameters);
       }
       builder.append(suffix);
     } else {
+      // TODO add context for multiple rules
       builder.append(MSG_SUCCESS_MULTIPLE_PREFIX.replace("#", Integer.toString(totalSize)));
       builder.append(thing.getName());
       builder.append(". ");
@@ -109,6 +120,9 @@ public class RulesDefinedIntent extends DialogFlowIntent {
 
     QueryResponse response = new QueryResponse();
     response.addFulfillmentMessage(builder.toString());
+    if (outContext != null) {
+      response.addOutContext(outContext);
+    }
     return response;
   }
 
