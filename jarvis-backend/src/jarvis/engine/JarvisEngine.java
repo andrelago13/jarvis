@@ -7,6 +7,7 @@ import jarvis.actions.command.definitions.CommandResult;
 import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
+import jarvis.controllers.TemperatureSensor;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
@@ -61,7 +62,6 @@ public class JarvisEngine {
   private void init() {
     ThingInterface.init(getDefaultThings());
     LoggerCommunication.init(getDefaultThings());
-    // TODO get actions from backup
     mScheduledActions = new HashMap<>();
     mActiveConsumers = new HashSet<>();
     mActiveHandlers = new HashMap<>();
@@ -94,6 +94,7 @@ public class JarvisEngine {
     // Default light
     things.add(OnOffLight.Builder.getDefaultBuilder("bedroom light", "/house").build());
     things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
+    things.add(TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
 
     return things;
   }
