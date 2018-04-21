@@ -4,13 +4,17 @@ import jarvis.actions.CommandRunnable;
 import jarvis.actions.ScheduledAction;
 import jarvis.actions.command.definitions.Command;
 import jarvis.actions.command.definitions.CommandResult;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
+import jarvis.controllers.TemperatureSensor;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.events.definitions.EventHandler;
+import jarvis.events.util.LoggedEventHandler;
 import jarvis.listeners.EventConsumer;
+import jarvis.listeners.ValueUpdateEventConsumer;
 import jarvis.util.TimeUtils;
 import java.sql.Timestamp;
 import java.time.LocalTime;
@@ -30,6 +34,7 @@ import mongodb.MongoDB;
 import org.json.JSONObject;
 import rabbitmq.RabbitMQ;
 import res.Config;
+import slack.SlackUtil;
 
 public class JarvisEngine {
 
@@ -59,7 +64,6 @@ public class JarvisEngine {
   private void init() {
     ThingInterface.init(getDefaultThings());
     LoggerCommunication.init(getDefaultThings());
-    // TODO get actions from backup
     mScheduledActions = new HashMap<>();
     mActiveConsumers = new HashSet<>();
     mActiveHandlers = new HashMap<>();
@@ -73,6 +77,11 @@ public class JarvisEngine {
       List<ThingEvent> events = t.getEvents();
       for (ThingEvent e : events) {
         addEventListener(t, e);
+      }
+
+      if(t instanceof TemperatureSensor) {
+        ThingEvent e = t.getEvents().get(0);
+        RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new ValueUpdateEventConsumer(t, e));
       }
     }
   }
@@ -92,6 +101,7 @@ public class JarvisEngine {
     // Default light
     things.add(OnOffLight.Builder.getDefaultBuilder("bedroom light", "/house").build());
     things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
+    things.add(TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
 
     return things;
   }
@@ -127,11 +137,16 @@ public class JarvisEngine {
     return null;
   }
 
-  public Map<Long, ScheduledAction> getScheduledActions() {
-    return mScheduledActions;
+  public List<ScheduledAction> getScheduledActions() {
+    List<ScheduledAction> result = new ArrayList<>();
+    Set<Long> keys = mScheduledActions.keySet();
+    for (Long k : keys) {
+      result.add(mScheduledActions.get(k));
+    }
+    return result;
   }
 
-  public List<Command> getLatestNUserCommands(int n) {
+  public List<LoggedCommand> getLatestNUserCommands(int n) {
     return ThingInterface.getLatestNUserCommands(n);
   }
 
@@ -141,6 +156,10 @@ public class JarvisEngine {
 
   public Optional<Command> getUserCommand(long id) {
     return ThingInterface.getUserCommand(id);
+  }
+
+  public void updateThingValue(String thingName, Object value) {
+    ValueTracker.getInstance().setValue(thingName, value);
   }
 
   ///////////////////////////////////
@@ -162,11 +181,13 @@ public class JarvisEngine {
     addScheduling(id, action);
   }
 
-  private void createRepeatedScheduling(long id, Command cmd, long initialDelay, long interval,
-      TimeUnit timeUnit) {
+  private void createRepeatedScheduling(long id, Command cmd, LocalTime desiredTime) {
+    long initialDelay = TimeUtils.calculateSecondsToLocalTime(desiredTime);
+    long repeatInterval = TimeUnit.DAYS.toSeconds(1);
+
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     ScheduledFuture future = executor.scheduleAtFixedRate(
-        new CommandRunnable(cmd), initialDelay, interval, TimeUnit.SECONDS);
+        new CommandRunnable(cmd), initialDelay, repeatInterval, TimeUnit.SECONDS);
     ScheduledAction action = new ScheduledAction(id, cmd, future);
     addScheduling(id, action);
   }
@@ -188,8 +209,9 @@ public class JarvisEngine {
     return mActiveConsumers;
   }
 
-  public void addEventHandler(long id, EventHandler handler) {
-    mActiveHandlers.put(id, handler);
+  public void addEventHandler(EventHandler handler) {
+    mActiveHandlers.put(handler.getId(), handler);
+    MongoDB.logActiveEventHandler(handler.toJSON());
   }
 
   public boolean removeEventHandler(long id) {
@@ -197,6 +219,7 @@ public class JarvisEngine {
       return false;
     }
     mActiveHandlers.remove(id);
+    MongoDB.deleteActiveEventHandler(id);
     return true;
   }
 
@@ -217,19 +240,27 @@ public class JarvisEngine {
     return false;
   }
 
-  public boolean logEventHandled(JSONObject json) {
-    return LoggerCommunication.logEventHandled(json);
+  public boolean logEventHandled(EventHandler handler) {
+    LoggedEventHandler info = new LoggedEventHandler(handler);
+    return LoggerCommunication.logEventHandled(info);
   }
 
   public Set<EventHandler> getEventHandlers() {
     Set<EventHandler> result = new HashSet<>();
 
     Set<Long> keys = mActiveHandlers.keySet();
-    for(Long k : keys) {
+    for (Long k : keys) {
       result.add(mActiveHandlers.get(k));
     }
 
     return result;
+  }
+
+  public Optional<EventHandler> getEventHandler(long id) {
+    if(!mActiveHandlers.containsKey(id)) {
+      return Optional.empty();
+    }
+    return Optional.of(mActiveHandlers.get(id));
   }
 
   ///////////////////////////////////
@@ -282,9 +313,7 @@ public class JarvisEngine {
   // Schedules a daily repeating rule
   // Command must call actionCompleted when finished
   public void scheduleDailyRule(long id, Command cmd, LocalTime desiredTime) {
-    long initialDelay = TimeUtils.calculateSecondsToLocalTime(desiredTime);
-    long repeatInterval = TimeUnit.DAYS.toSeconds(1);
-    createRepeatedScheduling(id, cmd, initialDelay, repeatInterval, TimeUnit.SECONDS);
+    createRepeatedScheduling(id, cmd, desiredTime);
   }
 
   // Cancels a daily repeating rule

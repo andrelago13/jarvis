@@ -67,7 +67,8 @@ public class Thing {
     ON_OFF_LIGHT,
     DIMMABLE_LIGHT,
     ON_OFF_COLOR_LIGHT,
-    DIMMABLE_COLOR_LIGHT
+    DIMMABLE_COLOR_LIGHT,
+    TEMPERATURE_SENSOR
   }
 
   public static final Map<Integer, String> typeValues = new HashMap<>();
@@ -83,6 +84,7 @@ public class Thing {
     typeValues.put(Type.DIMMABLE_LIGHT.ordinal(), "dimmableLight");
     typeValues.put(Type.ON_OFF_COLOR_LIGHT.ordinal(), "onOffColorLight");
     typeValues.put(Type.DIMMABLE_COLOR_LIGHT.ordinal(), "dimmableColorLight");
+    typeValues.put(Type.TEMPERATURE_SENSOR.ordinal(), "temperatureSensor");
   }
 
   protected Thing(@NotNull String name,

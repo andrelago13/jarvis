@@ -14,10 +14,13 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import jarvis.actions.CommandBuilder;
 import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.controllers.ThingParser;
 import jarvis.controllers.definitions.Thing;
 import jarvis.events.definitions.EventHandler;
+import jarvis.events.util.LoggedEventHandler;
 import jarvis.util.AdminAlertUtil;
+import jarvis.util.JarvisException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -103,6 +106,10 @@ public class MongoDB {
     return getCollection(client, Config.MONGO_EVENT_HISTORY_COLLECTION);
   }
 
+  private static MongoCollection getActiveEventHandlersCollection(MongoClient client) {
+    return getCollection(client, Config.MONGO_ACTIVE_EVENTS_COLLECTION);
+  }
+
   public static boolean initialize(List<Thing> defaultThings) {
     MongoClient m = null;
     try {
@@ -142,9 +149,7 @@ public class MongoDB {
     return true;
   }
 
-  //////////////////////////////////////
-  //////////////// THINGS //////////////
-  //////////////////////////////////////
+  // THINGS /////////////////////////////////////////////////////////////
 
   public static List<Thing> getThings() {
     List<Thing> things = new ArrayList<>();
@@ -226,9 +231,7 @@ public class MongoDB {
     return things;
   }
 
-  //////////////////////////////////////
-  ////////////// COMMANDS //////////////
-  //////////////////////////////////////
+  // COMMANDS /////////////////////////////////////////////////////////////
 
   public static Optional<Command> getCommand(long id) {
     Command result = null;
@@ -238,9 +241,9 @@ public class MongoDB {
       m = buildClient();
       MongoCollection col = getCommandsCollection(m);
       FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
-      List<Command> commands = getCommandsFromDocument(documents);
+      List<LoggedCommand> commands = getCommandsFromDocument(documents);
       if (commands.size() == 1) {
-        result = commands.get(0);
+        result = commands.get(0).getCommand();
       }
     } catch (Exception e) {
       AdminAlertUtil.alertUnexpectedException(e);
@@ -257,16 +260,15 @@ public class MongoDB {
     return Optional.of(result);
   }
 
-  private static List<Command> getCommandsFromDocument(FindIterable<Document> documents) {
-    List<Command> commands = new ArrayList<>();
+  private static List<LoggedCommand> getCommandsFromDocument(FindIterable<Document> documents) {
+    List<LoggedCommand> commands = new ArrayList<>();
     for (Document doc : documents) {
       JSONObject commandInfo = new JSONObject(doc.toJson());
-      if (!commandInfo.has(KEY_COMMAND)) {
-        continue;
-      }
-      Command c = CommandBuilder.buildFromJSON(commandInfo.getJSONObject(KEY_COMMAND));
-      if (c != null) {
-        commands.add(c);
+      try {
+        LoggedCommand cmd = new LoggedCommand(commandInfo);
+        commands.add(cmd);
+      } catch (JarvisException e) {
+        // do nothing
       }
     }
     return commands;
@@ -276,16 +278,57 @@ public class MongoDB {
     return insertOne(command, Config.MONGO_COMMANDS_COLLECTION);
   }
 
-  //////////////////////////////////////
-  ////////////// EVENTS ////////////////
-  //////////////////////////////////////
+  // EVENTS ///////////////////////////////////////////////////////////////
+
+  public static boolean logActiveEventHandler(JSONObject event) {
+    return insertOne(event, Config.MONGO_ACTIVE_EVENTS_COLLECTION);
+  }
+
+  public static boolean deleteActiveEventHandler(long id) {
+    MongoClient m = null;
+    try {
+      m = buildClient();
+      MongoCollection col = getActiveEventHandlersCollection(m);
+
+      BasicDBObject document = new BasicDBObject();
+      document.put("id", Long.toString(id));
+      DeleteResult res = col.deleteOne(document);
+      return res.getDeletedCount() == 1;
+    } catch (Exception e) {
+      AdminAlertUtil.alertUnexpectedException(e);
+      e.printStackTrace();
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
+    return false;
+  }
+
+  public static boolean deleteActiveEventHandlers() {
+    MongoClient m = null;
+    try {
+      m = buildClient();
+      MongoCollection col = getActiveEventHandlersCollection(m);
+      col.drop();
+      return true;
+    } catch (Exception e) {
+      AdminAlertUtil.alertUnexpectedException(e);
+      e.printStackTrace();
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
+    return false;
+  }
 
   public static boolean logEventHandled(JSONObject command) {
     return insertOne(command, Config.MONGO_EVENT_HISTORY_COLLECTION);
   }
 
-  public static List<EventHandler> getLatestNEventsHandled(int n) {
-    List<EventHandler> eventHandlers = new ArrayList<>();
+  public static List<LoggedEventHandler> getLatestNEventsHandled(int n) {
+    List<LoggedEventHandler> eventHandlers = new ArrayList<>();
 
     MongoClient m = null;
     try {
@@ -305,29 +348,27 @@ public class MongoDB {
     return eventHandlers;
   }
 
-  private static List<EventHandler> getEventHandlersFromDocument(FindIterable<Document> documents) {
-    List<EventHandler> events = new ArrayList<>();
+  private static List<LoggedEventHandler> getEventHandlersFromDocument(FindIterable<Document> documents) {
+    List<LoggedEventHandler> events = new ArrayList<>();
     for (Document doc : documents) {
       JSONObject eventHandlerInfo = new JSONObject(doc.toJson());
-      Optional<EventHandler> e = EventHandler
-          .buildFromJSON(eventHandlerInfo.getJSONObject("event"));
-      if (e.isPresent()) {
-        events.add(e.get());
+      try {
+        events.add(new LoggedEventHandler(eventHandlerInfo));
+      } catch (JarvisException e1) {
+        e1.printStackTrace();
       }
     }
     return events;
   }
 
-  //////////////////////////////////////
-  //////////// USER COMMANDS ///////////
-  //////////////////////////////////////
+  // USER COMMANDS /////////////////////////////////////////////////////////////
 
   public static boolean logUserCommand(JSONObject command) {
     return insertOne(command, Config.MONGO_USER_COMMANDS_COLLECTION);
   }
 
-  public static List<Command> getLatestNUserCommands(int n) {
-    List<Command> commands = new ArrayList<>();
+  public static List<LoggedCommand> getLatestNUserCommands(int n) {
+    List<LoggedCommand> commands = new ArrayList<>();
 
     MongoClient m = null;
     try {
@@ -355,9 +396,9 @@ public class MongoDB {
       m = buildClient();
       MongoCollection col = getUserCommandsCollection(m);
       FindIterable<Document> documents = col.find(Filters.eq("command.id", id));
-      List<Command> commands = getCommandsFromDocument(documents);
+      List<LoggedCommand> commands = getCommandsFromDocument(documents);
       if (commands.size() == 1) {
-        result = commands.get(0);
+        result = commands.get(0).getCommand();
       }
     } catch (Exception e) {
       AdminAlertUtil.alertUnexpectedException(e);
@@ -374,9 +415,7 @@ public class MongoDB {
     return Optional.of(result);
   }
 
-  //////////////////////////////////////
-  //////////// ACTIVE RULES ////////////
-  //////////////////////////////////////
+  // ACTIVE RULES /////////////////////////////////////////////////////////////
 
   public static boolean logActiveRule(JSONObject rule) {
     return insertOne(rule, Config.MONGO_ACTIVE_RULES_COLLECTION);
@@ -421,9 +460,7 @@ public class MongoDB {
     return false;
   }
 
-  //////////////////////////////////////
-  //////////////// OTHERS //////////////
-  //////////////////////////////////////
+  // OTHERS /////////////////////////////////////////////////////////////
 
   private static boolean insertOne(JSONObject obj, String colName) {
     MongoClient m = null;

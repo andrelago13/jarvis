@@ -8,6 +8,8 @@ import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.actionables.Toggleable;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.ThingProperty;
+import jarvis.engine.JarvisEngine;
+import jarvis.engine.ValueTracker;
 import java.util.List;
 import java.util.Optional;
 import org.json.JSONObject;
@@ -41,24 +43,35 @@ public class OnOffLight extends Thing implements Toggleable {
 
   @Override
   public Optional<Boolean> turnOn() {
-    ThingInterface.sendThingsMessage(mLinks.getActions().get(), "on");
-    return Optional.empty();
+    ValueTracker.getInstance().setValue(mName, true);
+    return Optional.of(ThingInterface.sendThingsMessage(mLinks.getActions().get(), "on"));
   }
 
   @Override
   public Optional<Boolean> turnOff() {
-    ThingInterface.sendThingsMessage(mLinks.getActions().get(), "off");
-    return Optional.empty();
+    ValueTracker.getInstance().setValue(mName, false);
+    return Optional.of(ThingInterface.sendThingsMessage(mLinks.getActions().get(), "off"));
   }
 
   @Override
   public Optional<Boolean> toggle() {
+    Optional<Boolean> status = ValueTracker.getInstance().getValueBoolean(mName);
+    if(status.isPresent()) {
+      if(status.get()) {
+        // is on, will turn off
+        return turnOff();
+      } else {
+        // is off, will turn on
+        return turnOn();
+      }
+    }
+
     return Optional.empty();
   }
 
   @Override
   public Optional<Boolean> isOn() {
-    return Optional.empty();
+    return ValueTracker.getInstance().getValueBoolean(mName);
   }
 
   public static class Builder extends Thing.Builder {

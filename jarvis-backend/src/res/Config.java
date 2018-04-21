@@ -43,6 +43,9 @@ public class Config {
   public static final String MONGO_USER_COMMANDS_COLLECTION = "userCommands";
   public static final String MONGO_ACTIVE_RULES_COLLECTION = "activeRules";
   public static final String MONGO_EVENT_HISTORY_COLLECTION = "eventHistory";
+  public static final String MONGO_ACTIVE_EVENTS_COLLECTION = "activeEventHandlers";
+  public static final int MAX_EVENTS_TO_FETCH = 20;
+  public static final int MAX_COMMANDS_TO_FETCH = 20;
 
   /**
    * Timeout for Mongo connections.
@@ -77,6 +80,10 @@ public class Config {
   public static final String DF_EVENT_INTENT_ID = "d234e808-2fd7-420f-9aef-1852750f8bc6";
   public static final String DF_WHY_HAPPENNED_INTENT_NAME = "Why did something happen?";
   public static final String DF_WHY_HAPPENNED_INTENT_ID = "a835dba1-f963-4b82-a41f-c8dbf6eb8c19";
+  public static final String DF_RULES_DEFINED_INTENT_NAME = "Rules Defined";
+  public static final String DF_RULES_DEFINED_INTENT_ID = "51d173a2-2efd-4641-befa-b06dc692f155";
+  public static final String DF_CHANGE_SINGLE_RULE_INTENT_NAME = "Rules Defined | Change Single Rule";
+  public static final String DF_CHANGE_SINGLE_RULE_INTENT_ID = "9798598e-cb3c-4bcc-bb68-3721a1ec3b23";
 
   /**
    * DialogFlow context constants.
@@ -85,6 +92,11 @@ public class Config {
   public static final String DF_CANCEL_INTENT_COMMAND_ID = "commandId";
   public static final int DF_CANCEL_INTENT_COMMAND_LIFESPAN = 1;
   public static final String DF_CONFIRM_THING_INTENT_CONTEXT = "confirm-thing-choice";
+  public static final String DF_EDIT_SINGLE_RULE_CONTEXT = "edit-single-rule";
+  public static final String DF_EDIT_MULTIPLE_RULE_CONTEXT = "edit-multiple-rule";
+  public static final String DF_EDIT_RULE_CONTEXT_COMMAND = "command";
+  public static final String DF_EDIT_RULE_CONTEXT_EVENT = "event";
+  public static final String DF_EDIT_RULE_CONTEXT_EVENTS = "events";
 
   /**
    * DialogFlow entity constants.

@@ -46,7 +46,8 @@ public class BooleanEventHandler extends EventHandler {
 
     if (OnOffStatus.isValueEqualToBoolean(message, value)) {
       JarvisEngine.getInstance().executeCommand(command);
-      JarvisEngine.getInstance().logEventHandled(this.toJSON());
+      // Every handler must perform logging
+      log();
     }
     return true;
   }

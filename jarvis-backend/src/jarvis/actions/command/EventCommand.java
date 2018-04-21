@@ -45,13 +45,13 @@ public class EventCommand extends Command {
 
   @Override
   public CommandResult execute() {
-    JarvisEngine.getInstance().addEventHandler(mId, mEventHandler);
+    JarvisEngine.getInstance().addEventHandler(mEventHandler);
     return new CommandResult(true);
   }
 
   @Override
   public CommandResult undo() {
-    return new CommandResult(JarvisEngine.getInstance().removeEventHandler(mId));
+    return new CommandResult(JarvisEngine.getInstance().removeEventHandler(mEventHandler.getId()));
   }
 
   @Override
@@ -83,7 +83,8 @@ public class EventCommand extends Command {
   @Override
   public List<Thing> targetThings() {
     List<Thing> res = new ArrayList<>();
-    res.add(mEventHandler.eventConsumer.getThing());
+    res.addAll(mCommand.targetThings());
+//    res.add(mEventHandler.eventConsumer.getThing());
     return res;
   }
 
@@ -98,6 +99,14 @@ public class EventCommand extends Command {
     }
 
     return true;
+  }
+
+  @Override
+  public boolean canCauseCommand(Command c2) {
+    if(equals(c2) || mCommand.canCauseCommand(c2)) {
+      return true;
+    }
+    return false;
   }
 
   @Override

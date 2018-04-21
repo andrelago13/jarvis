@@ -13,8 +13,8 @@ public class EventConsumer {
   public final static String KEY_THING = "thing";
   public final static String KEY_EVENT = "event";
 
-  private Thing mThing;
-  private ThingEvent mEvent;
+  protected Thing mThing;
+  protected ThingEvent mEvent;
 
   public EventConsumer(Thing thing, ThingEvent event) {
     mThing = thing;

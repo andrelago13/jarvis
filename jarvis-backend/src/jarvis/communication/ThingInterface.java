@@ -1,6 +1,7 @@
 package jarvis.communication;
 
 import jarvis.actions.command.definitions.Command;
+import jarvis.actions.command.util.LoggedCommand;
 import jarvis.controllers.definitions.Thing;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class ThingInterface {
     return MongoDB.getThingsWithNameLike(name);
   }
 
-  public static List<Command> getLatestNUserCommands(int n) {
+  public static List<LoggedCommand> getLatestNUserCommands(int n) {
     return MongoDB.getLatestNUserCommands(n);
   }
 
@@ -48,5 +49,6 @@ public class ThingInterface {
     String[] rabbitCreds = Config.getRabbitCredentials();
     RabbitMQ.getInstance().init(rabbitCreds[0], rabbitCreds[1], rabbitCreds[2]);
     MongoDB.deleteActiveRules();
+    MongoDB.deleteActiveEventHandlers();
   }
 }

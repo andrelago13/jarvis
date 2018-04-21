@@ -1,0 +1,50 @@
+{
+  "id": "3412015b-1f94-4a2a-acaf-991e000486b1",
+  "timestamp": "2018-04-11T23:42:46.52Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "change that to when the living room light is on",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "event": {
+        "on-off-actuator": {
+          "light-switch": "living room light"
+        },
+        "on-off-status": "on"
+      }
+    },
+    "contexts": [
+      {
+        "lifespan": 1,
+        "name": "edit-single-rule",
+        "parameters": {
+          "event": "{\"id\":\"2144309538794832901\",\"tag\":\"booleanEventHandler\",\"value\":false,\"consumer\":{\"event\":{\"ON_OFF\":{\"unit\":\"boolean\",\"description\":\"Whether light is on\",\"href\":\"/house/living room light/events/ON_OFF\",\"type\":\"boolean\"}},\"thing\":{\"name\":\"living room light\",\"description\":\"On/Off light switch\",\"links\":{\"actions\":\"/house/living room light/actions\",\"properties\":\"/house/living room light/properties\",\"events\":\"/house/living room light/events\"},\"type\":\"onOffLight\",\"properties\":{\"status\":{\"description\":\"Describes current state of the switch (true=on)\",\"type\":\"boolean\"}},\"events\":{\"ON_OFF\":{\"unit\":\"boolean\",\"description\":\"Whether light is on\",\"href\":\"/house/living room light/events/ON_OFF\",\"type\":\"boolean\"}}}},\"command\":{\"id\":6840089621934373932,\"type\":\"onOffCommand\",\"thing\":\"bedroom light\",\"status\":true}}"
+        }
+      }
+    ],
+    "metadata": {
+      "intentId": "9798598e-cb3c-4bcc-bb68-3721a1ec3b23",
+      "webhookUsed": "false",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Rules Defined | Change Single Rule"
+    },
+    "fulfillment": {
+      "speech": "",
+      "messages": [
+        {
+          "type": 0,
+          "speech": ""
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "a4bb052c-5238-4a73-a7f9-95595bffa42f"
+}

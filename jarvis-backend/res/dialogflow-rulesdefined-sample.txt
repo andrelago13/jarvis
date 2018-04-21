@@ -1,0 +1,39 @@
+{
+  "id": "1abcefa2-d854-4840-b063-9a6b0aff30d2",
+  "timestamp": "2018-04-09T15:50:52.161Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "what rules are defined for the living room light",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "thing": {
+        "light-switch": "living room light"
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "51d173a2-2efd-4641-befa-b06dc692f155",
+      "webhookUsed": "false",
+      "webhookForSlotFillingUsed": "false",
+      "intentName": "Rules Defined"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I was not able to help with that.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Sorry, I was not able to help with that."
+        }
+      ]
+    },
+    "score": 0.8299999833106995
+  },
+  "status": {
+    "code": 200,
+    "errorType": "success",
+    "webhookTimedOut": false
+  },
+  "sessionId": "8290b4d1-4f06-4fdc-a40e-d01736c58ad7"
+}

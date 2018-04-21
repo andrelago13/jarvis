@@ -134,4 +134,13 @@ public class PeriodCommand extends Command {
   public boolean isCancellable() {
     return mStartTimestamp > System.currentTimeMillis();
   }
+
+  @Override
+  public boolean canCauseCommand(Command c2) {
+    // TODO this should check the undo action as well
+    if(equals(c2) || mCommand.canCauseCommand(c2)) {
+      return true;
+    }
+    return false;
+  }
 }
