@@ -43,7 +43,7 @@ public class ValueTracker {
       try {
         return Optional.of(NumberFormat.getInstance().parse((String)value));
       } catch (Exception e) {
-        return Optional.empty();
+        // do nothing
       }
     } else if (value instanceof Number) {
       return Optional.of((Number) value);
@@ -61,7 +61,7 @@ public class ValueTracker {
       try {
         return Optional.of(NumberFormat.getInstance().parse((String)value).intValue());
       } catch (Exception e) {
-        return Optional.empty();
+        // do nothing
       }
     } else if (value instanceof Number) {
       Number num = (Number) value;
@@ -80,11 +80,28 @@ public class ValueTracker {
       try {
         return Optional.of(NumberFormat.getInstance().parse((String)value).doubleValue());
       } catch (Exception e) {
-        return Optional.empty();
+        // do nothing
       }
     } else if (value instanceof Number) {
       Number num = (Number) value;
       return Optional.of(num.doubleValue());
+    }
+    return Optional.empty();
+  }
+
+  public Optional<Boolean> getValueBoolean(String thingName) {
+    Object value = values.get(thingName);
+    if(value == null) {
+      return Optional.empty();
+    }
+
+    if(value instanceof String) {
+      Boolean res = Boolean.valueOf((String) value);
+      if(res != null) {
+        return Optional.of(res);
+      }
+    } else if (value instanceof Boolean) {
+      return Optional.of((Boolean) value);
     }
     return Optional.empty();
   }
