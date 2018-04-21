@@ -22,13 +22,13 @@ public class TemperatureSensor extends Thing {
       @NotNull ThingLinks links,
       @NotNull List<ThingProperty> properties,
       @NotNull List<ThingEvent> events) {
-    super(name, Type.MULTILEVEL_SENSOR, description, links, properties, events);
+    super(name, Type.TEMPERATURE_SENSOR, description, links, properties, events);
   }
 
   protected TemperatureSensor(@NotNull JSONObject json) {
     super(json);
-    if (mType != Type.MULTILEVEL_SENSOR) {
-      throw new IllegalArgumentException("Thing type for TemperatureSensor must be multilevelSensor.");
+    if (mType != Type.TEMPERATURE_SENSOR) {
+      throw new IllegalArgumentException("Thing type for TemperatureSensor must be temperatureSensor.");
     }
   }
 
@@ -54,6 +54,7 @@ public class TemperatureSensor extends Thing {
       builder.setDescription(DEFAULT_DESCRIPTION);
       ThingProperty statusProperty = new ThingProperty("value", ThingProperty.Type.NUMBER);
       statusProperty.setDescription(DEFAULT_PROPERTY_DESCRIPTION);
+      statusProperty.setHref(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH + '/' + "value");
       builder.addProperty(statusProperty);
       builder.addEvent(new ThingEvent(ThingEvent.Type.VALUE, "temperature", "celsius",
           "Temperature value", basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH + '/' +

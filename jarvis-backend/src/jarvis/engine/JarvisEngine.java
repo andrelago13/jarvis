@@ -14,6 +14,7 @@ import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.events.definitions.EventHandler;
 import jarvis.events.util.LoggedEventHandler;
 import jarvis.listeners.EventConsumer;
+import jarvis.listeners.ValueUpdateEventConsumer;
 import jarvis.util.TimeUtils;
 import java.sql.Timestamp;
 import java.time.LocalTime;
@@ -33,6 +34,7 @@ import mongodb.MongoDB;
 import org.json.JSONObject;
 import rabbitmq.RabbitMQ;
 import res.Config;
+import slack.SlackUtil;
 
 public class JarvisEngine {
 
@@ -75,6 +77,11 @@ public class JarvisEngine {
       List<ThingEvent> events = t.getEvents();
       for (ThingEvent e : events) {
         addEventListener(t, e);
+      }
+
+      if(t instanceof TemperatureSensor) {
+        ThingEvent e = t.getEvents().get(0);
+        RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new ValueUpdateEventConsumer(t, e));
       }
     }
   }
@@ -149,6 +156,10 @@ public class JarvisEngine {
 
   public Optional<Command> getUserCommand(long id) {
     return ThingInterface.getUserCommand(id);
+  }
+
+  public void updateThingValue(String thingName, Object value) {
+    ValueTracker.getInstance().setValue(thingName, value);
   }
 
   ///////////////////////////////////

@@ -21,7 +21,7 @@ public class ThingParser {
     String docType = json.getString(TYPE_KEY);
     if (Thing.getTypeString(Thing.Type.ON_OFF_LIGHT).equals(docType)) {
       return Optional.of(OnOffLight.Builder.buildFromJSON(json));
-    } else if (Thing.getTypeString(Thing.Type.MULTILEVEL_SENSOR).equals(docType)) {
+    } else if (Thing.getTypeString(Thing.Type.TEMPERATURE_SENSOR).equals(docType)) {
       return Optional.of(TemperatureSensor.Builder.buildFromJSON(json));
     }
 
