@@ -5,7 +5,7 @@ services:
     container_name: "jarvis_backend"
     image: oracle/glassfish:5.0
     ports:
-     - "80:8080"
+     - "3001:8080"
      - "4848:4848"
     volumes:
      - ./jarvis-backend:/jarvis-backend
