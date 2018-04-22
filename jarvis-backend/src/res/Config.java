@@ -32,7 +32,7 @@ public class Config {
    */
   public static final String MONGO_USER = "jadmin";
   public static final String MONGO_AUTH_DB = "admin";
-  public static final String MONGO_PASSWORD = "pwd1231pwd#jarvis";
+  public static final String MONGO_PASSWORD = "pwd1231pwd";
 
   /**
    * Mongo DB config.
