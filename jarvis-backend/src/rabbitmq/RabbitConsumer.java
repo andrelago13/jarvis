@@ -32,8 +32,6 @@ public class RabbitConsumer extends DefaultConsumer {
       mConsumer.consume(message);
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 }
