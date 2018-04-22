@@ -48,14 +48,12 @@ public class RabbitMQ {
   }
 
   public boolean init(String host, String username, String password) {
-    System.out.println("Starting rabbit " + host + " " + username + " " + password);
     ConnectionFactory factory = new ConnectionFactory();
     factory.setHost(host);
     factory.setUsername(username);
     factory.setPassword(password);
     try {
       mConnection = factory.newConnection();
-      System.out.println("Success");
     } catch (IOException e) {
       AdminAlertUtil.alertUnexpectedException(e);
       e.printStackTrace();

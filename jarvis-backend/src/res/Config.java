@@ -32,7 +32,7 @@ public class Config {
    */
   public static final String MONGO_USER = "jadmin";
   public static final String MONGO_AUTH_DB = "admin";
-  public static final String MONGO_PASSWORD = "pwd1231pwd";
+  public static final String MONGO_PASSWORD = "pwd1231pwd#jarvis";
 
   /**
    * Mongo DB config.
@@ -120,19 +120,19 @@ public class Config {
   public static final String RABBITMQ_HOST_ENV = "rabbitmq-host";
   public static final String RABBITMQ_USERNAME_ENV = "rabbitmq-user";
   public static final String RABBITMQ_PASSWORD_ENV = "rabbitmq-pass";
-  public static final String RABBITMQ_HOST = "jarvis-iot.ml";
+  public static final String RABBITMQ_HOST = "rabbit";
   public static final String RABBITMQ_USERNAME = "rabbitmq";
   public static final String RABBITMQ_PASSWORD = "rabbitmq";
 
 
   public static String[] getRabbitCredentials() {
-    if (System.getenv(Config.RABBITMQ_HOST_ENV) != null) {
+    /*if (System.getenv(Config.RABBITMQ_HOST_ENV) != null) {
       return new String[]{
           System.getenv(Config.RABBITMQ_HOST_ENV),
           System.getenv(Config.RABBITMQ_USERNAME_ENV),
           System.getenv(Config.RABBITMQ_PASSWORD_ENV)
       };
-    }
+    }*/
     return new String[]{
         Config.RABBITMQ_HOST,
         Config.RABBITMQ_USERNAME,
