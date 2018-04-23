@@ -9,6 +9,8 @@ import jarvis.engine.JarvisEngine;
 import jarvis.events.definitions.EventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.JarvisException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Optional;
 import org.json.JSONObject;
 
@@ -19,10 +21,10 @@ public class ValueEventHandler extends EventHandler {
   public final static String KEY_VALUE = "value";
   public final static String KEY_CONDITION = "condition";
 
-  public final boolean value;
+  public final double value;
   public final int condition; // <0 - value less than, 0 - value equals, >0 - value greater than
 
-  public ValueEventHandler(EventConsumer consumer, Command command, boolean value, int condition) {
+  public ValueEventHandler(EventConsumer consumer, Command command, double value, int condition) {
     super(TAG, consumer, command);
     this.value = value;
     this.condition = condition;
@@ -35,7 +37,7 @@ public class ValueEventHandler extends EventHandler {
     }
 
     try {
-      value = json.getBoolean(KEY_VALUE);
+      value = json.getDouble(KEY_VALUE);
       condition = json.getInt(KEY_CONDITION);
     } catch (Exception e) {
       throw new JarvisException("Unable to create ValueEventHandler from JSON.");
@@ -45,38 +47,60 @@ public class ValueEventHandler extends EventHandler {
   @Override
   public boolean handleMessage(Thing t, ThingEvent e, String message) {
     // FIXME implement
-    /*if (!t.getName().equals(eventConsumer.getThing().getName())) {
+    if (!t.getName().equals(eventConsumer.getThing().getName())) {
       return false;
     }
 
-    if (OnOffStatus.isValueEqualToBoolean(message, value)) {
-      JarvisEngine.getInstance().executeCommand(command);
-      // Every handler must perform logging
-      log();
-    }*/
+    try {
+      if(condition < 0) {
+        if (NumberFormat.getInstance().parse(message).doubleValue() < value) {
+          JarvisEngine.getInstance().executeCommand(command);
+          // Every handler must perform logging
+          log();
+        }
+      } else if (condition > 0) {
+        if (NumberFormat.getInstance().parse(message).doubleValue() > value) {
+          JarvisEngine.getInstance().executeCommand(command);
+          // Every handler must perform logging
+          log();
+        }
+      } else {
+        if (NumberFormat.getInstance().parse(message).doubleValue() == value) {
+          JarvisEngine.getInstance().executeCommand(command);
+          // Every handler must perform logging
+          log();
+        }
+      }
+    } catch (ParseException e1) {
+      // do nothing
+      return false;
+    }
     return true;
   }
 
   @Override
   public String friendlyString() {
-    // FIXME implement
-    /*StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     builder.append(eventConsumer.getThing().getName());
-    builder.append(" is ");
-    builder.append(OnOffStatus.getValueString(value));
-    return builder.toString();*/
+    builder.append(" value is ");
+    if(condition < 0) {
+      builder.append("less than ");
+    } else if (condition > 0) {
+      builder.append("greater than ");
+    } else {
+      builder.append("equal to ");
+    }
+    builder.append(value);
+    return builder.toString();
   }
 
   @Override
   public String friendlyStringWithCommand() {
-    // FIXME implement
-    /*StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     builder.append(command.friendlyExecuteString());
-    builder.append(" when ");
-    builder.append(eventConsumer.getThing().getName());
-    builder.append(" is ");
-    builder.append(OnOffStatus.getValueString(value));
-    return builder.toString();*/
+    builder.append(" when the ");
+    builder.append(friendlyString());
+    return builder.toString();
   }
 
   @Override
