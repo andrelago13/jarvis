@@ -5,7 +5,7 @@ public class Config {
   /**
    * Domain where the Jarvis backend is hosted.
    */
-  public static final String JARVIS_DOMAIN = "jarvis-iot.ml";
+  public static final String JARVIS_DOMAIN = "andrelago.eu";
 
   /**
    * URL used to send a message to the Slack channel.
