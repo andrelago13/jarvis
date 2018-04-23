@@ -3,9 +3,10 @@ package res;
 public class Config {
 
   /**
-   * Domain where the Jarvis backend is hosted.
+   * Domain and port where the Jarvis backend is hosted.
    */
   public static final String JARVIS_DOMAIN = "andrelago.eu";
+  public static final int JARVIS_PORT = 3001;
 
   /**
    * URL used to send a message to the Slack channel.
