@@ -7,8 +7,8 @@ import jarvis.actions.command.definitions.CommandResult;
 import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
-import jarvis.controllers.TemperatureSensor;
 import jarvis.controllers.OnOffLight;
+import jarvis.controllers.TemperatureSensor;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.events.definitions.EventHandler;
@@ -34,7 +34,6 @@ import mongodb.MongoDB;
 import org.json.JSONObject;
 import rabbitmq.RabbitMQ;
 import res.Config;
-import slack.SlackUtil;
 
 public class JarvisEngine {
 
@@ -79,10 +78,12 @@ public class JarvisEngine {
         addEventListener(t, e);
       }
 
-      if(t instanceof TemperatureSensor) {
+      // FIXME make value updaters as event handlers. Currently done in {@link EventConsumer}
+      /*if(t instanceof TemperatureSensor) {
         ThingEvent e = t.getEvents().get(0);
-        RabbitMQ.getInstance().addQueueReceiver(e.getHref(), new ValueUpdateEventConsumer(t, e));
-      }
+        ValueUpdateEventConsumer consumer = new ValueUpdateEventConsumer(t, e);
+        RabbitMQ.getInstance().addQueueReceiver(e.getHref(), consumer);
+      }*/
     }
   }
 
@@ -101,7 +102,8 @@ public class JarvisEngine {
     // Default light
     things.add(OnOffLight.Builder.getDefaultBuilder("bedroom light", "/house").build());
     things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
-    things.add(TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
+    things.add(
+        TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
 
     return things;
   }
@@ -257,7 +259,7 @@ public class JarvisEngine {
   }
 
   public Optional<EventHandler> getEventHandler(long id) {
-    if(!mActiveHandlers.containsKey(id)) {
+    if (!mActiveHandlers.containsKey(id)) {
       return Optional.empty();
     }
     return Optional.of(mActiveHandlers.get(id));

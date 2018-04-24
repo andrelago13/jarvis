@@ -42,7 +42,7 @@ public class EventManager {
         for (EventConsumer consumer : consumers) {
           if (sensorName.equals(consumer.getThing().getName()) &&
               consumer.getEvent().getType() == Type.VALUE) {
-            return Optional.of(new ValueEventHandler(consumer, cmd, temperature.get().getValue(), condition));
+            return Optional.of(new ValueEventHandler(consumer, cmd, temperature.get(), condition));
           }
         }
       }

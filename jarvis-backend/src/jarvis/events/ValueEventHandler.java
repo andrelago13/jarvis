@@ -8,6 +8,7 @@ import jarvis.engine.JarvisEngine;
 import jarvis.events.definitions.EventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.JarvisException;
+import jarvis.util.Temperature;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Optional;
@@ -24,20 +25,20 @@ public class ValueEventHandler extends EventHandler {
 
   public final static String TAG = "booleanEventHandler";
 
-  public final static String KEY_VALUE = "value";
+  public final static String KEY_TEMPERATURE = "value";
   public final static String KEY_CONDITION = "condition";
 
-  public final double value;
+  public final Temperature temperature;
   public final Condition condition; // <0 - value less than, 0 - value equals, >0 - value greater than
 
-  public ValueEventHandler(EventConsumer consumer, Command command, double value, Condition condition) {
+  public ValueEventHandler(EventConsumer consumer, Command command, Temperature temperature, Condition condition) {
     super(TAG, consumer, command);
-    this.value = value;
+    this.temperature = temperature;
     this.condition = condition;
   }
 
-  public ValueEventHandler(EventConsumer consumer, Command command, double value, int condition) {
-    this(consumer, command, value, Condition.values()[condition]);
+  public ValueEventHandler(EventConsumer consumer, Command command, Temperature temperature, int condition) {
+    this(consumer, command, temperature, Condition.values()[condition]);
   }
 
   public ValueEventHandler(JSONObject json) throws JarvisException {
@@ -47,7 +48,7 @@ public class ValueEventHandler extends EventHandler {
     }
 
     try {
-      value = json.getDouble(KEY_VALUE);
+      temperature = Temperature.buildFromJSON(json.getJSONObject(KEY_TEMPERATURE)).get();
       int conditionValue = json.getInt(KEY_CONDITION);
       condition = Condition.values()[conditionValue];
     } catch (Exception e) {
@@ -65,21 +66,21 @@ public class ValueEventHandler extends EventHandler {
     try {
       switch (condition) {
         case EQUAL_TO:
-          if (NumberFormat.getInstance().parse(message).doubleValue() == value) {
+          if (NumberFormat.getInstance().parse(message).doubleValue() == temperature.getValue()) {
             JarvisEngine.getInstance().executeCommand(command);
             // Every handler must perform logging
             log();
           }
           break;
         case LESS_THAN:
-          if (NumberFormat.getInstance().parse(message).doubleValue() < value) {
+          if (NumberFormat.getInstance().parse(message).doubleValue() < temperature.getValue()) {
             JarvisEngine.getInstance().executeCommand(command);
             // Every handler must perform logging
             log();
           }
           break;
         case GREATER_THAN:
-          if (NumberFormat.getInstance().parse(message).doubleValue() > value) {
+          if (NumberFormat.getInstance().parse(message).doubleValue() > temperature.getValue()) {
             JarvisEngine.getInstance().executeCommand(command);
             // Every handler must perform logging
             log();
@@ -109,7 +110,9 @@ public class ValueEventHandler extends EventHandler {
         builder.append("greater than ");
         break;
     }
-    builder.append(value);
+    builder.append(temperature.getValue());
+    builder.append(" ");
+    builder.append(temperature.getUnit().toString().toLowerCase());
     return builder.toString();
   }
 
@@ -135,13 +138,13 @@ public class ValueEventHandler extends EventHandler {
 
     ValueEventHandler h = (ValueEventHandler) handler;
 
-    return h.value == value && h.condition == condition;
+    return h.temperature.getValue() == temperature.getValue() && h.condition == condition;
   }
 
   @Override
   public JSONObject toJSON() {
     JSONObject result = super.toJSON();
-    result.put(KEY_VALUE, value);
+    result.put(KEY_TEMPERATURE, temperature.toJSON());
     result.put(KEY_CONDITION, condition.ordinal());
     return result;
   }
