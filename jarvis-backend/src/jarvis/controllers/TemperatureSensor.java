@@ -6,7 +6,9 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.ThingProperty;
+import jarvis.engine.ValueTracker;
 import java.util.List;
+import java.util.Optional;
 import org.json.JSONObject;
 
 public class TemperatureSensor extends Thing {
@@ -36,9 +38,9 @@ public class TemperatureSensor extends Thing {
     super(t);
   }
 
-  public double getTemperature() {
-    // FIXME implement
-    return 0;
+  public Optional<Double> getTemperature() {
+    ValueTracker valueTracker = ValueTracker.getInstance();
+    return valueTracker.getValueDouble(mName);
   }
 
   public static class Builder extends Thing.Builder {

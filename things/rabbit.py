@@ -1,7 +1,7 @@
 import pika
 import jarvisled
 
-host = 'jarvis-iot.ml'
+host = 'andrelago.eu'
 username = 'rabbitmq'
 password = 'rabbitmq'
 bedroom_queue = '/house/bedroom_light/actions'

@@ -3,9 +3,10 @@ package res;
 public class Config {
 
   /**
-   * Domain where the Jarvis backend is hosted.
+   * Domain and port where the Jarvis backend is hosted.
    */
   public static final String JARVIS_DOMAIN = "andrelago.eu";
+  public static final int JARVIS_PORT = 3001;
 
   /**
    * URL used to send a message to the Slack channel.
@@ -111,8 +112,11 @@ public class Config {
   public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
   public static final String DF_ACTION_PAST_ENTITY_NAME = "action-past";
   public static final String DF_ACTION_PAST_ONOFF_NAME = "action-past-onoff";
-
   public static final String DF_TIME_PERIOD_SYS_ENTITY_NAME = "time-period";
+  public static final String DF_SENSOR_EVENT_CONDITION_ENTITY_NAME = "sensor_event_condition";
+  public static final String DF_SENSOR_EVENT_CONDITION_EQUAL_ENTITY_NAME = "sensor_event_condition_equal";
+  public static final String DF_SENSOR_EVENT_CONDITION_GREATER_ENTITY_NAME = "sensor_event_condition_greater";
+  public static final String DF_SENSOR_EVENT_CONDITION_LESS_ENTITY_NAME = "sensor_event_condition_less";
 
   /**
    * RabbitMQ constants
@@ -120,7 +124,7 @@ public class Config {
   public static final String RABBITMQ_HOST_ENV = "rabbitmq-host";
   public static final String RABBITMQ_USERNAME_ENV = "rabbitmq-user";
   public static final String RABBITMQ_PASSWORD_ENV = "rabbitmq-pass";
-  public static final String RABBITMQ_HOST = "rabbit";
+  public static final String RABBITMQ_HOST = "andrelago.eu";
   public static final String RABBITMQ_USERNAME = "rabbitmq";
   public static final String RABBITMQ_PASSWORD = "rabbitmq";
 

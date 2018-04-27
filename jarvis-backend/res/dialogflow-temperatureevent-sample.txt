@@ -1,0 +1,56 @@
+{
+  "id": "77928cd1-f0fa-45d9-a02a-28db0d18ada0",
+  "timestamp": "2018-04-24T09:49:12.628Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "turn on the light when the temperature is greater than 10 celsius",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "light"
+          }
+        }
+      },
+      "event": {
+        "temperature_sensor": "temperature",
+        "sensor_event_condition": {
+          "sensor_event_condition_greater": "greater than"
+        },
+        "temperature": {
+          "amount": 10,
+          "unit": "C"
+        }
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "d234e808-2fd7-420f-9aef-1852750f8bc6",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 472,
+      "intentName": "Event Intent"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I was unable to help.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Sorry, I was unable to help."
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 206,
+    "errorType": "partial_content",
+    "errorDetails": "Webhook call failed. Error: 503 Service Unavailable",
+    "webhookTimedOut": false
+  },
+  "sessionId": "deb15bd3-8cec-4006-b90e-3b123110f70c"
+}
