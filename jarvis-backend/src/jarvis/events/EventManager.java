@@ -37,7 +37,6 @@ public class EventManager {
       Optional<Temperature> temperature = Temperature.buildFromJSON(event.getJSONObject(Temperature.KEY_TEMPERATURE));
       Condition condition = ValueEventHandler.parseConditionFromEventWithDefault(event, Condition.EQUAL_TO);
       if(temperature.isPresent()) {
-        // FIXME value updaters are not in event consumers
         Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
         for (EventConsumer consumer : consumers) {
           if (sensorName.equals(consumer.getThing().getName()) &&

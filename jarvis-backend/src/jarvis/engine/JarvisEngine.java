@@ -78,7 +78,7 @@ public class JarvisEngine {
         addEventListener(t, e);
       }
 
-      // FIXME make value updaters as event handlers. Currently done in {@link EventConsumer}
+      // TODO make value updaters as event handlers. Currently done in {@link EventConsumer}
       /*if(t instanceof TemperatureSensor) {
         ThingEvent e = t.getEvents().get(0);
         ValueUpdateEventConsumer consumer = new ValueUpdateEventConsumer(t, e);
