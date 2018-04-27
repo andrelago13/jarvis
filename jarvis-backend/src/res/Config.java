@@ -1,5 +1,7 @@
 package res;
 
+import jarvis.util.Flags;
+
 public class Config {
 
   /**
@@ -124,7 +126,8 @@ public class Config {
   public static final String RABBITMQ_HOST_ENV = "rabbitmq-host";
   public static final String RABBITMQ_USERNAME_ENV = "rabbitmq-user";
   public static final String RABBITMQ_PASSWORD_ENV = "rabbitmq-pass";
-  public static final String RABBITMQ_HOST = "rabbit";
+  public static final String RABBITMQ_HOST = JARVIS_DOMAIN;
+  public static final String RABBITMQ_HOST_PROD = "rabbit";
   public static final String RABBITMQ_USERNAME = "rabbitmq";
   public static final String RABBITMQ_PASSWORD = "rabbitmq";
 
@@ -137,10 +140,18 @@ public class Config {
           System.getenv(Config.RABBITMQ_PASSWORD_ENV)
       };
     }*/
-    return new String[]{
-        Config.RABBITMQ_HOST,
-        Config.RABBITMQ_USERNAME,
-        Config.RABBITMQ_PASSWORD
-    };
+    if (Flags.isLocalExecution()) {
+      return new String[]{
+          Config.RABBITMQ_HOST,
+          Config.RABBITMQ_USERNAME,
+          Config.RABBITMQ_PASSWORD
+      };
+    } else {
+      return new String[]{
+          Config.RABBITMQ_HOST_PROD,
+          Config.RABBITMQ_USERNAME,
+          Config.RABBITMQ_PASSWORD
+      };
+    }
   }
 }
