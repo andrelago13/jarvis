@@ -124,7 +124,7 @@ public class Config {
   public static final String RABBITMQ_HOST_ENV = "rabbitmq-host";
   public static final String RABBITMQ_USERNAME_ENV = "rabbitmq-user";
   public static final String RABBITMQ_PASSWORD_ENV = "rabbitmq-pass";
-  public static final String RABBITMQ_HOST = "andrelago.eu";
+  public static final String RABBITMQ_HOST = "rabbit";
   public static final String RABBITMQ_USERNAME = "rabbitmq";
   public static final String RABBITMQ_PASSWORD = "rabbitmq";
 
