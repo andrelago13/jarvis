@@ -3,6 +3,7 @@ package jarvis.controllers;
 import static jarvis.controllers.definitions.Thing.TYPE_KEY;
 
 import jarvis.controllers.definitions.Thing;
+import jarvis.controllers.definitions.Thing.Type;
 import java.util.Optional;
 import org.json.JSONObject;
 
@@ -23,6 +24,8 @@ public class ThingParser {
       return Optional.of(OnOffLight.Builder.buildFromJSON(json));
     } else if (Thing.getTypeString(Thing.Type.TEMPERATURE_SENSOR).equals(docType)) {
       return Optional.of(TemperatureSensor.Builder.buildFromJSON(json));
+    } else if (Thing.getTypeString(Type.ON_OFF_SWITCH).equals(docType)) {
+      return Optional.of(OnOffSwitch.Builder.buildFromJSON(json));
     }
 
     return Optional.empty();

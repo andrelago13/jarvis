@@ -104,6 +104,8 @@ public class JarvisEngine {
     things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
     things.add(
         TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
+    things.add(TemperatureSensor.Builder.getDefaultBuilder("toaster", "/house").build());
+    things.add(TemperatureSensor.Builder.getDefaultBuilder("coffee machine", "/house").build());
 
     return things;
   }
