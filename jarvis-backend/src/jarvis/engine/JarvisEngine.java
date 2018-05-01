@@ -8,6 +8,7 @@ import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
 import jarvis.controllers.OnOffLight;
+import jarvis.controllers.OnOffSwitch;
 import jarvis.controllers.TemperatureSensor;
 import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
@@ -104,8 +105,8 @@ public class JarvisEngine {
     things.add(OnOffLight.Builder.getDefaultBuilder("living room light", "/house").build());
     things.add(
         TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
-    things.add(TemperatureSensor.Builder.getDefaultBuilder("toaster", "/house").build());
-    things.add(TemperatureSensor.Builder.getDefaultBuilder("coffee machine", "/house").build());
+    things.add(OnOffSwitch.Builder.getDefaultBuilder("toaster", "/house").build());
+    things.add(OnOffSwitch.Builder.getDefaultBuilder("coffee machine", "/house").build());
 
     return things;
   }
@@ -137,6 +138,10 @@ public class JarvisEngine {
   public static String getThingName(JSONObject thing) {
     if (thing.has(Config.DF_LIGHT_SWITCH_ENTITY_NAME)) {
       return thing.getString(Config.DF_LIGHT_SWITCH_ENTITY_NAME);
+    } else if (thing.has(Config.DF_ON_OFF_SWITCH_ENTITY_NAME)) {
+      return thing.getString(Config.DF_ON_OFF_SWITCH_ENTITY_NAME);
+    } else if (thing.has(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME)) {
+      return thing.getString(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME);
     }
     return null;
   }

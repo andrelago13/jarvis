@@ -105,6 +105,9 @@ public class Config {
    * DialogFlow entity constants.
    */
   public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
+  public static final String DF_ON_OFF_ACTUATOR_ENTITY_NAME = "on-off-actuator";
+  public static final String DF_ON_OFF_SWITCH_ENTITY_NAME = "on-off-switch";
+  public static final String DF_TEMPERATURE_SENSOR_ENTITY_NAME = "temperature_sensor";
   public static final String DF_ACTION_ENTITY_NAME = "action";
   public static final String DF_EVENT_ENTITY_NAME = "event";
   public static final String DF_TIME_ENTITY_NAME = "time";
@@ -114,6 +117,7 @@ public class Config {
   public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
   public static final String DF_ACTION_PAST_ENTITY_NAME = "action-past";
   public static final String DF_ACTION_PAST_ONOFF_NAME = "action-past-onoff";
+  public static final String DF_ON_OFF_STATUS_ENTITY_NAME = "on-off-status";
   public static final String DF_TIME_PERIOD_SYS_ENTITY_NAME = "time-period";
   public static final String DF_SENSOR_EVENT_CONDITION_ENTITY_NAME = "sensor_event_condition";
   public static final String DF_SENSOR_EVENT_CONDITION_EQUAL_ENTITY_NAME = "sensor_event_condition_equal";
