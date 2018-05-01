@@ -6,41 +6,42 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.ThingLinks;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.ThingProperty;
+import jarvis.controllers.definitions.properties.ThingProperty.Type;
 import jarvis.engine.ValueTracker;
 import java.util.List;
 import java.util.Optional;
 import org.json.JSONObject;
 
-public class TemperatureSensor extends Thing {
+public class BinarySensor extends Thing {
 
-  private static final String DEFAULT_DESCRIPTION = "Temperature Sensor";
-  private static final String DEFAULT_PROPERTY_DESCRIPTION = "Describes current temperature in Celsius";
-  private static final String DEFAULT_PROPERTIES_PATH = "properties";
-  private static final String DEFAULT_ACTIONS_PATH = "actions";
-  private static final String DEFAULT_EVENTS_PATH = "events";
+  protected static final String DEFAULT_DESCRIPTION = "Binary Sensor";
+  protected static final String DEFAULT_PROPERTY_DESCRIPTION = "Is triggered (\"on\") if the sensor is activated";
+  protected static final String DEFAULT_PROPERTIES_PATH = "properties";
+  protected static final String DEFAULT_ACTIONS_PATH = "actions";
+  protected static final String DEFAULT_EVENTS_PATH = "events";
 
-  protected TemperatureSensor(@NotNull String name,
+  protected BinarySensor(@NotNull String name,
       @Nullable String description,
       @NotNull ThingLinks links,
       @NotNull List<ThingProperty> properties,
       @NotNull List<ThingEvent> events) {
-    super(name, Type.TEMPERATURE_SENSOR, description, links, properties, events);
+    super(name, Type.BINARY_SENSOR, description, links, properties, events);
   }
 
-  protected TemperatureSensor(@NotNull JSONObject json) {
+  protected BinarySensor(@NotNull JSONObject json) {
     super(json);
-    if (mType != Type.TEMPERATURE_SENSOR) {
-      throw new IllegalArgumentException("Thing type for TemperatureSensor must be temperatureSensor.");
+    if (mType != Type.BINARY_SENSOR) {
+      throw new IllegalArgumentException("Thing type for BinarySensor must be binarySensor.");
     }
   }
 
-  protected TemperatureSensor(@NotNull TemperatureSensor t) {
+  protected BinarySensor(@NotNull BinarySensor t) {
     super(t);
   }
 
-  public Optional<Double> getTemperature() {
+  public Optional<Boolean> isOn() {
     ValueTracker valueTracker = ValueTracker.getInstance();
-    return valueTracker.getValueDouble(mName);
+    return valueTracker.getValueBoolean(mName);
   }
 
   public static class Builder extends Thing.Builder {
@@ -54,13 +55,13 @@ public class TemperatureSensor extends Thing {
 
       builder.setName(name);
       builder.setDescription(DEFAULT_DESCRIPTION);
-      ThingProperty statusProperty = new ThingProperty("value", ThingProperty.Type.NUMBER);
+      ThingProperty statusProperty = new ThingProperty("value", ThingProperty.Type.BOOLEAN);
       statusProperty.setDescription(DEFAULT_PROPERTY_DESCRIPTION);
       statusProperty.setHref(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH + '/' + "value");
       builder.addProperty(statusProperty);
-      builder.addEvent(new ThingEvent(ThingEvent.Type.VALUE, "temperature", "celsius",
-          "Temperature value", basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH + '/' +
-          ThingEvent.Type.VALUE.toString().toLowerCase()));
+      builder.addEvent(new ThingEvent(ThingEvent.Type.TRIGGER, "trigger", "",
+          "If sensor is activated", basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH + '/' +
+          ThingEvent.Type.TRIGGER.toString().toLowerCase()));
       ThingLinks.Builder linksBuilder = new ThingLinks.Builder();
       linksBuilder.setProperties(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH);
       linksBuilder.setActions(basePath + '/' + name + '/' + DEFAULT_ACTIONS_PATH);
@@ -71,16 +72,16 @@ public class TemperatureSensor extends Thing {
     }
 
     @Override
-    public TemperatureSensor build() {
-      return new TemperatureSensor(mName, mDescription, mLinks, mProperties, mEvents);
+    public BinarySensor build() {
+      return new BinarySensor(mName, mDescription, mLinks, mProperties, mEvents);
     }
 
-    public static TemperatureSensor buildFromCopy(TemperatureSensor t) {
-      return new TemperatureSensor(t);
+    public static BinarySensor buildFromCopy(BinarySensor t) {
+      return new BinarySensor(t);
     }
 
-    public static TemperatureSensor buildFromJSON(JSONObject json) {
-      return new TemperatureSensor(json);
+    public static BinarySensor buildFromJSON(JSONObject json) {
+      return new BinarySensor(json);
     }
   }
 }
