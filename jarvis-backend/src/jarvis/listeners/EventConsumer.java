@@ -32,9 +32,8 @@ public class EventConsumer {
   }
 
   public void consume(String message) {
-    JarvisEngine.getInstance().updateThingValue(mThing.getName(), message);
-    // TODO trigger events for binarysensors
     JarvisEngine.getInstance().handleEvent(mThing, mEvent, message);
+    JarvisEngine.getInstance().updateThingValue(mThing.getName(), message);
   }
 
   public Thing getThing() {

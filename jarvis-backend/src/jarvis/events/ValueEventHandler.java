@@ -58,7 +58,6 @@ public class ValueEventHandler extends EventHandler {
 
   @Override
   public boolean handleMessage(Thing t, ThingEvent e, String message) {
-    // FIXME implement
     if (!t.getName().equals(eventConsumer.getThing().getName())) {
       return false;
     }
@@ -127,7 +126,6 @@ public class ValueEventHandler extends EventHandler {
 
   @Override
   public boolean equals(EventHandler handler) {
-    // FIXME implement
     if (!super.equals(handler)) {
       return false;
     }

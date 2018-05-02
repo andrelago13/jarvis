@@ -42,6 +42,8 @@ public class EventManager {
           }
         }
       }
+    } else if (event.has(Config.DF_BINARY_SENSOR_ENTITY_NAME)) {
+      // FIXME implement
     }
 
     return Optional.empty();

@@ -108,6 +108,7 @@ public class Config {
   public static final String DF_ON_OFF_ACTUATOR_ENTITY_NAME = "on-off-actuator";
   public static final String DF_ON_OFF_SWITCH_ENTITY_NAME = "on-off-switch";
   public static final String DF_TEMPERATURE_SENSOR_ENTITY_NAME = "temperature_sensor";
+  public static final String DF_BINARY_SENSOR_ENTITY_NAME = "binary_sensor";
   public static final String DF_ACTION_ENTITY_NAME = "action";
   public static final String DF_EVENT_ENTITY_NAME = "event";
   public static final String DF_TIME_ENTITY_NAME = "time";

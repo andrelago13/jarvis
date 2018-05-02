@@ -144,8 +144,8 @@ public class JarvisEngine {
       return thing.getString(Config.DF_ON_OFF_SWITCH_ENTITY_NAME);
     } else if (thing.has(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME)) {
       return thing.getString(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME);
-    } else if (thing.has(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME)) {
-      return thing.getString(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME);
+    } else if (thing.has(Config.DF_BINARY_SENSOR_ENTITY_NAME)) {
+      return thing.getString(Config.DF_BINARY_SENSOR_ENTITY_NAME);
     }
     return null;
   }
