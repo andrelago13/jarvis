@@ -1,0 +1,39 @@
+{
+  "id": "0ff9ee90-3cba-4067-a49e-bf2b68748eae",
+  "timestamp": "2018-05-02T16:20:13.249Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "create an alias for turn up the heat",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "alias": "turn up the heat"
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "b9038171-11bb-4024-91b4-cad41fdcc9e6",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 8499,
+      "intentName": "Alias Intent"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I was not able to help.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Sorry, I was not able to help."
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 206,
+    "errorType": "partial_content",
+    "errorDetails": "Webhook call failed. Error: 503 Service Unavailable"
+  },
+  "sessionId": "857547d2-9e74-43b0-af54-c95459b486a4",
+  "isStackdriverLoggingEnabled": false
+}

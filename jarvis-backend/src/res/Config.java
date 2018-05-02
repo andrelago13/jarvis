@@ -87,6 +87,10 @@ public class Config {
   public static final String DF_RULES_DEFINED_INTENT_ID = "51d173a2-2efd-4641-befa-b06dc692f155";
   public static final String DF_CHANGE_SINGLE_RULE_INTENT_NAME = "Rules Defined | Change Single Rule";
   public static final String DF_CHANGE_SINGLE_RULE_INTENT_ID = "9798598e-cb3c-4bcc-bb68-3721a1ec3b23";
+  public static final String DF_ALIAS_INTENT_NAME = "Alias Intent";
+  public static final String DF_ALIAS_INTENT_ID = "b9038171-11bb-4024-91b4-cad41fdcc9e6";
+  public static final String DF_ALIAS_SET_TYPE_INTENT_NAME = "Alias Intent | Set Alias Type";
+  public static final String DF_ALIAS_SET_TYPE_INTENT_ID = "99637bce-5049-4fc4-92f6-da12110059ed";
 
   /**
    * DialogFlow context constants.
@@ -100,6 +104,8 @@ public class Config {
   public static final String DF_EDIT_RULE_CONTEXT_COMMAND = "command";
   public static final String DF_EDIT_RULE_CONTEXT_EVENT = "event";
   public static final String DF_EDIT_RULE_CONTEXT_EVENTS = "events";
+  public static final String DF_ALIAS_INTENT_CONTEXT = "alias-creation-context";
+  public static final String DF_ALIAS_INTENT_CONTEXT_ALIAS = "alias";
 
   /**
    * DialogFlow entity constants.
@@ -124,6 +130,7 @@ public class Config {
   public static final String DF_SENSOR_EVENT_CONDITION_EQUAL_ENTITY_NAME = "sensor_event_condition_equal";
   public static final String DF_SENSOR_EVENT_CONDITION_GREATER_ENTITY_NAME = "sensor_event_condition_greater";
   public static final String DF_SENSOR_EVENT_CONDITION_LESS_ENTITY_NAME = "sensor_event_condition_less";
+  public static final String DF_ALIAS_ENTITY_NAME = "alias";
 
   /**
    * RabbitMQ constants
