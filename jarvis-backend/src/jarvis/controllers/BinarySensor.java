@@ -59,7 +59,7 @@ public class BinarySensor extends Thing {
       statusProperty.setDescription(DEFAULT_PROPERTY_DESCRIPTION);
       statusProperty.setHref(basePath + '/' + name + '/' + DEFAULT_PROPERTIES_PATH + '/' + "value");
       builder.addProperty(statusProperty);
-      builder.addEvent(new ThingEvent(ThingEvent.Type.TRIGGER, "trigger", "",
+      builder.addEvent(new ThingEvent(ThingEvent.Type.TRIGGER, "trigger", "boolean",
           "If sensor is activated", basePath + '/' + name + '/' + DEFAULT_EVENTS_PATH + '/' +
           ThingEvent.Type.TRIGGER.toString().toLowerCase()));
       ThingLinks.Builder linksBuilder = new ThingLinks.Builder();

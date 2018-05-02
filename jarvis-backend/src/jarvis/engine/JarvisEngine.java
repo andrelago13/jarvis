@@ -7,6 +7,7 @@ import jarvis.actions.command.definitions.CommandResult;
 import jarvis.actions.command.util.LoggedCommand;
 import jarvis.communication.LoggerCommunication;
 import jarvis.communication.ThingInterface;
+import jarvis.controllers.BinarySensor;
 import jarvis.controllers.OnOffLight;
 import jarvis.controllers.OnOffSwitch;
 import jarvis.controllers.TemperatureSensor;
@@ -62,17 +63,17 @@ public class JarvisEngine {
   }
 
   private void init() {
-    ThingInterface.init(getDefaultThings());
-    LoggerCommunication.init(getDefaultThings());
+    List<Thing> defaultThings = getDefaultThings();
+    ThingInterface.init(defaultThings);
+    LoggerCommunication.init(defaultThings);
     mScheduledActions = new HashMap<>();
     mActiveConsumers = new HashSet<>();
     mActiveHandlers = new HashMap<>();
 
-    initEventListeners();
+    initEventListeners(defaultThings);
   }
 
-  private void initEventListeners() {
-    List<Thing> things = ThingInterface.getThings();
+  private void initEventListeners(List<Thing> things) {
     for (Thing t : things) {
       List<ThingEvent> events = t.getEvents();
       for (ThingEvent e : events) {
@@ -107,6 +108,7 @@ public class JarvisEngine {
         TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
     things.add(OnOffSwitch.Builder.getDefaultBuilder("toaster", "/house").build());
     things.add(OnOffSwitch.Builder.getDefaultBuilder("coffee machine", "/house").build());
+    things.add(BinarySensor.Builder.getDefaultBuilder("chair pressure", "/house").build());
 
     return things;
   }

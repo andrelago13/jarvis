@@ -21,6 +21,10 @@ public class ValueTracker {
     return instance;
   }
 
+  public Map<String, Object> getValues() {
+    return new HashMap<>(values);
+  }
+
   public Optional<Object> getValue(String thingName) {
     Object val = values.get(thingName);
     if(val == null) {
