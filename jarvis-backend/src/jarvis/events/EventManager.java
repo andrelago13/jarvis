@@ -43,7 +43,17 @@ public class EventManager {
         }
       }
     } else if (event.has(Config.DF_BINARY_SENSOR_ENTITY_NAME)) {
-      // FIXME implement
+      String sensorName = event.getString(Config.DF_BINARY_SENSOR_ENTITY_NAME);
+      if(event.has(Config.DF_ON_OFF_STATUS_ENTITY_NAME)) {
+        boolean desiredStatus = OnOffStatus.isValueOn(event.getString(Config.DF_ON_OFF_STATUS_ENTITY_NAME));
+        Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
+        for (EventConsumer consumer : consumers) {
+          if (sensorName.equals(consumer.getThing().getName()) &&
+              consumer.getEvent().getType() == Type.TRIGGER) {
+            return Optional.of(new BinaryTriggerEventHandler(consumer, cmd, desiredStatus));
+          }
+        }
+      }
     }
 
     return Optional.empty();

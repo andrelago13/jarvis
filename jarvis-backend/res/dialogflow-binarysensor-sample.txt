@@ -1,0 +1,50 @@
+{
+  "id": "6edc8a1e-efbb-433d-92f1-556efb8cbf0c",
+  "timestamp": "2018-05-02T15:00:04.034Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "turn on the living room light when the living room motion sensor is on",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "living room light"
+          }
+        }
+      },
+      "event": {
+        "binary_sensor": "living room motion sensor",
+        "on-off-status": "on"
+      }
+    },
+    "contexts": [],
+    "metadata": {
+      "intentId": "d234e808-2fd7-420f-9aef-1852750f8bc6",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 9134,
+      "intentName": "Event Intent"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I was unable to help.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Sorry, I was unable to help."
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 206,
+    "errorType": "partial_content",
+    "errorDetails": "Webhook call failed. Error: 503 Service Unavailable"
+  },
+  "sessionId": "857547d2-9e74-43b0-af54-c95459b486a4",
+  "isStackdriverLoggingEnabled": false
+}

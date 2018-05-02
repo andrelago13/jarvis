@@ -6,15 +6,12 @@ import jarvis.controllers.definitions.Thing;
 import jarvis.controllers.definitions.events.ThingEvent;
 import jarvis.controllers.definitions.properties.OnOffStatus;
 import jarvis.engine.JarvisEngine;
+import jarvis.engine.ValueTracker;
 import jarvis.events.definitions.EventHandler;
 import jarvis.listeners.EventConsumer;
 import jarvis.util.JarvisException;
-import jarvis.util.Temperature;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Optional;
 import org.json.JSONObject;
-import res.Config;
 
 public class BinaryTriggerEventHandler extends EventHandler {
 
@@ -48,7 +45,13 @@ public class BinaryTriggerEventHandler extends EventHandler {
       return false;
     }
 
-    if(OnOffStatus.isValueEqualToBoolean(message, condition)) {
+    boolean currentValue = OnOffStatus.isValueOn(message);
+    Optional<String> previousValue = ValueTracker.getInstance().getValueString(t.getName());
+
+    // Executes command if the condition is met and there is either no previous value for the sensor
+    // or there is and it is different
+    if (condition == currentValue && (!previousValue.isPresent() ||
+        !OnOffStatus.isValueEqualToBoolean(previousValue.get(), currentValue))) {
       JarvisEngine.getInstance().executeCommand(command);
       // Every handler must perform logging
       log();
@@ -62,7 +65,7 @@ public class BinaryTriggerEventHandler extends EventHandler {
   public String friendlyString() {
     StringBuilder builder = new StringBuilder();
     builder.append(eventConsumer.getThing().getName());
-    if(condition) {
+    if (condition) {
       builder.append(" is activated");
     } else {
       builder.append(" is deactivated");

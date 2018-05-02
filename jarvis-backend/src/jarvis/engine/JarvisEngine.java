@@ -108,7 +108,7 @@ public class JarvisEngine {
         TemperatureSensor.Builder.getDefaultBuilder("living room temperature", "/house").build());
     things.add(OnOffSwitch.Builder.getDefaultBuilder("toaster", "/house").build());
     things.add(OnOffSwitch.Builder.getDefaultBuilder("coffee machine", "/house").build());
-    things.add(BinarySensor.Builder.getDefaultBuilder("chair pressure", "/house").build());
+    things.add(BinarySensor.Builder.getDefaultBuilder("living room motion sensor", "/house").build());
 
     return things;
   }
