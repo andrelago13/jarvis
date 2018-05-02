@@ -1,5 +1,7 @@
 package res;
 
+import jarvis.util.Flags;
+
 public class Config {
 
   /**
@@ -103,6 +105,10 @@ public class Config {
    * DialogFlow entity constants.
    */
   public static final String DF_LIGHT_SWITCH_ENTITY_NAME = "light-switch";
+  public static final String DF_ON_OFF_ACTUATOR_ENTITY_NAME = "on-off-actuator";
+  public static final String DF_ON_OFF_SWITCH_ENTITY_NAME = "on-off-switch";
+  public static final String DF_TEMPERATURE_SENSOR_ENTITY_NAME = "temperature_sensor";
+  public static final String DF_BINARY_SENSOR_ENTITY_NAME = "binary_sensor";
   public static final String DF_ACTION_ENTITY_NAME = "action";
   public static final String DF_EVENT_ENTITY_NAME = "event";
   public static final String DF_TIME_ENTITY_NAME = "time";
@@ -112,6 +118,7 @@ public class Config {
   public static final String DF_ONOFF_ACTION_ENTITY_NAME = "action-onoff";
   public static final String DF_ACTION_PAST_ENTITY_NAME = "action-past";
   public static final String DF_ACTION_PAST_ONOFF_NAME = "action-past-onoff";
+  public static final String DF_ON_OFF_STATUS_ENTITY_NAME = "on-off-status";
   public static final String DF_TIME_PERIOD_SYS_ENTITY_NAME = "time-period";
   public static final String DF_SENSOR_EVENT_CONDITION_ENTITY_NAME = "sensor_event_condition";
   public static final String DF_SENSOR_EVENT_CONDITION_EQUAL_ENTITY_NAME = "sensor_event_condition_equal";
@@ -124,7 +131,8 @@ public class Config {
   public static final String RABBITMQ_HOST_ENV = "rabbitmq-host";
   public static final String RABBITMQ_USERNAME_ENV = "rabbitmq-user";
   public static final String RABBITMQ_PASSWORD_ENV = "rabbitmq-pass";
-  public static final String RABBITMQ_HOST = "rabbit";
+  public static final String RABBITMQ_HOST = JARVIS_DOMAIN;
+  public static final String RABBITMQ_HOST_PROD = "rabbit";
   public static final String RABBITMQ_USERNAME = "rabbitmq";
   public static final String RABBITMQ_PASSWORD = "rabbitmq";
 
@@ -137,10 +145,18 @@ public class Config {
           System.getenv(Config.RABBITMQ_PASSWORD_ENV)
       };
     }*/
-    return new String[]{
-        Config.RABBITMQ_HOST,
-        Config.RABBITMQ_USERNAME,
-        Config.RABBITMQ_PASSWORD
-    };
+    if (Flags.isLocalExecution()) {
+      return new String[]{
+          Config.RABBITMQ_HOST,
+          Config.RABBITMQ_USERNAME,
+          Config.RABBITMQ_PASSWORD
+      };
+    } else {
+      return new String[]{
+          Config.RABBITMQ_HOST_PROD,
+          Config.RABBITMQ_USERNAME,
+          Config.RABBITMQ_PASSWORD
+      };
+    }
   }
 }

@@ -32,8 +32,8 @@ public class EventConsumer {
   }
 
   public void consume(String message) {
-    JarvisEngine.getInstance().updateThingValue(mThing.getName(), message);
     JarvisEngine.getInstance().handleEvent(mThing, mEvent, message);
+    JarvisEngine.getInstance().updateThingValue(mThing.getName(), message);
   }
 
   public Thing getThing() {
