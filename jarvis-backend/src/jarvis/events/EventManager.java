@@ -20,7 +20,8 @@ public class EventManager {
     if (event.has(Config.DF_ON_OFF_ACTUATOR_ENTITY_NAME)) {
       JSONObject thing = event.getJSONObject(Config.DF_ON_OFF_ACTUATOR_ENTITY_NAME);
       String thingName = JarvisEngine.getThingName(thing);
-      boolean onOffStatus = OnOffStatus.isValueOn(event.getString(Config.DF_ON_OFF_STATUS_ENTITY_NAME));
+      boolean onOffStatus = OnOffStatus
+          .isValueOn(event.getString(Config.DF_ON_OFF_STATUS_ENTITY_NAME));
 
       Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
       for (EventConsumer consumer : consumers) {
@@ -31,9 +32,11 @@ public class EventManager {
       }
     } else if (event.has(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME)) {
       String sensorName = event.getString(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME);
-      Optional<Temperature> temperature = Temperature.buildFromJSON(event.getJSONObject(Temperature.KEY_TEMPERATURE));
-      Condition condition = ValueEventHandler.parseConditionFromEventWithDefault(event, Condition.EQUAL_TO);
-      if(temperature.isPresent()) {
+      Optional<Temperature> temperature = Temperature
+          .buildFromJSON(event.getJSONObject(Temperature.KEY_TEMPERATURE));
+      Condition condition = ValueEventHandler
+          .parseConditionFromEventWithDefault(event, Condition.EQUAL_TO);
+      if (temperature.isPresent()) {
         Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
         for (EventConsumer consumer : consumers) {
           if (sensorName.equals(consumer.getThing().getName()) &&
@@ -44,8 +47,9 @@ public class EventManager {
       }
     } else if (event.has(Config.DF_BINARY_SENSOR_ENTITY_NAME)) {
       String sensorName = event.getString(Config.DF_BINARY_SENSOR_ENTITY_NAME);
-      if(event.has(Config.DF_ON_OFF_STATUS_ENTITY_NAME)) {
-        boolean desiredStatus = OnOffStatus.isValueOn(event.getString(Config.DF_ON_OFF_STATUS_ENTITY_NAME));
+      if (event.has(Config.DF_ON_OFF_STATUS_ENTITY_NAME)) {
+        boolean desiredStatus = OnOffStatus
+            .isValueOn(event.getString(Config.DF_ON_OFF_STATUS_ENTITY_NAME));
         Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
         for (EventConsumer consumer : consumers) {
           if (sensorName.equals(consumer.getThing().getName()) &&
@@ -56,6 +60,33 @@ public class EventManager {
       }
     }
 
+    return Optional.empty();
+  }
+
+  public static Optional<EventConsumer> findActiveEventConsumer(JSONObject event) {
+    if (event.has(Config.DF_ON_OFF_ACTUATOR_ENTITY_NAME)) {
+      JSONObject thing = event.getJSONObject(Config.DF_ON_OFF_ACTUATOR_ENTITY_NAME);
+      String thingName = JarvisEngine.getThingName(thing);
+      return findActiveEventConsumer(thingName, Type.ON_OFF);
+    } else if (event.has(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME)) {
+      String sensorName = event.getString(Config.DF_TEMPERATURE_SENSOR_ENTITY_NAME);
+      return findActiveEventConsumer(sensorName, Type.VALUE);
+    } else if (event.has(Config.DF_BINARY_SENSOR_ENTITY_NAME)) {
+      String sensorName = event.getString(Config.DF_BINARY_SENSOR_ENTITY_NAME);
+      return findActiveEventConsumer(sensorName, Type.TRIGGER);
+    }
+
+    return Optional.empty();
+  }
+
+  public static Optional<EventConsumer> findActiveEventConsumer(String thingName, Type eventType) {
+    Set<EventConsumer> consumers = JarvisEngine.getInstance().getActiveConsumers();
+    for (EventConsumer consumer : consumers) {
+      if (thingName.equals(consumer.getThing().getName())
+          && consumer.getEvent().getType() == eventType) {
+        return Optional.of(consumer);
+      }
+    }
     return Optional.empty();
   }
 }
