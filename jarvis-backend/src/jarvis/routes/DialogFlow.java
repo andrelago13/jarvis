@@ -28,6 +28,7 @@ public class DialogFlow {
       DialogFlowIntent intent = DialogFlowIntent.getIntent(request);
 
       String res = intent.execute().toString();
+      SlackUtil.sendDebugMessage(res);
       res += "";
       return res;
     } catch (JarvisException e) {
