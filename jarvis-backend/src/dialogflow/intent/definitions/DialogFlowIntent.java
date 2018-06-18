@@ -2,6 +2,8 @@ package dialogflow.intent.definitions;
 
 import dialogflow.DialogFlowRequest;
 import dialogflow.QueryResponse;
+import dialogflow.intent.AliasConfirmIntent;
+import dialogflow.intent.AliasIntent;
 import dialogflow.intent.CancelIntent;
 import dialogflow.intent.ChangeSingleRuleIntent;
 import dialogflow.intent.ConfirmCancelIntent;
@@ -61,6 +63,10 @@ public abstract class DialogFlowIntent {
       return new RulesDefinedIntent(request, extras);
     } else if (ChangeSingleRuleIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
       return new ChangeSingleRuleIntent(request, extras);
+    } else if (AliasIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+      return new AliasIntent(request, extras);
+    } else if (AliasConfirmIntent.INTENT_ID.equals(request.getMetadataIntentId())) {
+      return new AliasConfirmIntent(request, extras);
     }
 
     return new InvalidIntent();

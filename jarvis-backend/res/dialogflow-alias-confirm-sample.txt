@@ -1,0 +1,55 @@
+{
+  "id": "4fe0e2d7-67e1-4873-a178-d19ad4d8d3fe",
+  "timestamp": "2018-05-02T16:24:37.74Z",
+  "lang": "en",
+  "result": {
+    "source": "agent",
+    "resolvedQuery": "execute turn on the light",
+    "action": "",
+    "actionIncomplete": false,
+    "parameters": {
+      "event": "",
+      "action": {
+        "action-onoff": {
+          "status": "on",
+          "actuator": {
+            "light-switch": "light"
+          }
+        }
+      }
+    },
+    "contexts": [
+      {
+        "lifespan": 1,
+        "name": "alias-creation-context",
+        "parameters": {
+          "alias": ""
+        }
+      }
+    ],
+    "metadata": {
+      "intentId": "99637bce-5049-4fc4-92f6-da12110059ed",
+      "webhookUsed": "true",
+      "webhookForSlotFillingUsed": "false",
+      "webhookResponseTime": 2946,
+      "intentName": "Alias Intent | Set Alias Type"
+    },
+    "fulfillment": {
+      "speech": "Sorry, I was not able to help.",
+      "messages": [
+        {
+          "type": 0,
+          "speech": "Sorry, I was not able to help."
+        }
+      ]
+    },
+    "score": 1
+  },
+  "status": {
+    "code": 206,
+    "errorType": "partial_content",
+    "errorDetails": "Webhook call failed. Error: 503 Service Unavailable"
+  },
+  "sessionId": "857547d2-9e74-43b0-af54-c95459b486a4",
+  "isStackdriverLoggingEnabled": false
+}
