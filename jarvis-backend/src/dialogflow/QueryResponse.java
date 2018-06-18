@@ -63,6 +63,7 @@ public class QueryResponse {
 
     for (QueryResponseMessage message : mFulfillmentMessages) {
       result.append(KEY_MESSAGES, message.toJSON());
+      result.put("speech", message.getSpeech());
     }
 
     for (DialogFlowContext c : mOutContexts) {

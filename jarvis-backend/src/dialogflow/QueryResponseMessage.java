@@ -28,6 +28,10 @@ public class QueryResponseMessage {
     return result;
   }
 
+  public String getSpeech() {
+    return mSpeech;
+  }
+
   public static int getTypeIndex(Type t) {
     switch (t) {
       case DEFAULT:
