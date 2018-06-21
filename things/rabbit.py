@@ -1,11 +1,13 @@
 import pika
 import jarvisled
+import button
 
 host = 'andrelago.eu'
 username = 'rabbitmq'
 password = 'rabbitmq'
 bedroom_queue = '/house/bedroom_light/actions'
 living_room_queue = '/house/living_room_light/actions'
+living_room_motion_queue = '/house/living_room_motion_sensor/events'
 
 jarvisled.initGPIO()
 
@@ -45,6 +47,12 @@ def callback_living_room(ch, method, properties, body):
         jarvisled.ledOff_2()
     else:
         print("Unrecognized message")
+
+def callback_livingroompressure_button_pressed():
+    print("Button pressed")
+    channel.basic_publish(exchange='', routing_key=living_room_motion_queue, body='on')
+
+button_thread = threading.Thread(target = button.button_func, args = (callback_livingroompressure_button_pressed))
 
 channel.basic_consume(callback_bedroom, queue=bedroom_queue, no_ack=True)
 channel.basic_consume(callback_living_room, queue=living_room_queue, no_ack=True)
