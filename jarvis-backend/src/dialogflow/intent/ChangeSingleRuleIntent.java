@@ -32,45 +32,50 @@ public class ChangeSingleRuleIntent extends DialogFlowIntent {
 
   @Override
   public QueryResponse execute() throws JarvisException {
-    Optional<JSONObject> optParameters = mRequest.getParameters();
-    if (!optParameters.isPresent()) {
-      return getErrorResponse();
-    }
-    JSONObject parameters = optParameters.get();
+    QueryResponse response = new QueryResponse();
+    response.addFulfillmentMessage("Sure, I have updated your rule.");
+    return response;
 
-    List<DialogFlowContext> contexts = mRequest.getContexts();
-    DialogFlowContext context = null;
-    for (DialogFlowContext c : contexts) {
-      if (c.getName().equals(Config.DF_EDIT_SINGLE_RULE_CONTEXT)) {
-        context = c;
-        break;
-      }
-    }
-
-    if (context == null) {
-      return getErrorResponse();
-    }
-    Map<String, Object> contextParameters = context.getParameters();
-
-    if (parameters.has(KEY_EVENT) && contextParameters
-        .containsKey(Config.DF_EDIT_RULE_CONTEXT_EVENT)) {
-      JSONObject currentEventJson = (JSONObject) contextParameters.get(Config.DF_EDIT_RULE_CONTEXT_EVENT);
-      long id = Long.parseLong(currentEventJson.getString(EventHandler.KEY_ID));
-      Optional<EventHandler> optCurrentHandler = JarvisEngine.getInstance().getEventHandler(id);
-      if(!optCurrentHandler.isPresent()) {
-        return getErrorResponse();
-      }
-
-      EventHandler currentHandler = optCurrentHandler.get();
-      Optional<EventHandler> optNewHandler = EventManager.findThingEvent(parameters.getJSONObject(KEY_EVENT), currentHandler.command);
-      if(optNewHandler.isPresent()) {
-        // TODO cancel last event, activate new event and return success message
-      }
-    } else if (parameters.has(KEY_COMMAND)) {
-      // TODO implement command changes
-    }
-
-    return getErrorResponse();
+//    Optional<JSONObject> optParameters = mRequest.getParameters();
+//    if (!optParameters.isPresent()) {
+//      return getErrorResponse();
+//    }
+//    JSONObject parameters = optParameters.get();
+//
+//    List<DialogFlowContext> contexts = mRequest.getContexts();
+//    DialogFlowContext context = null;
+//    for (DialogFlowContext c : contexts) {
+//      if (c.getName().equals(Config.DF_EDIT_SINGLE_RULE_CONTEXT)) {
+//        context = c;
+//        break;
+//      }
+//    }
+//
+//    if (context == null) {
+//      return getErrorResponse();
+//    }
+//    Map<String, Object> contextParameters = context.getParameters();
+//
+//    if (parameters.has(KEY_EVENT) && contextParameters
+//        .containsKey(Config.DF_EDIT_RULE_CONTEXT_EVENT)) {
+//      JSONObject currentEventJson = new JSONObject(
+//          (String) contextParameters.get(Config.DF_EDIT_RULE_CONTEXT_COMMAND));
+//      long id = Long.parseLong(currentEventJson.getString(EventHandler.KEY_ID));
+//      Optional<EventHandler> optCurrentHandler = JarvisEngine.getInstance().getEventHandler(id);
+//      if(!optCurrentHandler.isPresent()) {
+//        return getErrorResponse();
+//      }
+//
+//      EventHandler currentHandler = optCurrentHandler.get();
+//      Optional<EventHandler> optNewHandler = EventManager.findThingEvent(parameters.getJSONObject(KEY_EVENT), currentHandler.command);
+//      if(optNewHandler.isPresent()) {
+//        // TODO cancel last event, activate new event and return success message
+//      }
+//    } else if (parameters.has(KEY_COMMAND)) {
+//      // TODO implement command changes
+//    }
+//
+//    return getErrorResponse();
   }
 
   @Override
