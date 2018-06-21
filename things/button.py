@@ -3,7 +3,8 @@ import time
 
 button_pin = 22
 
-def button_func (callback):
+def button_func ():
+    print("listening")
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
@@ -15,4 +16,4 @@ def button_func (callback):
             if(input_state == False):
                 print('Button Pressed')
                 time.sleep(0.2)
-                callback()
+                #callback()
