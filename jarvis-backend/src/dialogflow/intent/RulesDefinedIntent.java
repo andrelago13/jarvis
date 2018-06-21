@@ -61,7 +61,16 @@ public class RulesDefinedIntent extends DialogFlowIntent {
     for (ScheduledAction action : scheduledActions) {
       long id = action.getId();
       Optional<Command> c = MongoDB.getUserCommand(id);
-      c.ifPresent(activeCommands::add);
+      if(c.isPresent()) {
+        List<Thing> targetThings = c.get().targetThings();
+        for (Thing t : targetThings) {
+          if (t.getName().equals(thing.getName())) {
+            activeCommands.add(c.get());
+            break;
+          }
+        }
+      }
+      //c.ifPresent(activeCommands::add);
     }
 
     Set<EventHandler> relatedEvents = new HashSet<>();
