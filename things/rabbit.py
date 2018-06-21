@@ -1,6 +1,7 @@
 import pika
 import jarvisled
 import button
+import threading
 
 host = 'andrelago.eu'
 username = 'rabbitmq'
@@ -52,7 +53,8 @@ def callback_livingroompressure_button_pressed():
     print("Button pressed")
     channel.basic_publish(exchange='', routing_key=living_room_motion_queue, body='on')
 
-button_thread = threading.Thread(target = button.button_func, args = (callback_livingroompressure_button_pressed))
+button_thread = threading.Thread(target = button.button_func)
+button_thread.start()
 
 channel.basic_consume(callback_bedroom, queue=bedroom_queue, no_ack=True)
 channel.basic_consume(callback_living_room, queue=living_room_queue, no_ack=True)
