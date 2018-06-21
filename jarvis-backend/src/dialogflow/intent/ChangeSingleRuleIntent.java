@@ -54,8 +54,7 @@ public class ChangeSingleRuleIntent extends DialogFlowIntent {
 
     if (parameters.has(KEY_EVENT) && contextParameters
         .containsKey(Config.DF_EDIT_RULE_CONTEXT_EVENT)) {
-      JSONObject currentEventJson = new JSONObject(
-          (String) contextParameters.get(Config.DF_EDIT_RULE_CONTEXT_EVENT));
+      JSONObject currentEventJson = (JSONObject) contextParameters.get(Config.DF_EDIT_RULE_CONTEXT_EVENT);
       long id = Long.parseLong(currentEventJson.getString(EventHandler.KEY_ID));
       Optional<EventHandler> optCurrentHandler = JarvisEngine.getInstance().getEventHandler(id);
       if(!optCurrentHandler.isPresent()) {
