@@ -2,6 +2,7 @@ import pika
 import jarvisled
 import button
 import threading
+from threading import Thread
 import time
 import RPi.GPIO as GPIO
 
@@ -85,4 +86,8 @@ channel.basic_consume(callback_hall, queue=hall_queue, no_ack=True)
 
 print(' [*] Waiting for messages. To exit press CTRL+C')
 #channel.start_consuming()
-button_func(hall_button)
+#button_func(hall_button)
+
+thread = Thread(target = button_func, args = (hall_button))
+thread.start()
+thread.join()
