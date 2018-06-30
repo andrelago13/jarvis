@@ -88,9 +88,11 @@ def initLedController():
 ####################################
 
 def initBtnController_1() :
+    initGPIO()
     button_func(hall_button, hall_event_queue)
 
 def initBtnController_2() :
+    initGPIO()
     button_func(living_room_button, living_room_event_queue)
 
 #def callback_livingroompressure_button_pressed():
