@@ -88,6 +88,10 @@ print(' [*] Waiting for messages. To exit press CTRL+C')
 #channel.start_consuming()
 #button_func(hall_button)
 
-thread = Thread(target = button_func, args = (hall_button))
+thread = Thread(target = button_func, args = (hall_button, ))
 thread.start()
-thread.join()
+#thread.join()
+
+thread2 = Thread(target = button_func, args = (living_room_button, ))
+thread2.start()
+thread2.join()
