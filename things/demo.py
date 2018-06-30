@@ -2,6 +2,7 @@ import pika
 import jarvisled
 import button
 import threading
+import time
 import RPi.GPIO as GPIO
 
 living_room_led = 17
@@ -30,6 +31,16 @@ def initGPIO ():
    # input buttons
    GPIO.setup(living_room_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
    GPIO.setup(hall_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def button_func (button_pin):
+    previous_state = True
+    while True:
+        input_state = GPIO.input(button_pin)
+        if input_state != previous_state:
+            previous_state = input_state
+            if(input_state == False):
+                print('Button Pressed')
+                time.sleep(0.2)
 
 initGPIO()
 
@@ -73,4 +84,5 @@ channel.basic_consume(callback_living_room, queue=living_room_queue, no_ack=True
 channel.basic_consume(callback_hall, queue=hall_queue, no_ack=True)
 
 print(' [*] Waiting for messages. To exit press CTRL+C')
-channel.start_consuming()
+#channel.start_consuming()
+button_func(hall_button)
