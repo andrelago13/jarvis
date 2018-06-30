@@ -27,11 +27,11 @@ def ledOff_2 ():
    print "LED 2 off"
 
 def turnOnLed (led):
-    GPIO.output(pin_2, GPIO.HIGH)
+    GPIO.output(led, GPIO.HIGH)
     print "LED " + str(led) + " on"
 
 def turnOffLed (led):
-    GPIO.output(pin_2, GPIO.LOW)
+    GPIO.output(led, GPIO.LOW)
     print "LED " + str(led) + " off"
 
 def turnLed (led, message):
