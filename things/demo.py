@@ -31,7 +31,7 @@ def initGPIO ():
    GPIO.setup(living_room_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
    GPIO.setup(hall_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-#jarvisled.initGPIO()
+initGPIO()
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host, credentials=pika.PlainCredentials(username=username, password=password)))
 channel = connection.channel()
