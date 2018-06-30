@@ -25,3 +25,19 @@ def ledOn_2 ():
 def ledOff_2 ():
    GPIO.output(pin_2, GPIO.LOW)
    print "LED 2 off"
+
+def turnOnLed (led):
+    GPIO.output(pin_2, GPIO.HIGH)
+    print "LED " + str(led) + " on"
+
+def turnOffLed (led):
+    GPIO.output(pin_2, GPIO.LOW)
+    print "LED " + str(led) + " off"
+
+def turnLed (led, message):
+    if message == 'on':
+        turnOnLed(led)
+    elif message == 'off':
+        turnOffLed(led)
+    else:
+        print("Unrecognized message")
