@@ -17,8 +17,10 @@ username = 'rabbitmq'
 password = 'rabbitmq'
 bedroom_queue = '/house/bedroom_light/actions'
 living_room_queue = '/house/living_room_light/actions'
+living_room_event_queue = '/house/living_room_motion_sensor/events'
 hall_queue = '/house/hall_light/actions'
-living_room_motion_queue = '/house/living_room_motion_sensor/events'
+hall_event_queue = '/house/hall_motion_sensor/events'
+#living_room_motion_queue = '/house/living_room_motion_sensor/events'
 
 def initGPIO ():
    GPIO.setmode(GPIO.BCM)
@@ -33,7 +35,7 @@ def initGPIO ():
    GPIO.setup(living_room_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
    GPIO.setup(hall_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-def button_func (button_pin):
+def button_func (button_pin, queue):
     previous_state = True
     while True:
         input_state = GPIO.input(button_pin)
@@ -42,13 +44,6 @@ def button_func (button_pin):
             if(input_state == False):
                 print('Button Pressed')
                 time.sleep(0.2)
-
-initGPIO()
-
-connection = pika.BlockingConnection(pika.ConnectionParameters(host, credentials=pika.PlainCredentials(username=username, password=password)))
-channel = connection.channel()
-channel.queue_declare(queue=bedroom_queue)
-channel.queue_declare(queue=living_room_queue)
 
 ####################################
 ########### SEND MESSAGE ###########
@@ -61,7 +56,7 @@ channel.queue_declare(queue=living_room_queue)
 #connection.close()
 
 ####################################
-######### RECEIVE MESSAGE ##########
+######### LED CONTROLLER  ##########
 ####################################
 
 def callback_bedroom(ch, method, properties, body):
@@ -73,25 +68,34 @@ def callback_living_room(ch, method, properties, body):
 def callback_hall(ch, method, properties, body):
     jarvisled.turnLed(hall_led, body)
 
+def initLedController():
+    initGPIO()
+
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host, credentials=pika.PlainCredentials(username=username, password=password)))
+    channel = connection.channel()
+    channel.queue_declare(queue=bedroom_queue)
+    channel.queue_declare(queue=living_room_queue)
+
+    channel.basic_consume(callback_bedroom, queue=bedroom_queue, no_ack=True)
+    channel.basic_consume(callback_living_room, queue=living_room_queue, no_ack=True)
+    channel.basic_consume(callback_hall, queue=hall_queue, no_ack=True)
+
+    print(' [*] Waiting for messages. To exit press CTRL+C')
+    channel.start_consuming()
+
+####################################
+######### BUTTON CONTROLLER  #######
+####################################
+
+def initBtnController_1() :
+    button_func(hall_button, hall_event_queue)
+
+def initBtnController_2() :
+    button_func(living_room_button, living_room_event_queue)
+
 #def callback_livingroompressure_button_pressed():
 #    print("Button pressed")
 #    channel.basic_publish(exchange='', routing_key=living_room_motion_queue, body='on')
 
 #button_thread = threading.Thread(target = button.button_func)
 #button_thread.start()
-
-channel.basic_consume(callback_bedroom, queue=bedroom_queue, no_ack=True)
-channel.basic_consume(callback_living_room, queue=living_room_queue, no_ack=True)
-channel.basic_consume(callback_hall, queue=hall_queue, no_ack=True)
-
-print(' [*] Waiting for messages. To exit press CTRL+C')
-#channel.start_consuming()
-#button_func(hall_button)
-
-thread = Thread(target = button_func, args = (hall_button, ))
-thread.start()
-#thread.join()
-
-thread2 = Thread(target = button_func, args = (living_room_button, ))
-thread2.start()
-thread2.join()

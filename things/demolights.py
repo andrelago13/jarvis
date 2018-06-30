@@ -1,0 +1,3 @@
+import demo
+
+demo.initLedController()
