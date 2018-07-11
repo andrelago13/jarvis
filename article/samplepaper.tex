@@ -74,29 +74,125 @@ This boom in worldwide connected devices has led to a lot of different applicati
 
 Finally, \textbf{customized smart spaces} are a logical consequence of the growth of IoT and its associated products, as it became possible for almost everyone to create a customized IoT experience based on products and hardware available. In any IoT system, the essential items are the physical devices that are connected by the system and interact with the environment. In this document these are called \textbf{leaf devices}. 
 
-The first step to create a customized smart space is to acquire the leaf devices, depending on the intended use for the system. Some of the most common leaf devices are temperature sensors, motion sensors and remote light switches.
+The first step to create a customized smart space is to acquire the leaf devices, depending on the intended use for the system. Some of the most common leaf devices are temperature sensors, motion sensors and remote light switches. Although some of these devices have controllers of their own that can be programmed or controlled in a certain way, it is also possible to acquire \textbf{middleware devices} that connect to the leaf devices, and therefore are able to read and modify their current status. 
 
-Although some of these devices have controllers of their own that can be programmed or controlled in a certain way, it is also possible to acquire \textbf{middleware devices} that connect to the leaf devices, and therefore are able to read and modify their current status. 
-
-Arduino boards and Raspberry Pi computers, which were mentioned above, are often used as middleware devices due to their setup simplicity and low cost. For example, a Raspberry Pi’s GPIO\footnote{General Purpose Input/Output, multi-purpose ports that can be programmed for different inputs and outputs} ports can be simultaneously connected to a luminosity sensor and a light switch. That way, not only the luminosity value of the sensor can be sent to a remote server via Wi-Fi, but also the light switch can be turned on when the luminosity drops below a certain level. Arduino boards can also be used to increase the capacity of simpler devices such as sensors or actuators. For example, an Arduino board can be connected to a sensor providing it with a connection to a local network, so that the sensor’s status can be accessed remotely.
+Arduino boards and Raspberry Pi computers are often used as middleware devices due to their setup simplicity and low cost. For example, a Raspberry Pi’s GPIO\footnote{General Purpose Input/Output, multi-purpose ports that can be programmed for different inputs and outputs} ports can be simultaneously connected to a luminosity sensor and a light switch. That way, not only the luminosity value of the sensor can be sent to a remote server via Wi-Fi, but also the light switch can be turned on when the luminosity drops below a certain level. Arduino boards can also be used to increase the capacity of simpler devices such as sensors or actuators. For example, an Arduino board can be connected to a sensor providing it with a connection to a local network, so that the sensor’s status can be accessed remotely.
 
 Once the devices are acquired, it is necessary to connect them to a network and manage their behavior. To achieve this, a common technique is to use a \textbf{supervisor device}, a middleware device that acts as a supervisor for all the other devices. A computer or Raspberry Pi are common supervisor devices as these usually require a bit more power than alternatives like Arduino boards can offer. Once the supervisor device is ready, platforms like Node-RED\footnote{\url{https://nodered.org/}} or Home Assistant\footnote{\url{https://home-assistant.io/}} can be installed to facilitate the management of the system as a whole. These \textbf{management platforms} are described thoroughly below.
 
 As a practical example, let’s picture a user that wants to have a luminosity sensor and a temperature sensor in his room, and an actuator that can open and close the window. With these, the user wants to have a dashboard where he can consult the history of the room’s luminosity as well as the status (open/closed) of the window. Finally, the user wants the window to be shut if the temperature drops below a certain level. To achieve this functionality, all the user needs is to buy the actual sensors, the actuator and a Raspberry Pi. Then, the sensors and the actuator are connected to the Pi, which is then given an installation of Node-RED, so that the user can make the window close when the temperature drops.
 
 \subsection{Visual Programming Paltforms}
+
+Visual programing platforms, or VPPs, are tools that are usually installed in supervisor devices in IoT systems so that they can access all the devices and components in such systems. Because of that, these platforms can offer users with extensive and friendly UIs through which the user can visualize the state of the system, customize its behavior or even configure the system’s devices themselves. Some VPPs even offer integrations with third parties such as Twitter or Instagram, so that their APIs can be used as part of the system’s behavioral rules.
+
+As an example, we will take a look at one of the most popular VPPs (Node-RED), but it is important to note that there are other relevant alternatives, such as the Home Assistant\footnote{\url{https://home-assistant.io/}}.
+
+\textbf{Node-RED}\footnote{\url{https://nodered.org/}} is a tool developed by IBM’s Emerging Technology Services team in 2013, and is now a part of the JS Foundation. Node-RED follows a flow-based programming approach to the management of an IoT system, providing its users with a Node.js-based web application through which they can create, edit and delete system rules and connections in an interface that displays rules and connections as a flow of information, events or actions.
+
+In Node-RED, system devices are represented as colourful nodes that possess specific properties and actions which can be interconnected with other nodes. Similarly, conditions, actions and events are also represented as nodes, which makes it easy to understand how elements can be connected in the platform. Being based in Node.js, all that is required to use Node-RED is to have it running in a supervisor device in the system, such as a Raspberry Pi, and then the platform can be accessed through any regular web browser.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{figures/nodered-simple.jpg}
+        \caption{Simple setup of a Node-RED managed system.} \label{fig:nodered-simple}
+    \end{center}
+\end{figure}
+
+Figure~\ref{fig:nodered-simple} represents a simple application of Node-RED to manage an IoT system. In the example, the user has defined a flow where built-in Node-RED nodes are connected in a flow of information. With blocks similar to those displayed by the figure it is possible to not only send commands to IoT devices but also act upon events received from them, which brings the possibility to create rather complex systems with many dependency rules.
+
+When multiple rules such as the one displayed in Figure~\ref{fig:nodered-simple} are setup in Node-RED, it becomes possible to create complex systems that turn on lights at a certain time, activate devices such as microwave ovens when it is time for breakfast or close the windows if it starts raining.
+
+VPPs can be extremely useful for users of custom smart spaces due to the flexibility and power they provide. However, they possess several disadvantages that make them somewhat hard to use, especially for users that are not entirely comfortable with understanding how certain technologies work.
+
+Let's imagine a Node-RED system, embedded in a user’s home, with multiple devices. Even if there are only a couple of dozens of rules defined, it can be extremely difficult to understand why a certain event took place due to the overwhelming flow that results from them. A single dozen of rules can already result in a Node-RED page that you need to scroll to completely visualize, let alone a couple dozen! The more rules you add to the system, the harder it becomes to look at Node-RED’s interface and understand what the system is able to do, in part because it is impossible to make any other form of  “query” to the platform besides looking at it.
+
+Another major disadvantage of this sort of platforms is that they require the user to sit in front of a computer to set up the system, even if it is for simple tasks. For example, if a user is sitting in his couch, far away from his computer, and thinks that it would be great to have his light turn on as soon as it gets dark outside, he would need to actually get up and go to the computer when there can possibly be a lot of IoT devices around him that he could interact with. Again, this can make these platforms hard or boring to use as it may require a lot of time to perform simple tasks such as the one described.
+
 \subsection{Conversational Assistants}
+
+As an alternative to VPPs there are many conversational assistants, such as the Google Assistant\footnote{\url{https://assistant.google.com/}} or Amazon Alexa\footnote{\url{https://developer.amazon.com/alexa}}, that are capable of answering questions based on knowledge bases, read out emails or notifications and, most importantly, interact with smart spaces. As an example, we will take a deeper look into the Google Assistant as it represents the relevant features that are also present in its alternative products.
+
+There are plenty of ways users can interact with the Google Assistant: the standalone Google apps, built-in integrations with Android (6.0+) and Chrome OS, or with standalone hardware, such as the Google Home. Through these interfaces, it is possible to ask the Assistant questions, ask it to do things and interact with other associated products.
+
+With this, comes one of the interesting use cases of the Assistant - interacting with smart spaces. With the Assistant it is possible to talk to smart space devices such as NEST thermostats\footnote{\url{https://nest.com/thermostats/nest-learning-thermostat/overview/}}, as well as third-party services like Philips Hue\footnote{\url{https://www2.meethue.com/en-us}} bulbs or IFTTT\footnote{\url{https://ifttt.com/}} queue systems, among others\footnote{\url{https://support.google.com/googlehome/table/7401014}}.
+
+The problem with the Assistant’s approach is that these interactions are quite simple, and are mostly directly associated with direct commands or queries to the smart devices. All the Assistant can do with these devices is perform queries like “\textit{is the baby monitor on?}” or “\textit{what is the temperature in the living room?}”, or execute direct actions such as “\textit{turn on the coffee machine}”\footnote{\url{https://store.google.com/us/product/google\_home\_learn?hl=en-US}}.
+
+What this means is that although intelligent assistants like the Google Assistant, Siri and other can make it much more comfortable to interact with smart spaces because they remove the need of touching a physical device, they do not allow you to define rules for how the spaces operate. Saying things like “\textit{everyday at 3pm close the windows}” or  “\textit{when it is raining turn on the porch light}” won’t work on these assistants unless you manually define every single one of them.
+
+Overall, it is easy to understand that although current smart assistants can be very helpful and comfortable to use, they don’t yet have the complexity and completeness that other IoT management systems like Node-RED possess. Also, some of them are limited to a specific range of vendor devices, so there is always a limitation to the customization they can offer.
+
 \subsection{IoT Communication Protocols}
+
+When it comes to IoT, there are many protocol definitions that are essential for systems to work, and these can fit into the many layers they are made of. These protocols can be dedicated for IoT, but they can also be general application protocols that happen to be usable in these systems.For example, IoT systems may use the IPv6 protocol for the infrastructure layer, Bluetooth in the communication layer or MQTT for data protocols.
+
+Mozilla is currently developing a Web Thing API\footnote{\url{https://iot.mozilla.org/wot/}} which is expected to be submitted for approval to the W3C\footnote{\url{https://www.w3.org/}}, a community that brings together companies and experts to develop Web standards. The goal of Mozilla’s Web Thing API is to describe a data model and API that could be used in the context of IoT describe physical devices in a JSON format. This API could then be used together with the communication platforms like MQTT and RabbitMQ to create a more standardized way of establishing communication structures and protocols for IoT systems.
+
+While the document is still being prepared for submission, it’s principles for communication structures and device identification are already interesting and useful for developing projects. The description of some concepts described by Mozilla’s API can be found below. The JSON code described by the API can fully describe the status and abilities of a “web thing”, which can be useful for example for knowing what sort of actions a certain device is capable of or to read its current status.
 
 \section{Problem Statement}
 \subsection{Current Issues}
+
+As presented in the sections above, the current solutions available in the market offer great alternatives for the management of smart spaces, but none of them seems complete as a whole. This is because none of the presented tools simultaneously has these features:
+
+\begin{easylist}[itemize]
+    & \textbf{Complex Management:} the ability to perform a wide range of tasks, including direct actions, delayed actions, conditional actions or device interoperability.
+    & \textbf{Comfort and ease of use:} the possibility to manage the IoT system with the minnimum possible effort. The maximum comfort would be for the user not to have to move or touch a device in order to get his tasks done, as can happen with voice assistants.
+    & \textbf{Understanding system's functioning:} the ability to understand how the configure system works or why something was done. For example, with Node-RED, this is only possible by looking at all the configured rules to figure out which one could have caused somethign to happen. Ideally, all that should be needed is to ask the system why something happen and it should do that search for the user.
+\end{easylist}
+
 \subsection{Proposal}
-\subsection{Desiderata}
+
+The goal of this project is to develop a conversational bot dedicated to the management of smart spaces that is capable of defining and managing complex system rules, called \textbf{Jarvis}.
+
+Jarvis's abilities reach across different levels of operational complexity, ranging from direct one-time actions (e.g. \textit{"turn on the light}) to repeating conditional actions (e.g. \textit{"when it is raining, close the windows"}). Besides that, Jarvis also lets the user easily change or understand the status of the system, through queries like \textit{"why did the toaster turn on?"}. In that latter case, Jarvis should also possess conversational awareness that allows for chained commands. This particular feature is demonstrated by the following dialogue:
+
+\indent\indent \textbf{User}: “\textit{Why did the toaster turn on?}”
+
+\indent\indent \textbf{Jarvis}: "\textit{You told me to turn it on at 8 AM.}”
+
+\indent\indent \textbf{User}: “\textit{Okay, change it to 7:50 AM.}”
+
+\indent\indent \textbf{Jarvis}: “\textit{Sure, toaster timer was changed.}”
+
+In the example above, the second query of the user wouldn't make sense on its own, however it does make sense as a follow-up to the previous interactions. This can not only be extremely user but also facilitate the user's experience since it avoids repeating information that was already mentioned in the conversation.
+
+To make the bot easy to integrate with current systems, its interface was made through existing platforms like the Google Assistant, Amazon Alexa, Facebook Messenger, Slack, among others. This range of integrations give the bot the ability to interact with users via voice or text queries.
+
 \subsection{Research Questions}
 
+With the development and documentation of this project, we aim to answer the following research questions:
+
+\begin{enumerate}
+    \item \textbf{"How can direct, delayed, period and repeating actions be implemented?":} this type of features can be very helpful in a voice assistant and make it a very powerful tool for users. With the support for these features, queries such as "\textit{turn on the light}", "\textit{turn on the light in 5 minutes}" or "\textit{turn on the light everyday from 10am to 11am}" become possible.
+
+    \item \textbf{"Can we use contextual awareness for IoT management?":} contextual awareness can help make conversations feel more natural and intuitive as they are closer to human interactions and prevent the user from having to repeat certain commands or phrases. 
+    
+    \item \textbf{"Can a conversational assistant handle event management?":} events make it possible for certain devices to have a behavior that depends on other devices without being directly connected to them. Because of that, being able to support this sort of features can make a system truly powerful and useful. An example of an event query would be "\textit{Turn on the kitchen light if the kitchen motion sensor is activated}".
+    
+    \item \textbf{"How can a conversational bot solve causality queries?":} a query such as "\textit{how did that happen?}" can be very helpful for a user to understand how a system is operating or to change the rules previously created. As will be seen, this is not a trivial problem since it has many possible approaches.
+\end{enumerate}
+
 \section{Developed Solution}
-\subsection{Proposed Features}
-\subsection{Software Components}
+
+This section details the implementation of this project, explaining its main software components and techniques used to tackle the development problems. This is an open source project that is hosted in a public GitHub repository\footnote{https://github.com/andrelago13/jarvis}.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{figures/architecture.png}
+        \caption{Jarvis overall architectural components.} \label{fig:architecture}
+    \end{center}
+\end{figure}
+
+Figure~\ref{fig:architecture} presents the high level software components of Jarvis. Each of the components is explained in the following subsections.
+
+\subsection{User Interface}
+\subsection{Dialogflow Backend}
+\subsection{Jarvis Backend}
+\subsection{Database}
+\subsection{Messaging Queue}
+\subsection{IoT System Controllers}
 
 \section{Validation}
 \subsection{Simulated Scenarios}
@@ -228,63 +324,5 @@ while the following text appears in normal font.
 % LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
 % Oct 2017
 
-% END OF SAMPLES
-
-% \bibitem{XYWV12}
-% Xia, F., Yang, L. T., Wang, L., Vinel, A. (2012). Internet of Things. INTERNATIONAL JOURNAL OF COMMUNICATION SYSTEMS Int. J. Commun. Syst. Int. J. Commun. Syst, 25(25). https://doi.org/10.1002/dac
-
 %\end{thebibliography}
 \end{document}
-
-% Dorri, A., Kanhere, S. S., Jurdak, R., & Gauravaram, P. (2017). Blockchain for IoT security and privacy: The case study of a smart home. In 2017 IEEE International Conference on Pervasive Computing and Communications Workshops (PerCom Workshops) (pp. 618–623). IEEE. https://doi.org/10.1109/PERCOMW.2017.7917634
-% Techlabs, M. (2017). Exploring Dialogflow: Understanding Agent Interaction. Retrieved from https://chatbotslife.com/which-are-the-best-on-site-chatbot-frameworks-3dbf5157fb57
-% Davydova, O. (2017). 25 Chatbot Platforms: A Comparative Table. Retrieved from https://chatbotsjournal.com/25-chatbot-platforms-a-comparative-table-aeefc932eaff
-% Birch, J. (2017). Exploring Dialogflow: Understanding Agent Interaction. Retrieved from https://medium.com/@hitherejoe/exploring-dialogflow-understanding-agent-interaction-8f3323e3b738
-% Apache. (2005, June). Batik \svg{} {T}oolkit {A}rchitecture.
-% Apache. (2005, June). Batik {SVG} {T}oolkit.
-% Lipsum. (2008). Lorem Ipsum.
-% Tham, M. (2001, May). Writing Research Theses or Dissertations.
-% Marinho, F., Viegas, P., & Lopes, J. C. (2006). {SVG} na Visualização de Sinópticos. In J. C. Ramalho, J. C. Lopes, & A. Simões (Eds.), {XATA2006}, XML: Aplicações e Tecnologias Associadas (Portalege, 9 e 10 de Fevereiro de 2006) (pp. 99–112). Universidade do Minho.
-% Zukowski, D. J., Purakayastha, A., Mohindra, A., & Devarakonda, M. (1997). Metis: A Thin-Client Application Framework. Proceedings of the Third Conference on Object-Oriented Technologies and Systems, 103–114.
-% Matos, M. A. (1993). Normas para Apresentação de Dissertações, Bases Essenciais.
-% Franz, M. S. O. (1995). Code-Generation On-the-Fly: A Key to Portable Software. Swiss Federal Institute of Technology Zurich, ETH Zürich.
-% Randall, D. (2003). Living inside a smart home: A case study. In Inside the smart home (pp. 227–246). Springer.
-% Griss, M. L. (1997). Software reuse architecture, process, and organization for business success. In Proceedings of the Eighth Israeli Conference on Computer Systems and Software Engineering. IEEE Comput. Soc. https://doi.org/10.1109/ICCSSE.1997.599879
-% Hertzfeld, A. (1984). It Sure Is Great To Get Out Of That Bag! Folklore. Retrieved from https://www.gartner.com/newsroom/id/2905717
-% Chowdhury, G. G. (2003). Natural language processing. Annual Review of Information Science and Technology, 37(1). https://doi.org/10.1002/aris.1440370103
-% Allan, D. (2017). The best voice recognition software of 2017. TechRadar. Retrieved from http://www.techradar.com/news/the-best-voice-recognition-software-of-2017
-% Juang, B. H., & Rabiner, L. R. (2004). Automatic Speech Recognition – A Brief History of the Technology Development. Retrieved from http://www.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/354_LALI-ASRHistory-final-10-8.pdf
-% Patel, K. (2017). 6 Benefits of Internet of Things for Hospitals and Healthcare. IBM. Retrieved from https://www.ibm.com/blogs/internet-of-things/6-benefits-of-iot-for-healthcare/
-% Marr, B. (2016). 15 noteworthy facts about Wearables in 2016. Forbes. Retrieved from https://www.forbes.com/sites/bernardmarr/2016/03/18/15-mind-boggling-facts-about-wearables-in-2016/#79ad0f5e2732
-% Xu, L. Da, He, W., & Li, S. (2014, November). Internet of things in industries: A survey. IEEE Transactions on Industrial Informatics. https://doi.org/10.1109/TII.2014.2300753
-% Lee, I., & Lee, K. (2015). The Internet of Things (IoT): Applications, investments, and challenges for enterprises. Business Horizons, 58(4), 431–440. https://doi.org/10.1016/j.bushor.2015.03.008
-% Chen, S., Xu, H., Liu, D., Hu, B., & Wang, H. (2014). A vision of IoT: Applications, challenges, and opportunities with China Perspective. IEEE Internet of Things Journal. https://doi.org/10.1109/JIOT.2014.2337336
-% Rivera, J., & van der Meulen, R. (2014). Gartner Says 4.9 Billion Connected “Things” Will Be in Use in 2015. Gartner - Newsroom, 9–10. https://doi.org/10.1017/CBO9781107415324.004
-% Brown, P. (2017). 20 Billion Connected Internet of Things Devices in 2017, IHS Markit Says. Electronics360. Retrieved from http://electronics360.globalspec.com/article/8032/20-billion-connected-internet-of-things-devices-in-2017-ihs-markit-says
-% Dennis, A. K. (2013). Raspberry Pi home automation with Arduino. Packt Publishing Ltd.
-% Deering, S. E. (1998). Internet protocol, version 6 (IPv6) specification.
-% Sean Dodson. (2003). The internet of things. The Guardian. Retrieved from https://www.theguardian.com/technology/2003/oct/09/shopping.newmedia
-% Florea, A., & Sgârciu, V. (2016). Smart refrigerator : A next generation refrigerator connected to the IoT. In Proceedings of the 8th International Conference on Electronics, Computers and Artificial Intelligence, ECAI 2016 (pp. 1–6). IEEE. https://doi.org/10.1109/ECAI.2016.7861170
-% Kevin Ashton. (2009). That “Internet of Things” Thing. RFID Journal. Retrieved from http://www.rfidjournal.com/articles/view?4986
-% Suresh, P., Daniel, J. V., Parthasarathy, V., & Aswathy, R. H. (2014). A state of the art review on the Internet of Things (IoT) history, technology and fields of deployment. In 2014 International Conference on Science Engineering and Management Research (ICSEMR). IEEE. https://doi.org/10.1109/ICSEMR.2014.7043637
-% 1.5 Million Home Automation Systems Installed in the US This Year. (2012). Retrieved from https://www.abiresearch.com/press/15-million-home-automation-systems-installed-in-th/
-% Average hours per day spent in selected activities by sex and day. (2017). Bureau of Labor Statistics. Retrieved from https://www.bls.gov/charts/american-time-use/activity-by-sex.htm
-% Dr. Brian M. Pierce. (n.d.). Autonomous Real-time Ground Ubiquitous Surveillance - Infrared (ARGUS-IR). DARPA. Retrieved from https://www.darpa.mil/program/autonomous-real-time-ground-ubiquitous-surveillance-infrared
-% Peterson, H. (2017). How automation will impact the retail industry. Business Insider. Retrieved from http://www.businessinsider.com/how-automation-will-impact-the-retail-industry-2017-5
-% Oliver Balch. (2017). Automated mining will cost jobs and tax income: it’s time for governments to act. The Guardian. Retrieved from https://www.theguardian.com/sustainable-business/2017/jan/20/autonomous-mining-will-cost-jobs-and-tax-income-its-time-for-governments-to-act
-% McFarland, M. (2017). Why Volvo’s self-driving garbage truck spends most of its time in reverse. Retrieved from http://money.cnn.com/2017/05/18/technology/volvo-garbage-truck/index.html
-% Musson, A. E., & Robinson, E. (1969). Science and technology in the industrial revolution. Manchester University Press.
-% Jerome, H. (1934). Mechanization in Industry. National Bureau of Economic Research, 158.
-% Guarnieri, M. (2010). The roots of automation before mechatronics. In IEEE Industrial Electronics Magazine (Vol. 4, pp. 42–43). https://doi.org/10.1109/MIE.2010.936772
-% ISA. (2010). What is Automation? - ISA. Isa. Retrieved from https://www.isa.org/about-isa/what-is-automation/
-% Santos, J., Rodrigues, J. J. P. C., Casal, J., Saleem, K., & Denisov, V. (2016). Intelligent Personal Assistants Based on Internet of Things Approaches. IEEE Systems Journal, 1–10. https://doi.org/10.1109/JSYST.2016.2555292
-% Hunke, N., Rüßmann, M., Schmieg, F., Bhatia, A., & Kalra, N. (2017). Winning in IoT: It’s All About the Business Processes. Bgc.perspectives. Retrieved from https://www.bcg.com/publications/2017/hardware-software-energy-environment-winning-in-iot-all-about-winning-processes.aspx
-% van der Meulen, R. (2017). Gartner Press Release, Gartner Says 8.4 Billion Connected “Things” Will Be in Use in 2017, Up 31 Percent From 2016. Gartner Press Release. https://doi.org/10.1017/CBO9781107415324.004
-% Rasch, K. (2014). An unsupervised recommender system for smart homes. Journal of Ambient Intelligence and Smart Environments, 6, 21–37. https://doi.org/10.3233/AIS-130242
-% 
-% Mourya, R. (2017). IoT applications spanning across industries. IBM. Retrieved from https://www.ibm.com/blogs/internet-of-things/iot-applications-industries/
-% García, R. G. (2005). \svg{} for {SCADA}.
-% World Wide Web Consortium, W.---. (2005, June). W3C SVG Specification.
-% World Wide Web Consortium, W.---. (2005, April). {W3C} --- {About SVG}.
-% IBM. (2005, May). Program with {SVG}.
-% Philips, E. M., & Pugh, D. S. (2005). How to Get a {PhD} ({F}ourth). Open University Press.
