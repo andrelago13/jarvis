@@ -188,20 +188,204 @@ This section details the implementation of this project, explaining its main sof
 Figure~\ref{fig:architecture} presents the high level software components of Jarvis. Each of the components is explained in the following subsections.
 
 \subsection{User Interface}
+
+The user interface is the means through which the user interacts with Jarvis. Due to the use of DialogFlow, there is no need to create specific interfaces for Jarvis as this platform provides built-in integration with multiple popular interfaces. In this case, the main interfaces used were Slack and the Google Assistant so that both text and voice interfaces were covered.
+
+Slack\footnote{\url{https://slack.com/}} is a very powerful team-communication tool used worldwide for team collaboration and efficient communication. Slack provides direct communication with individuals or groups of individuals, but also channeled conversations. In this case, users may create public or private messaging channels in which they can write themed content for other members of the channels to read.
+
+The integration with the Google Assistant is also made easily due to Dialogflow's built-in integration system. With it, the user may use any Google Assistant enabled device with his account to communicate with the bot, only needing to start with a query such as \textit{"Hey Google, talk to Jarvis"}.
+
+Regardless of which of these interfaces is used, the strings representing the exact user query are sent from the interface to DialogFlow’s backend. Because Dialogflow is being used, there is no need to implement any Speech Recognition techniques because they are already implemented. This means that Dialogflow's backend receives raw strings that represent the user queries, which are then analyzed using Natural Language Processing techniques.
+
 \subsection{Dialogflow Backend}
+
+This system receives the user queries from the different user interfaces and parses them into machine understandable code.
+
+Upon receiving a request, there are two things DialogFlow can do: either respond with an automatic response or send the parsed request to a fulfillment backend (in this case, the Jarvis Backend) which will then process the request and return the desired response.
+
+There are a few key concepts that are important to understand in Dialogflow in order to make it operate the best possible way. All the information below can be found in the official Dialogflow documentation\footnote{\url{https://dialogflow.com/docs/getting-started/basics}}.
+
+\begin{easylist}[itemize]
+  & \textbf{Fulfillment Backend:} a secondary server that provides a REST API for Dialogflow to send messages to in order to receive the response to the user. This backend receives the result of the processing done by Dialogflow, being able to perform other actions that Dialogflow can't perform (e.g. interact with IoT devices).
+  & \textbf{Request:} plain string that represents a user query. An example would be “turn on the living room light”.
+  & \textbf{Entity:} symbol that can be represented by different literal strings. As an example, there may be an entity called “toggleable-device” which may be represented by “living room light” or “kitchen light”. Additionally, entities may be represented by other entities, which means that an entity “device” could be represented by the entity “toggleable-device” which then may be represented by certain strings. Entities are represented in DialogFlow with the use of the “@” symbol (“@device”).
+  & \textbf{System entity:} a system entity is a regular entity that instead of being manually defined by the user is already defined by the Dialogflow system.
+  & \textbf{Intent:} represents a set of example requests that may contain multiple entities. Intents are defined manually and, ideally, each represents one type of query by the user. As an example, an intent named \textit{“Turn on/off device”} may be represented by the requests \textit{“turn the @device on”} and \textit{“turn the @device off”}. In this case, if the request is \textit{“turn the kitchen light on”}, the DialogFlow engine will understand that \textit{“@device”} is represented by \textit{“kitchen light”} and provide that information to the fulfillment backend.
+  & \textbf{Context\footnote{\url{https://dialogflow.com/docs/contexts}}:} contexts are used to allow intents or requests to depend on previous instances, enabling for the creation of context-aware interactions. A context is defined by a simple string (e.g. “device-choice”) and can be used as input and/or output for an intent. If an intent has a context as output, the following requests will carry that context in their parameters. On the other hand, if an intent has a context as input, a request will only be parsed into that intent if it carries that context in its parameters (e.g. if a previous intent had that same context as output). Contexts may also carry parameters, which are a simple list of key-value pairs. Whether or not a context is the output of an intent can either be pre-defined in DialogFlow or defined by the fulfillment backend.
+\end{easylist}
+
+In the case of Jarvis, there are multiple intents, entities and contexts defined to make the entire system work. Figure~\ref{fig:entities} illustrates the main entities defined for Jarvis in Dialogflow.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/entities.png}
+        \caption{Main entities defined in Jarvis' Dialogflow project.} \label{fig:entities}
+    \end{center}
+\end{figure}
+
+The many different intents defined for Jarvis make it possible to support all of its features. The complete list of intents is as follows: Direct Action Intent; Delayed Action Intent; Confirm Thing Choice Intent; Repeating Intent; Event Intent; "Why did something happen?" Intent; Rules Defined Intent; Rules Defined Change Single Rule Intent; Cancel Command Intent; Confirm Cancel Intent. As an example, the Event Intent is explained below:
+
+\begin{easylist}[itemize]  
+  & \textbf{Event Intent}
+  && \textbf{Usage:} creates an action that is performed upon a certain event, such as an activity of another device or a change of a device's status.
+  && \textbf{Definition:}
+  &&& "@action:action when @event:event"
+  && \textbf{Example:}
+  &&& \textit{"Turn on the bedroom light when the living room light turns off"}
+\end{easylist}
+
+Having the intents defined, the Dialogflow backend takes requests and builds JSON objects that contain all the information related to the intent parsed as well as the entities that are present in it. These objects are then sent to the Jarvis backend for further processing.
+
 \subsection{Jarvis Backend}
-\subsection{Database}
-\subsection{Messaging Queue}
-\subsection{IoT System Controllers}
+
+The Jarvis backend is a JavaEE\footnote{\url{http://www.oracle.com/technetwork/java/javaee/overview/index.html}} application that provides a REST API to which Dialogflow requests are sent via a POST URL to compute the replies to user queries as well as perform the required actions on IoT devices.
+
+For each of the intents mentioned in the previous section, the backend has an equivalent class that is responsible for parsing the request and generating a response. Upon receiving a request, each of the intent classes is responsible for validating the request parameters to make sure that not only all required parameters are present (e.g. device names or desired action) but also that the specified devices, if any, are clear and unique. If the request has errors, an appropriate and explanatory response should be returned. If the parameters are valid but the intended device is unclear (e.g. user wants to turn on the "light" but there is a "living room light" and a "bedroom light"), the device specification context should be added and the response should ask the user to specify the desired device.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{figures/intent-activity.png}
+        \caption{Activity diagram for the parsing of the query "\textit{turn on the light}".} \label{fig:intent-activity}
+    \end{center}
+\end{figure}
+
+To perform the logs of commands and user commands, all actions that can be performed are represented as commands, therefore using the Command\footnote{\url{http://w3sdesign.com/}} design pattern. Each command has "execute" and "undo" methods, implemented in a way that calling "undo" after "execute" should return the system to its original state.
+
+With most intents, such as direct actions or "why did something happen?" queries, the effects are immediate and require no delayed activity from the backend, except for period actions, rules and events. These require a special engineering so that they can perform actions on the backend without the need of a request to trigger them.
+
+A period action is an action that must be done and then undone after a certain period of time. This can happen as a result of a query such as "\textit{turn on the light from 4pm to 5pm}". As a result of this sort of query, a command is generated. This command includes an implementation of a state machine in which the state tells whether the first action (4pm) was not executed yet, the first action was executed but the second (5pm) wasn't or both have been executed. Therefore, when the command is executed, it schedules a Java thread to be run at 4pm, at which time the command is executed again, changing its state and executing the 4pm action. At this point, a second thread is scheduled for 5pm to execute the second action and move the command to its final state. The use of the Command pattern is useful as it abstracts from the engine the notion of direct or delayed commands.
+
+The same concept is used for system rules, which are used for queries such as "\textit{turn on the light everyday at 5pm}". In this case, at first, a thread is scheduled for the following "5pm" to execute the command for the first time. From then on, everytime the command is executed it schedules a new thread for the following 5pm, but never leaves this state of rescheduling. The only way to cancel this action is to call the "undo" method which cancels the currently scheduled thread.
+
+This thread scheduling mechanism does not work for events because the time at which these are executed is not known. Events are a result of queries such as "\textit{turn on the light when the sensor is activated}". In this case, it is necessary for the system to listen to the messaging queues of the device actions and states (these queues are explained below in another section). As will be explained below, each device has messaging queues that relate to its actions and state changes. Messages are published in the latter by the device controller everytime its state is changed, which means that listening to those queues allows a listener to be notified of state changes on the device.
+
+On the backend, it wouldn't make sense to create a new listener for every event that uses a certain condition as that would put more load on the messaging queue layer of the backend. Instead, a different mechanism is used. Upon startup of the backend, a listener is created for each event queue of each device. These are simple classes that are responsible for receiving messages published in those queues and notifying the Jarvis backend engine that those messages were received.
+
+The engine then uses the Observer\footnote{\url{http://w3sdesign.com/}} design pattern to allow commands to add observers to these messages. For example, the query "\textit{turn on the light when the sensor is activated}" would add an observer that would look for messages on the sensor's event queue with the value "on". Because of that, the engine would notify this observer of all messages on that queue leading to the event being executed. The advantage of this technique is that it allows the engine to be a centralized point through which all messages go through and with which all observers must be registered.
+
+Other patterns are used across the solution such as Builder (for creating IoT device classes), Singleton (for database and messaging queue networked connections) and Adapter (for abstracting the networked interactions with the messaging queue for the IoT devices).
+
+One of the main features of this project are the causality queries, the requests through which the user asks why something happened (e.g. "\textit{why did the light turn on?}". To implement them, the command classes also have a method that determines whether or not they could have caused a certain condition to be true. Because of that, a simple solution to this problem is to, given the queried condition, look through the log of commands and user commands to understand what could have caused that condition. However, this approach does not work for all the use cases, for example, when, at the moment of the query, multiple rules may have caused the condition to be true. In these cases, it is not enough to return the latest logged command that could cause the queried condition. Instead, there are two possible approaches:
+
+\begin{easylist}[itemize]
+  & \textbf{Return earliest possible cause:} if multiple rules/events could have caused the queried condition to be true, choose the one that happened first as that was the cause for the condition to be true in the first place.
+  & \textbf{Use an heuristic to calculate most relevant cause:} instead of assuming the best answer is the earliest cause, use an heuristic to evaluate all the possible causes in terms of relevance and choose the most relevant. This calculation can use the nature of the cause (caused by user vs. caused by rule), order by which causes happened, among others.
+\end{easylist}
+
+In the context of this project the implemented solution was to use the earliest possible cause, but it is important to mention that the alternative would be just as valid and possibly more useful to the user.
+
+It is also possible that a chain of interconnected rules caused the queried condition to be true. In this case, it is possible to either reply with the complete chain of events, the latest possible cause or engage in a conversation through which the user can explore the full chain of events chronologically (e.g. by saying "\textit{tell me more}" to explore the chain).
+
+In the context of this project, the solution uses the approach of returning the latest possible cause. However, with the mindset of creating a helpful and fully capable bot, the best approach would be to engage in a conversation with the user, not only because it would allow the user to obtain more information at his own pace but also because it would be possible to make changes to the rules as he goes. For example, if the user is having that conversation and he decides to change one of the rules, he can just interrupt the conversation to modify the rule. With the current approach, that is only possible if the answer contains a single rule or cause to the condition which in reality is not always the case.
+
+\subsection{Database, Messaging Queue and IoT System Controllers}
+
+These components are not crucial to the functioning of Jarvis so they will be described very briefly in this Section. These fall slightly out of the scope of the project, however they are useful to understand how the entire system works.
+
+The chosen database technology was MongoDB\footnote{\url{https://www.mongodb.com/}} due to the fact that it is a popular document store database. This database was used to store the list of available devices as well as a log of the commands executed by the Jarvis backend, which was useful for answering causality queries.
+
+The chosen messaging service was RabbitMQ\footnote{\url{https://www.rabbitmq.com/}} due to the fact that it facilitates a Publisher-Consumer architecture while providing a scalable and reliable solution. Different messaging queues were created on the service with two purposes. On one hand, action queues were used for the Jarvis backend to publish messages to create actions on the IoT devices (e.g. publishing "on" to turn on a light). On the other hand, event queues were used for the devices to publish state changes (e.g. a new temperature detected in a sensor), which in turn were used for events in the Jarvis engine.
+
+The IoT system controllers are the entity that falls further away from the scope of the project. These were simple Python scripts that were used to read and write messages from the messaging queues to appropriately act on the IoT devices using Python's hardware libraries (in this project's case, the RPi.GPIO\footnote{\url{https://pypi.org/project/RPi.GPIO/}} since RaspberryPi devices were used).
 
 \section{Validation}
-\subsection{Simulated Scenarios}
-\subsection{User Study}
 
-\section{Conclusions and Future Work}
+To evaluate the success of this project, two measures were taken to understand how it may outperform other systems due to the features it provides as well as how easy and intuitive it is to use. For that, a list of simulated scenarios was elaborated to understand how the implemented features are present in currently available alternatives for smart space management. Then, a user study was done to evaluate the project's ease of use and what users may think of it.
+
+\subsection{Simulated Scenarios}
+
+Table~\ref{table:comparison} shows how the developed features compare to current alternatives of visual platforms and conversational assistants, in this case, respectively, Node-RED and the Google Assistant (these were chosen as examples as they are among the most complete alternatives in each field).
+
+It is important to clarify that "One-time action w/unclear device" refers to actions like "\textit{turn on the light}" with which Jarvis asks the user to clarify which device he means based on the given name ("\textit{do you mean the bedroom or living room light?}"). "Cancel last command" refers to that actual command being said, which should cause the last command to be undone, be it an action or a rule creation. Finally, "Rules defined for device" refers to the user querying Jarvis what the defined rules for a device are (e.g. "\textit{what rules are defined for the bedroom light?}").
 
 \begin{table}
-    \caption{User Study results (task completion rate, task time and incorrect queries).}
+    \centering
+    \begin{tabular}{ | c | c | c | c |}
+    \hline
+    Scenario & Jarvis & Google Assistant & Node-RED \\ \hline
+
+    One-time action &
+    \includegraphics[width=20pt]{figures/checkmark} &
+    \includegraphics[width=20pt]{figures/checkmark} &
+    \includegraphics[width=20pt]{figures/checkmark} \\ \hline
+    
+    One-time action w/unclear device &
+    \includegraphics[width=20pt]{figures/checkmark} &
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/cross} \\ \hline
+    
+    Delayed action &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/checkmark} \\ \hline
+    
+    Period action &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/checkmark} \\ \hline
+    
+    Daily repeating action &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/checkmark} \\ \hline
+    
+    Daily repeating period action &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/checkmark} \\ \hline
+    
+    Cancel last command &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/cross} \\ \hline
+    
+    Event rule &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/cross} \\ \hline
+    
+    Rules defined for device &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/cross} \\ \hline
+    
+    Causality query &
+    \includegraphics[width=20pt]{figures/checkmark} & 
+    \includegraphics[width=20pt]{figures/cross} &
+    \includegraphics[width=20pt]{figures/cross} \\ \hline
+    \end{tabular}
+
+    \caption{Simulated scenarios fulfillment in Jarvis, Google Assistant and Node-RED}
+    \label{table:comparison}
+\end{table}
+
+The important conclusion to withdraw from the table is that Jarvis provides a lot of features that aren't present in either the Google Assistant or Node-RED. Obviously both of these products do a lot more than these features, but especially with the Assistant the advantage is clear since the only kind of smart space feature it supports is the one shown in the table.
+
+Overall, these studies prove that it is possible to bring some of the features available in Node-RED to a conversational interface, as well as bring even more features that provide increased complexity and management.
+
+\subsection{User Study}
+
+The study was done with 17 participants with ages ranging from 18 to 51. The main goal on obtaining the test participants was to obtain a significant age range but also to include mostly people without a background in technology to understand whether the language capabilities of Jarvis are enough for the users to interact with it. Because of that, 14 of the participants did not have a background in software development although they were familiar with different technologies such as smartphones and the internet.
+
+Each participant was given a set of 5 tasks (1 control task and 4 study tasks) that they were supposed to get done with the help of Jarvis, using the Google Assistant as the user interface. The only instructions given were that they must talk to the phone in the way that feels the most natural to them in order to complete the tasks at hand. There were 2 sets of tasks that participants were assigned to randomly.
+
+Besides the set of tasks, participants were given the list of IoT devices available in the simulated smart house they would be attempting to manage through Jarvis. To increase the diversity and reduce the bias of the study, two different sets of devices and tasks were created, so that different smart house topologies were tested. The participants were assigned one of the test sets randomly.
+
+For each of the tasks, the study administrator would take note of whether each participant was able to complete each of the tasks, the time it took to complete the task and the count of unsuccessful queries. This count was made separately for queries that were not understood by the Assistant's speech recognition capabilities, for queries the user mispronounced and for queries that were correct but Jarvis was unable to process. After completing the tasks, the administrator would explain to participants that an alternative to Jarvis to perform the tasks at hand was a non-conversational visual interface such as Node-RED, giving an example of how the same tasks would be performed using that tool. After that, the administrator would ask participants what they believe are the advantages of Jarvis over such a tool, if they find any, and whether they would prefer Jarvis over any non-conversational tool. Finally, the participants would be asked what they think could be improved about Jarvis and the way it handles smart space management.
+
+Table~\ref{table:studyresults} compiles the results observed during the study. Each row represents one of the tasks given to participants. The meaning of each column is as follows:
+
+\begin{easylist}[itemize]
+    & \textbf{"Task:"} number of the task (0-4) and the task set number in parenthesis (1/2).
+    & \textbf{"Done:"} percentage of participants that were able to complete the task successfully.
+    & \textbf{"Time:"} average ("\textit{Avg}") and median ("\textit{Med}") time, in seconds, that participants took to complete the task.
+    & \textbf{"IQ (Ast):"} average ("\textit{Avg}") and median ("\textit{Med}") times that queries were incorrect due to the Google Assistant not properly recognizing the user's speech (due to microphone malfunction, background noise, ...).
+    & \textbf{"IQ (User):"} average ("\textit{Avg}") and median ("\textit{Med}") times that queries were incorrect due to the user not speaking a valid query (e.g. saying "\textit{Turn up the lighting}").
+    & \textbf{"IQ (Jvs):"} average ("\textit{Avg}") and median ("\textit{Med}") times that queries were incorrect due to Jarvis not recognizing a valid query.
+    & \textbf{"IQ:"} average ("\textit{Avg}") and median ("\textit{Med}") times queries were incorrect (sum of "\textit{IQ (Ast)}", "\textit{IQ (User)}" and "\textit{IQ (Jvs)}").
+\end{easylist}
+
+\begin{table}
     \centering
     \begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | c | c |}
     \hline
@@ -220,71 +404,94 @@ Figure~\ref{fig:architecture} presents the high level software components of Jar
     4 (2) & 100\% & 8.33 & 8 & 0.33 & 0 & 0.22 & 0 & 0.22 & 0 & 0.78 & 1 \\ \hline
     \end{tabular}
 
+    \caption{User Study results (task completion rate, task time and incorrect queries).}
     \label{table:studyresults}
 \end{table}
 
-\section{First Section}
-\subsection{A Subsection Sample}
-Please note that the first paragraph of a section or subsection is
-not indented. The first paragraph that follows a table, figure,
-equation etc. does not need an indent, either.
+The complexity of the queries increases from task 0 to task 3 since the queries require more words or interactions. This is reflected by the task time that also increases from task 0 to task 3 in both the average and median values and in both task sets. Other than that, it is hard to use the task times as means of comparison to visual tools since no comparison study was done. However, since using a visual tool such as Node-RED involves moving to a computer, opening the platform, dragging blocks and then configuring their options, we consider that in any case the overall task would take longer in a visual tool than it does with Jarvis.
 
-Subsequent paragraphs, however, are indented.
+%The numbers related to incorrect queries also bring some interesting conclusions about the system's performance. The table shows that there were some incorrect queries for the Assistant which means that the Assistant's speech recognition failed to correctly translate what the participants said. However, this was mostly due to the participant's pronounciation since none of the speakers had English as their main language. This does not have implications to the evaluation of Jarvis, but it does indicate that this sort of systems might be harder to use if they do not support the user's native language.
 
-\subsubsection{Sample Heading (Third Level)} Only two levels of
-headings should be numbered. Lower level headings remain unnumbered;
-they are formatted as run-in headings.
+It can also be noted that there were a few instances of incorrect queries that were the user's fault ("\textit{IQ (User)}"). These were cases where user queries were gramatically incorrect and therefore did not match the sample queries defined in Dialogflow. For example, a query like "\textit{Turn on lights}" is not a considered the user's fault since the correct one would be "\textit{Turn on the lights}", however, it still carries enough information to understand what the user's intent is. More reflexion on these cases will be done below in Section~\ref{sec:validationthreats}.
 
-\paragraph{Sample Heading (Fourth Level)}
-The contribution should contain no more than four levels of
-headings. Table~\ref{tab1} gives a summary of all heading levels.
+There is a significant number of incorrect queries due to Jarvis ("\textit{IQ (Jvs)}"), meaning that the user's query was valid but its meaning was not understood by Jarvis. This can be caused by either a mispronounciation of a device's name (e.g. saying "\textit{Turn on the living room light\textbf{s}}" instead of "\textit{Turn on the living room light}") or a sentence structure that is valid but is not recognized due to the sample queries inserted into Dialogflow. This possibly represents the most serious downside of this project, but its severity and possible solutions are discussed below.
 
-\begin{table}
-\caption{Table captions should be placed above the
-tables.}\label{tab1}
-\begin{tabular}{|l|l|l|}
-\hline
-Heading level &  Example & Font size and style\\
-\hline
-Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
-1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
-2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
-3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
-4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
-\hline
-\end{tabular}
-\end{table}
+It is also important to note that despite the numbers for incorrect queries, the success rate of all tasks is very high, which indicates that the system is intuitive enough to be used without previous instruction or formation. This proves that not only the features work on the smart space management side, but also that the conversational interface is well designed and works as expected.
+
+All of the reflexions made above are reflected by the participants' answers to the questions made, since they reiterate that Jarvis is easy to use and provides "accessibility" and "commodity". This is very important since it is the deciding factor for participants to prefer Jarvis over a non-conversational interface, which they still consider to have some advantages over Jarvis.
+
+Some of the aspects mentioned above reflect threats to the project's validation.
+
+One one hand, there are the incorrect queries that are due to the user either having a bad pronounciation or providing incorrect sentences. For example, a query like "\textit{Turn up lights}" is not a valid query since that would be "\textit{Turn on the lights}", however, it still carries enough information to understand what the user's intent is. As it stands, Jarvis does not support this sort of queries. However, including gramatically incorrect queries in Dialogflow's system would make Jarvis more accept these partially incorrect queries, making it more flexible to these scenarios and therefore improve the user experience.
+
+On the other hand, there are queries that are valid but fail because Jarvis fails to recognize them. This is concerning because if the user feels that a query didn't work because his pronounciation or grammar was bad he repeats the query and does not blame the system. However, if the user feels he said what was supposed to be said but the system did not understand it properly, he loses motivation to use the system and feels like it doesn't work, which is bad and goes against the goals of Jarvis. The positive remark is that in most cases the flaw was due to the user mispronouncing the device name, e.g. saying "\textit{Turn on the living room light\textbf{s}}" instead of "\textit{Turn on the living room light}". This could easily be fixed by adapting the way Jarvis detects devices. Currently, it looks for devices that match the exact same name that was provided in the user query. If, instead, Jarvis looks for similar names that are not an exact match, the number of incorrect queries due to Jarvis can be significantly reduced, therefore minimizing this problem and improving the system's functioning.
+
+There were also the cases that failed due to Jarvis due to a sentence structure that was not included in the sample queries configured in Dialogflow. This happened because the sample queries configured in Dialogflow were not enough to cover all the different ways that the same command can be given, resulting in an increased error rate for queries. For example, in the intent "Rules Defined", a query like "\textit{What are the rules for the bedroom light?}" would be considered invalid since none of the sample queries is similar to it, despite it being a completely valid query to ask for the rules for a device. To fix this problem it is important to detect other ways of providing the same commands already represented by the intents that are already defined, for example by looking at the failed queries from the user study, to increase the range of commands that Jarvis can parse. Doing this reduces the error rate of queries, which improves the system's flexibility even further.
+
+\section{Conclusions and Future Work}
+
+% \section{First Section}
+% \subsection{A Subsection Sample}
+% Please note that the first paragraph of a section or subsection is
+% not indented. The first paragraph that follows a table, figure,
+% equation etc. does not need an indent, either.
+
+% Subsequent paragraphs, however, are indented.
+
+% \subsubsection{Sample Heading (Third Level)} Only two levels of
+% headings should be numbered. Lower level headings remain unnumbered;
+% they are formatted as run-in headings.
+
+% \paragraph{Sample Heading (Fourth Level)}
+% The contribution should contain no more than four levels of
+% headings. Table~\ref{tab1} gives a summary of all heading levels.
+
+% \begin{table}
+% \caption{Table captions should be placed above the
+% tables.}\label{tab1}
+% \begin{tabular}{|l|l|l|}
+% \hline
+% Heading level &  Example & Font size and style\\
+% \hline
+% Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
+% 1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
+% 2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
+% 3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
+% 4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
+% \hline
+% \end{tabular}
+% \end{table}
 
 
-\noindent Displayed equations are centered and set on a separate
-line.
-\begin{equation}
-x + y = z
-\end{equation}
-Please try to avoid rasterized images for line-art diagrams and
-schemas. Whenever possible, use vector graphics instead (see
-Fig.~\ref{fig1}).
+% \noindent Displayed equations are centered and set on a separate
+% line.
+% \begin{equation}
+% x + y = z
+% \end{equation}
+% Please try to avoid rasterized images for line-art diagrams and
+% schemas. Whenever possible, use vector graphics instead (see
+% Fig.~\ref{fig1}).
 
-\begin{figure}
-\includegraphics[width=\textwidth]{fig1.eps}
-\caption{A figure caption is always placed below the illustration.
-Please note that short captions are centered, while long ones are
-justified by the macro package automatically.} \label{fig1}
-\end{figure}
+% \begin{figure}
+% \includegraphics[width=\textwidth]{fig1.eps}
+% \caption{A figure caption is always placed below the illustration.
+% Please note that short captions are centered, while long ones are
+% justified by the macro package automatically.} \label{fig1}
+% \end{figure}
 
-\begin{theorem}
-This is a sample theorem. The run-in heading is set in bold, while
-the following text appears in italics. Definitions, lemmas,
-propositions, and corollaries are styled the same way.
-\end{theorem}
-%
-% the environments 'definition', 'lemma', 'proposition', 'corollary',
-% 'remark', and 'example' are defined in the LLNCS documentclass as well.
-%
-\begin{proof}
-Proofs, examples, and remarks have the initial word in italics,
-while the following text appears in normal font.
-\end{proof}
+% \begin{theorem}
+% This is a sample theorem. The run-in heading is set in bold, while
+% the following text appears in italics. Definitions, lemmas,
+% propositions, and corollaries are styled the same way.
+% \end{theorem}
+% %
+% % the environments 'definition', 'lemma', 'proposition', 'corollary',
+% % 'remark', and 'example' are defined in the LLNCS documentclass as well.
+% %
+% \begin{proof}
+% Proofs, examples, and remarks have the initial word in italics,
+% while the following text appears in normal font.
+% \end{proof}
 % For citations of references, we prefer the use of square brackets
 % and consecutive numbers. Citations using labels or the author/year
 % convention are also acceptable. The following bibliography provides
